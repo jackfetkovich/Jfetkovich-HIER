@@ -9,9 +9,22 @@ m = 0.1   # mass of the pole
 M = 1.0   # mass of the cart
 dt = 0.01 # time step
 K = 100   # number of samples
-T = 200   # time steps
+T = 400   # time steps
 sigma = 1.0
 lambda_ = 1.0
+
+# Simulation Parameters
+init_x = 0.0
+init_theta = 0.0
+init_x_dot = 0.0
+init_theta_dot = 0.0
+
+target_x = 0.3
+target_x_dot = 0.0
+target_theta = 0.5
+target_theta_dot = 0.0
+
+target_states = np.array([target_x, target_x_dot, target_theta, target_theta_dot])
 
 # Generate a random number in the range [0, 1]
 def gen_rand():
@@ -32,11 +45,17 @@ def cart_pole_dynamics(x, u):
 
 # Cost function
 def cost_function(x, u):
-    Q = np.diag([1.0, 10.0, 1.0, 100.0])  # Diagonal matrix Q
+    Q = np.diag([1.0, 1.0, 1.0, 10.0])  # Diagonal matrix Q
     R = 0.1  # Scalar R
     
     cost = np.dot(x.T, np.dot(Q, x)) + u * R * u
     return cost
+
+def terminal_cost(x):
+    Q = np.diag([100.0, 10000, 0, 0]);
+    state_diff = np.abs(target_states - x)
+    terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
+    return terminal_cost
 
 # MPPI control
 def mppi(x):
@@ -55,6 +74,8 @@ def mppi(x):
         for t in range(T):
             X[k, t + 1, :] = cart_pole_dynamics(X[k, t, :], U[k, t])
             costs[k] += cost_function(X[k, t + 1, :], U[k, t])
+        terminal_cost_val = terminal_cost(X[k, T, :]) #Terminal cost of final state
+        costs[k] += terminal_cost_val
 
     # Calculate weights for each trajectory
     weights = np.exp(-lambda_ * (costs - np.min(costs)))
@@ -79,8 +100,8 @@ def plot(time, cart_pos, pole_angle, cart_velo, pole_velo):
 
 # Main function
 def main():
-    Tx = 200
-    x = np.array([0.0, 0.1, 0.0, 0.0])  # Initial state [x, theta, x_dot, theta_dot]
+    Tx = 400
+    x = np.array([init_x, init_theta, init_x_dot, init_theta_dot])  # Initial state [x, theta, x_dot, theta_dot]
     X = np.zeros((T, 4))
     U = np.zeros(T)
     
@@ -92,6 +113,7 @@ def main():
 
     for t in range(Tx - 1):
         U[t] = mppi(x)
+        #print(x)
         x = cart_pole_dynamics(x, U[t])
         X[t + 1, :] = x
         time.append(t)
