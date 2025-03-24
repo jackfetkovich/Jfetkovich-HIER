@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from scipy.interpolate import interp1d
 import random
 matplotlib.use("TkAgg")
 
@@ -27,7 +29,7 @@ target_x_dot = 0.0
 target_y_dot = 0.0
 target_theta_dot = 0.0
 
-target_states = np.array([target_x, target_y, target_theta, target_x_dot, target_y_dot, target_theta_dot])
+# target_states = np.array([target_x, target_y, target_theta, target_x_dot, target_y_dot, target_theta_dot])
 
 # Generate a random number in the range [0, 1]
 def gen_rand():
@@ -56,14 +58,14 @@ def cost_function(x, u):
     cost = np.dot(x.T, np.dot(Q, x)) + np.dot(u.T, np.dot(R, u))
     return cost
 
-def terminal_cost(x):
-    Q = np.diag([100.0, 0, 1000, 0, 0, 0]);
+def terminal_cost(x, target_states):
+    Q = np.diag([100.0, 100.0, 0, 0, 0, 0]);
     state_diff = np.abs(target_states - x)
     terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
     return terminal_cost
 
 # MPPI control
-def mppi(x):
+def mppi(x, target):
     #U = np.random.randn(K, T, 2) * sigma  # Random initial control inputs
 
     U = np.stack([
@@ -81,11 +83,11 @@ def mppi(x):
         for t in range(T):
             X[k, t + 1, :] = unicyle_dynamics(X[k, t, :], U[k, t])
             costs[k] += cost_function(X[k, t + 1, :], U[k, t])
-        #terminal_cost_val = terminal_cost(X[k, T, :]) #Terminal cost of final state
-        #costs[k] += terminal_cost_val
+        terminal_cost_val = terminal_cost(X[k, T, :], target) #Terminal cost of final state
+        costs[k] += terminal_cost_val
 
     # Calculate weights for each trajectory
-    weights = np.exp(-1/lambda_ * (costs)) #TODO: updating this cost function
+    weights = np.exp(-1/lambda_ * (costs))
     weights /= np.sum(weights)
 
     # Compute the weighted sum of control inputs
@@ -93,17 +95,93 @@ def mppi(x):
     
     return u_star[0]
 
+def generate_trajectory_from_waypoints(waypoints, num_points=100):
+    """
+    Generates a smooth trajectory by interpolating between given waypoints.
+
+    Parameters:
+    waypoints (list of tuples): List of (x, y, theta) waypoints.
+    num_points (int): Number of points to interpolate.
+
+    Returns:
+    tuple: (x_vals, y_vals, theta_vals) interpolated trajectory.
+    """
+    waypoints = np.array(waypoints)
+    t = np.linspace(0, 1, len(waypoints))  # Normalized parameter along waypoints
+    t_interp = np.linspace(0, 1, num_points)  # Fine-grained interpolation parameter
+
+    # Interpolating x, y, and theta
+    interp_x = interp1d(t, waypoints[:, 0], kind='linear')
+    interp_y = interp1d(t, waypoints[:, 1], kind='linear')
+    interp_theta = interp1d(t, waypoints[:, 2], kind='linear')
+
+    x_vals = interp_x(t_interp)
+    y_vals = interp_y(t_interp)
+    theta_vals = interp_theta(t_interp)
+
+    return x_vals, y_vals, theta_vals
+
 # Plotting function
 def plot(time, x_pos, y_pos, theta, x_vel, y_vel, omega):
     plt.title("Unicycle States")
-    plt.plot(time, x_pos, label="x")
-    plt.plot(time, y_pos, label="y")
-    plt.plot(time, theta, label="theta")
-    #plt.plot(time, x_vel, label="x velocity")
-   # plt.plot(time, y_vel, label="y velocity")
-    #plt.plot(time, omega, label="omega")
+    #plt.plot(time, x_pos, label="x")
+    #plt.plot(time, y_pos, label="y")
+    #plt.plot(time, theta, label="theta")
+    plt.plot(time, x_vel, label="x velocity")
+    plt.plot(time, y_vel, label="y velocity")
+    plt.plot(time, omega, label="omega")
     plt.xlabel("time")
     plt.ylabel("Y")
+    plt.legend()
+    plt.show()
+
+def animate(x_vals, y_vals, theta_vals, x_traj=None, y_traj=None):
+    """
+    Animates the movement of an object in 2D space given its state variables over time.
+    Also plots a given trajectory as a dotted line.
+
+    Parameters:
+    x_vals (list or np.array): X positions over time.
+    y_vals (list or np.array): Y positions over time.
+    theta_vals (list or np.array): Orientations (in radians) over time.
+    x_traj (list or np.array, optional): X values of the reference trajectory.
+    y_traj (list or np.array, optional): Y values of the reference trajectory.
+    """
+    # Set up the figure
+    fig, ax = plt.subplots()
+    ax.set_xlim(min(x_vals) - 1, max(x_vals) + 1)
+    ax.set_ylim(min(y_vals) - 1, max(y_vals) + 1)
+    ax.set_xlabel("X Position")
+    ax.set_ylabel("Y Position")
+
+    # Plot the trajectory if provided
+    if x_traj is not None and y_traj is not None:
+        ax.plot(x_traj, y_traj, 'k--', linewidth=1.5, label="Trajectory")  # Dotted reference path
+
+    # Initialize plot elements
+    line, = ax.plot([], [], 'r-', linewidth=2)  # History line
+    point, = ax.plot([], [], 'bo', markersize=8)  # Current position
+    arrow = ax.quiver([], [], [], [], angles='xy', scale_units='xy', scale=1, color='b')  # Orientation arrow
+
+    # Update function
+    def update(frame):
+        x, y, theta = x_vals[frame], y_vals[frame], theta_vals[frame]
+        
+        # Update history path
+        line.set_data(x_vals[:frame+1], y_vals[:frame+1])
+        
+        # Update point position
+        point.set_data([x], [y])
+        
+        # Update arrow orientation
+        arrow.set_offsets([[x, y]])
+        arrow.set_UVC([np.cos(theta)], [np.sin(theta)])
+
+        return line, point, arrow
+
+    # Create animation
+    ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=50, blit=True)
+    
     plt.legend()
     plt.show()
 
@@ -121,10 +199,24 @@ def main():
     x_vel = []
     y_vel = []
     omega = []
+    waypoints = [
+        (0, 0, 0),
+        (0.1, 0.2, np.pi / 8),
+        (0.3, 0.5, np.pi / 6),
+        (0.6, 0.7, np.pi / 4),
+        (1.0, 0.8, np.pi / 3),
+        (1.3, 0.6, np.pi / 2),
+        (1.5, 0.3, 3*np.pi / 4),
+        (1.66, 0, np.pi)
+    ]
+
+
+    traj = generate_trajectory_from_waypoints(waypoints, 1000)
+
 
     for t in range(Tx - 1):
-        U[t] = mppi(x)
-        print(U[t])
+        targets = [traj[0][t], traj[1][t], traj[2][t], 0, 0, 0]
+        U[t] = mppi(x, targets)
         x = unicyle_dynamics(x, U[t])
         X[t + 1, :] = x
         time.append(t)
@@ -135,7 +227,8 @@ def main():
         y_vel.append(X[t + 1, 4])
         omega.append(X[t + 1, 5])
 
-    plot(time, x_pos, y_pos, theta, x_vel, y_vel, omega)
+    #plot(time, x_pos, y_pos, theta, x_vel, y_vel, omega)
+    animate(x_pos, y_pos, theta, traj[0], traj[1])
 
 if __name__ == "__main__":
     main()
