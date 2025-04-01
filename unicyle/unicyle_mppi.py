@@ -9,7 +9,7 @@ matplotlib.use("TkAgg")
 
 # system parameters
 dt = 0.01 # time step
-K = 100   # number of samples
+K = 200   # number of samples
 T = 10 # time steps (HORIZON)
 sigma = 1.0
 lambda_ = 1.0
@@ -53,8 +53,8 @@ def unicyle_dynamics(x, u):
 
 # Cost function
 def cost_function(x, u, target):
-    Q = np.diag([1.0, 1.0, 0.0, 0, 0, 0])  # State costs
-    R = np.diag([0,0])  # Input costs
+    Q = np.diag([0.10, 0.10, 0.0, 0, 0, 0])  # State costs
+    R = np.diag([0.04,0.0])  # Input costs
 
     x_des= np.array([target[0], target[1], 0, 0, 0, 0])
     state_diff = np.abs(x_des - x)
@@ -64,19 +64,19 @@ def cost_function(x, u, target):
     return cost
 
 def terminal_cost(x, target):
-    Q = np.diag([100.0, 100.0, 0, 0, 0, 0]);
+    Q = np.diag([0.50, 0.50, 0.0, 0, 0, 0]);
     x_des= np.array([target[0], target[1], 0, 0, 0, 0])
     state_diff = np.abs(x_des - x)
     terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
     return terminal_cost
 
 # MPPI control
-def mppi(x, target):
+def mppi(x, target, prev_U):
     #U = np.random.randn(K, T, 2) * sigma  # Random initial control inputs
 
     U = np.stack([
-        np.random.normal(loc=0, scale=10, size=(K, T)),
-        np.random.normal(loc=0, scale=5*np.pi, size=(K, T))
+        np.random.normal(loc=0, scale=5, size=(K, T)),
+        np.random.normal(loc=0, scale=10*np.pi, size=(K, T))
     ], axis=-1)
 
     X = np.zeros((K, T + 1, 6))  # Array to store states
@@ -97,8 +97,6 @@ def mppi(x, target):
     # Calculate weights for each trajectory
     weights = np.exp(-1/lambda_ * (costs))
     weights /= np.sum(weights)
-    print(weights)
-    print(sum(weights))
 
     # Compute the weighted sum of control inputs
     u_star = np.sum(weights[:, None, None] * U, axis=0)
@@ -194,7 +192,10 @@ def animate(x_vals, y_vals, theta_vals, x_traj=None, y_traj=None):
 
     # Create animation
     ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=50, blit=True)
-    
+    filename=f"unicyle{K}-{T}w-theta-cost.gif"
+    ani.save(filename, writer='pillow', fps=20)
+    print(f"Animation saved as {filename}")
+    plt.title(f"K={K}, T={T}")
     plt.legend()
     plt.show()
 
@@ -226,13 +227,13 @@ def main():
 
     traj = generate_trajectory_from_waypoints(waypoints, 1000+T)
 
-
+    last_u = np.zeros(2)
     for t in range(Tx - 1):
         # targets = [traj[0][t:t+T], traj[1][t:t+T], traj[2][t:t+T], 0, 0, 0]
         targets = np.array([
             traj[0][t:t+T], traj[1][t:t+T], traj[2][t:t+T], np.zeros(T), np.zeros(T), np.zeros(T)
         ])
-        U[t] = mppi(x, targets)
+        U[t] = mppi(x, targets, last_u)
         x = unicyle_dynamics(x, U[t])
         X[t + 1, :] = x
         time.append(t)
@@ -242,6 +243,7 @@ def main():
         x_vel.append(X[t + 1, 3])
         y_vel.append(X[t + 1, 4])
         omega.append(X[t + 1, 5])
+        last_u = U[t]
 
     #plot(time, x_pos, y_pos, theta, x_vel, y_vel, omega)
     animate(x_pos, y_pos, theta, traj[0], traj[1])

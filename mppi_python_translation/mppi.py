@@ -9,22 +9,22 @@ m = 0.1   # mass of the pole
 M = 1.0   # mass of the cart
 dt = 0.01 # time step
 K = 100   # number of samples
-T = 400   # time steps
+T = 10   # time steps (HORIZON)
 sigma = 1.0
 lambda_ = 1.0
 
 # Simulation Parameters
 init_x = 0.0
-init_theta = 0.0
+init_theta = 0
 init_x_dot = 0.0
 init_theta_dot = 0.0
 
-target_x = 0.3
+target_x = -0.3
 target_x_dot = 0.0
 target_theta = 0.5
 target_theta_dot = 0.0
 
-target_states = np.array([target_x, target_x_dot, target_theta, target_theta_dot])
+target_states = np.array([target_x, target_theta, target_x_dot, target_theta_dot])
 
 # Generate a random number in the range [0, 1]
 def gen_rand():
@@ -52,17 +52,13 @@ def cost_function(x, u):
     return cost
 
 def terminal_cost(x):
-    Q = np.diag([100.0, 10000, 0, 0]);
+    Q = np.diag([100.0, 0, 1000, 0]);
     state_diff = np.abs(target_states - x)
     terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
     return terminal_cost
 
 # MPPI control
 def mppi(x):
-    dt = 0.01
-    T = 10
-    K = 100
-
     U = np.random.randn(K, T) * sigma  # Random initial control inputs
     X = np.zeros((K, T + 1, 4))  # Array to store states
     for k in range(K):
@@ -100,10 +96,10 @@ def plot(time, cart_pos, pole_angle, cart_velo, pole_velo):
 
 # Main function
 def main():
-    Tx = 400
+    Tx = 1000
     x = np.array([init_x, init_theta, init_x_dot, init_theta_dot])  # Initial state [x, theta, x_dot, theta_dot]
-    X = np.zeros((T, 4))
-    U = np.zeros(T)
+    X = np.zeros((Tx, 4))
+    U = np.zeros(Tx)
     
     time = []
     cart_pos = []
