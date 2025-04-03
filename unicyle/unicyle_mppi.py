@@ -9,8 +9,8 @@ matplotlib.use("TkAgg")
 
 # system parameters
 dt = 0.01 # time step
-K = 30   # number of samples
-T = 15 # time steps (HORIZON)
+K = 500   # number of samples
+T = 20 # time steps (HORIZON)
 sigma = 1.0
 lambda_ = 1.0
 
@@ -53,7 +53,7 @@ def unicyle_dynamics(x, u):
 
 # Cost function
 def cost_function(x, u, target):
-    Q = np.diag([0.10, 0.10, 0.0, 0, 0, 0])  # State costs
+    Q = np.diag([10, 10, 0.0, 0, 0, 0])  # State costs
     R = np.diag([0.0,0.0])  # Input costs
 
     x_des= np.array([target[0], target[1], 0, 0, 0, 0])
@@ -64,13 +64,14 @@ def cost_function(x, u, target):
     return cost
 
 def terminal_cost(x, target):
-    Q = np.diag([0.50, 0.50, 0.0, 0, 0, 0]);
+    Q = np.diag([50, 50, 0.0, 0, 0, 0]);
     x_des= np.array([target[0], target[1], 0, 0, 0, 0])
     state_diff = np.abs(x_des - x)
     terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
     return terminal_cost
 
 X_calc = np.zeros((K, T + 1, 6))
+traj_weight_single = np.zeros(K)
 # MPPI control
 def mppi(x, target, prev_U):
     #U = np.random.randn(K, T, 2) * sigma  # Random initial control inputs
@@ -98,6 +99,8 @@ def mppi(x, target, prev_U):
     # Calculate weights for each trajectory
     weights = np.exp(-1/lambda_ * (costs))
     weights /= np.sum(weights)
+    global traj_weight_single
+    traj_weight_single[:] = weights
 
     # Compute the weighted sum of control inputs
     u_star = np.sum(weights[:, None, None] * U, axis=0)
@@ -147,7 +150,7 @@ def plot(time, x_pos, y_pos, theta, x_vel, y_vel, omega):
 
 
 
-def animate(x_vals, y_vals, theta_vals, x_traj, y_traj, sample_trajs):
+def animate(x_vals, y_vals, theta_vals, x_traj, y_traj, sample_trajs, weights):
     """
     Animates the movement of an object in 2D space given its state variables over time.
     Also plots a given trajectory as a dotted line.
@@ -181,8 +184,6 @@ def animate(x_vals, y_vals, theta_vals, x_traj, y_traj, sample_trajs):
     arrow = ax.quiver([], [], [], [], angles='xy', scale_units='xy', scale=30, color='y')  # Orientation arrow
 
 
-
-    
     # Update function
     def update(frame):
         x, y, theta = x_vals[frame], y_vals[frame], theta_vals[frame]
@@ -195,7 +196,9 @@ def animate(x_vals, y_vals, theta_vals, x_traj, y_traj, sample_trajs):
         # Update generated trajectories
         for i in range(K):
             samples[i].set_data([], [])  # Clears previous data
+            samples[i].set_color([0, weights[frame][i] , 0, weights[frame][i]*2])
             samples[i].set_data(sample_trajs[frame, i, 0, 0 : T], sample_trajs[frame, i, 1, 0 : T])
+            print(weights[frame][i])
 
         
         # Update ghost point if reference trajectory exists
@@ -217,12 +220,15 @@ def animate(x_vals, y_vals, theta_vals, x_traj, y_traj, sample_trajs):
     plt.legend()
     plt.show()
 
+
+
 # Main function
 def main():
     Tx = 1000
     x = np.zeros(6)  # Initial state [x, theta, x_dot, theta_dot]
     X = np.zeros((Tx, 6))
     U = np.zeros((Tx, 2))
+    all_weights = np.zeros((Tx+1, K))
     
     time = []
     x_pos = []
@@ -247,6 +253,7 @@ def main():
     sample_trajectories = np.zeros((Tx, K, 2, T))
     sample_trajectories_one = np.zeros((K, 2, T))
 
+    
     last_u = np.zeros(2)
     for t in range(Tx - 1):
         # targets = [traj[0][t:t+T], traj[1][t:t+T], traj[2][t:t+T], 0, 0, 0]
@@ -270,13 +277,12 @@ def main():
                 sample_trajectories_one[k, 0, t_] = X_calc[k, t_, 0] #should be 0
                 sample_trajectories_one[k, 1, t_] = X_calc[k, t_, 1] #should be 1
         sample_trajectories[t] = sample_trajectories_one
-        # print(f"{t}x: {sample_trajectories[0, 0]}")
-        # print(f"{t}y: {sample_trajectories[0, 1]}")
+        all_weights[t] = traj_weight_single
+
     
 
-    #plot(time, x_pos, y_pos, theta, x_vel, y_vel, omega)
-    animate(x_pos, y_pos, theta, traj[0], traj[1], sample_trajectories)
-    #, all_x_trajs=X_calc[:, :, 0], all_y_trajs=X_calc[:, :, 1], K=K, T=T
+    animate(x_pos, y_pos, theta, traj[0], traj[1], sample_trajectories, all_weights)
+
 
 if __name__ == "__main__":
     main()
