@@ -9,8 +9,8 @@ matplotlib.use("TkAgg")
 
 # system parameters
 dt = 0.01 # time step
-K = 200   # number of samples
-T = 10 # time steps (HORIZON)
+K = 30   # number of samples
+T = 15 # time steps (HORIZON)
 sigma = 1.0
 lambda_ = 1.0
 
@@ -42,7 +42,7 @@ def unicyle_dynamics(x, u):
     cos_theta = np.cos(theta)
     
     # Next states that depend on time differential
-    td_states = np.array([u[0]*cos_theta, u[0]*sin_theta, u[1], 0, 0, 0]) 
+    td_states = np.array([u[0]*cos_theta, u[0]*sin_theta, u[1], 0, 0, 0]) # should be cos, sin
     
      # Next states that don't depend on time differentia
     # ntd_states = np.array([x[0], x[1], x[2], u[0]*cos_theta, u[0]*sin_theta, u[1]])
@@ -54,7 +54,7 @@ def unicyle_dynamics(x, u):
 # Cost function
 def cost_function(x, u, target):
     Q = np.diag([0.10, 0.10, 0.0, 0, 0, 0])  # State costs
-    R = np.diag([0.04,0.0])  # Input costs
+    R = np.diag([0.0,0.0])  # Input costs
 
     x_des= np.array([target[0], target[1], 0, 0, 0, 0])
     state_diff = np.abs(x_des - x)
@@ -70,6 +70,7 @@ def terminal_cost(x, target):
     terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
     return terminal_cost
 
+X_calc = np.zeros((K, T + 1, 6))
 # MPPI control
 def mppi(x, target, prev_U):
     #U = np.random.randn(K, T, 2) * sigma  # Random initial control inputs
@@ -79,19 +80,19 @@ def mppi(x, target, prev_U):
         np.random.normal(loc=0, scale=10*np.pi, size=(K, T))
     ], axis=-1)
 
-    X = np.zeros((K, T + 1, 6))  # Array to store states
+    # X = np.zeros((K, T + 1, 6))  # Array to store states
     for k in range(K):
-        X[k, 0, :] = x  # Initialize all trajectories with the current state
+        X_calc[k, 0, :] = x  # Initialize all trajectories with the current state
 
     costs = np.zeros(K)
     
     for k in range(K):
         for t in range(T):
-            X[k, t + 1, :] = unicyle_dynamics(X[k, t, :], U[k, t])
+            X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], U[k, t])
             current_target = np.array([target[0][t],target[1][t], target[2][t], target[3][t], target[4][t], target[5][t]])
-            costs[k] += cost_function(X[k, t + 1, :], U[k, t], current_target)
+            costs[k] += cost_function(X_calc[k, t + 1, :], U[k, t], current_target)
         final_target = np.array([target[0][T-1],target[1][T-1], target[2][T-1], target[3][T-1], target[4][T-1], target[5][T-1]])
-        terminal_cost_val = terminal_cost(X[k, T, :], final_target) #Terminal cost of final state
+        terminal_cost_val = terminal_cost(X_calc[k, T, :], final_target) #Terminal cost of final state
         costs[k] += terminal_cost_val
 
     # Calculate weights for each trajectory
@@ -144,7 +145,9 @@ def plot(time, x_pos, y_pos, theta, x_vel, y_vel, omega):
     plt.legend()
     plt.show()
 
-def animate(x_vals, y_vals, theta_vals, x_traj=None, y_traj=None):
+
+
+def animate(x_vals, y_vals, theta_vals, x_traj, y_traj, sample_trajs):
     """
     Animates the movement of an object in 2D space given its state variables over time.
     Also plots a given trajectory as a dotted line.
@@ -167,34 +170,49 @@ def animate(x_vals, y_vals, theta_vals, x_traj=None, y_traj=None):
     if x_traj is not None and y_traj is not None:
         ax.plot(x_traj, y_traj, 'k--', linewidth=1.5, label="Trajectory")  # Dotted reference path
 
+    samples = []
+    for i in range(K):
+        samples.append(ax.plot([], [], color=[0.5, 0.5, 0.5], linewidth=0.5)[0])
+
     # Initialize plot elements
     line, = ax.plot([], [], 'r-', linewidth=2)  # History line
     point, = ax.plot([], [], 'bo', markersize=8)  # Current position
     ghost,  = ax.plot([], [], 'gx', markersize=6)  # Desired position
     arrow = ax.quiver([], [], [], [], angles='xy', scale_units='xy', scale=30, color='y')  # Orientation arrow
 
+
+
+    
     # Update function
     def update(frame):
-        x, y, theta, x_des, y_des = x_vals[frame], y_vals[frame], theta_vals[frame], x_traj[frame], y_traj[frame]
+        x, y, theta = x_vals[frame], y_vals[frame], theta_vals[frame]
 
         # Update history path
-        line.set_data(x_vals[:frame+1], y_vals[:frame+1])
-        
-        # Update point position
+        line.set_data(x_vals[:frame + 1], y_vals[:frame + 1])
+                # Update point position
         point.set_data([x], [y])
-        ghost.set_data([x_des], [y_des])
         
-        # Update arrow orientation
-        arrow.set_offsets([[x, y]])
-        arrow.set_UVC([np.cos(theta)], [np.sin(theta)])
+        # Update generated trajectories
+        for i in range(K):
+            samples[i].set_data([], [])  # Clears previous data
+            samples[i].set_data(sample_trajs[frame, i, 0, 0 : T], sample_trajs[frame, i, 1, 0 : T])
 
-        return line, point, arrow, ghost
+        
+        # Update ghost point if reference trajectory exists
+        if x_traj is not None and y_traj is not None:
+            ghost.set_data([x_traj[frame]], [y_traj[frame]])
+
+        # Fix quiver arrow update
+        arrow.set_offsets([[x, y]])  # Move arrow to (x, y)
+        arrow.set_UVC(np.array([np.cos(theta)]), np.array([np.sin(theta)]))  # Ensure proper array input
+
+        return [line, point, arrow, ghost].append(samples)
 
     # Create animation
-    ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=50, blit=True)
-    filename=f"unicyle{K}-{T}w-theta-cost.gif"
-    ani.save(filename, writer='pillow', fps=20)
-    print(f"Animation saved as {filename}")
+    ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=50, blit=False)
+    # filename=f"unicyle{K}-{T}w-theta-cost.gif"
+    # ani.save(filename, writer='pillow', fps=20)
+    # print(f"Animation saved as {filename}")
     plt.title(f"K={K}, T={T}")
     plt.legend()
     plt.show()
@@ -226,6 +244,8 @@ def main():
 
 
     traj = generate_trajectory_from_waypoints(waypoints, 1000+T)
+    sample_trajectories = np.zeros((Tx, K, 2, T))
+    sample_trajectories_one = np.zeros((K, 2, T))
 
     last_u = np.zeros(2)
     for t in range(Tx - 1):
@@ -245,8 +265,18 @@ def main():
         omega.append(X[t + 1, 5])
         last_u = U[t]
 
+        for k in range(K):
+            for t_ in range (T):
+                sample_trajectories_one[k, 0, t_] = X_calc[k, t_, 0] #should be 0
+                sample_trajectories_one[k, 1, t_] = X_calc[k, t_, 1] #should be 1
+        sample_trajectories[t] = sample_trajectories_one
+        # print(f"{t}x: {sample_trajectories[0, 0]}")
+        # print(f"{t}y: {sample_trajectories[0, 1]}")
+    
+
     #plot(time, x_pos, y_pos, theta, x_vel, y_vel, omega)
-    animate(x_pos, y_pos, theta, traj[0], traj[1])
+    animate(x_pos, y_pos, theta, traj[0], traj[1], sample_trajectories)
+    #, all_x_trajs=X_calc[:, :, 0], all_y_trajs=X_calc[:, :, 1], K=K, T=T
 
 if __name__ == "__main__":
     main()
