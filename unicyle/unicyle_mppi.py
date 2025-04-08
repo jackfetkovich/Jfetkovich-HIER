@@ -9,10 +9,10 @@ matplotlib.use("TkAgg")
 
 # system parameters
 dt = 0.01 # time step
-K = 500   # number of samples
-T = 20 # time steps (HORIZON)
+K = 1000   # number of samples
+T = 30 # time steps (HORIZON)
 sigma = 1.0
-lambda_ = 1.0
+lambda_ = 1
 
 # Simulation Parameters
 init_x = 0.0
@@ -56,8 +56,8 @@ def cost_function(x, u, target):
     Q = np.diag([10, 10, 0.0, 0, 0, 0])  # State costs
     R = np.diag([0.0,0.0])  # Input costs
 
-    x_des= np.array([target[0], target[1], 0, 0, 0, 0])
-    state_diff = np.abs(x_des - x)
+    x_des= np.array([target[0], target[1], target[2], 0, 0, 0])
+    state_diff = x_des - x
     state_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
 
     cost = state_cost + np.dot(u.T, np.dot(R, u))
@@ -65,8 +65,8 @@ def cost_function(x, u, target):
 
 def terminal_cost(x, target):
     Q = np.diag([50, 50, 0.0, 0, 0, 0]);
-    x_des= np.array([target[0], target[1], 0, 0, 0, 0])
-    state_diff = np.abs(x_des - x)
+    x_des= np.array([target[0], target[1], target[2], 0, 0, 0])
+    state_diff = x_des - x
     terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
     return terminal_cost
 
@@ -77,8 +77,8 @@ def mppi(x, target, prev_U):
     #U = np.random.randn(K, T, 2) * sigma  # Random initial control inputs
 
     U = np.stack([
-        np.random.normal(loc=0, scale=5, size=(K, T)),
-        np.random.normal(loc=0, scale=10*np.pi, size=(K, T))
+        np.random.normal(loc=1, scale=3, size=(K, T)),
+        np.random.normal(loc=0, scale=15*np.pi, size=(K, T))
     ], axis=-1)
 
     # X = np.zeros((K, T + 1, 6))  # Array to store states
@@ -192,13 +192,18 @@ def animate(x_vals, y_vals, theta_vals, x_traj, y_traj, sample_trajs, weights):
         line.set_data(x_vals[:frame + 1], y_vals[:frame + 1])
                 # Update point position
         point.set_data([x], [y])
-        
+
+        max_intensity = -1
+        for i in range(K):
+            this_intensity = weights[frame][i]
+            if this_intensity > max_intensity:
+                max_intensity = this_intensity
         # Update generated trajectories
         for i in range(K):
+            intensity = min(weights[frame][i], 1)
             samples[i].set_data([], [])  # Clears previous data
-            samples[i].set_color([0, weights[frame][i] , 0, weights[frame][i]*2])
+            samples[i].set_color([0, intensity/max_intensity , 0, intensity/max_intensity])
             samples[i].set_data(sample_trajs[frame, i, 0, 0 : T], sample_trajs[frame, i, 1, 0 : T])
-            print(weights[frame][i])
 
         
         # Update ghost point if reference trajectory exists
@@ -213,11 +218,11 @@ def animate(x_vals, y_vals, theta_vals, x_traj, y_traj, sample_trajs, weights):
 
     # Create animation
     ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=50, blit=False)
-    # filename=f"unicyle{K}-{T}w-theta-cost.gif"
-    # ani.save(filename, writer='pillow', fps=20)
-    # print(f"Animation saved as {filename}")
     plt.title(f"K={K}, T={T}")
     plt.legend()
+    filename=f"unicyle{K}-{T}-green.gif"
+    ani.save(filename, writer='pillow', fps=20)
+    print(f"Animation saved as {filename}")
     plt.show()
 
 
@@ -225,7 +230,7 @@ def animate(x_vals, y_vals, theta_vals, x_traj, y_traj, sample_trajs, weights):
 # Main function
 def main():
     Tx = 1000
-    x = np.zeros(6)  # Initial state [x, theta, x_dot, theta_dot]
+    x = np.array([0,0,3.14/2, 0, 0,0])  # Initial state [x, theta, x_dot, theta_dot]
     X = np.zeros((Tx, 6))
     U = np.zeros((Tx, 2))
     all_weights = np.zeros((Tx+1, K))
