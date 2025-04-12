@@ -9,8 +9,8 @@ matplotlib.use("TkAgg")
 
 # system parameters
 dt = 0.01 # time step
-K = 1000   # number of samples
-T = 30 # time steps (HORIZON)
+K = 500   # number of samples
+T = 15 # time steps (HORIZON)
 sigma = 1.0
 lambda_ = 1
 
@@ -29,20 +29,11 @@ target_x_dot = 0.0
 target_y_dot = 0.0
 target_theta_dot = 0.0
 
-# target_states = np.array([target_x, target_y, target_theta, target_x_dot, target_y_dot, target_theta_dot])
-
-# Generate a random number in the range [0, 1]
-def gen_rand():
-    return random.uniform(0.0, 10.0)
 
 # Unicyle dynamics
-def unicyle_dynamics(x, u):
-    theta = x[2]
-    sin_theta = np.sin(theta)
-    cos_theta = np.cos(theta)
-    
+def unicyle_dynamics(x, u):    
     # Next states that depend on time differential
-    td_states = np.array([u[0]*cos_theta, u[0]*sin_theta, u[1], 0, 0, 0]) # should be cos, sin
+    td_states = np.array([u[0], u[1]]) # should be cos, sin
     
      # Next states that don't depend on time differentia
     # ntd_states = np.array([x[0], x[1], x[2], u[0]*cos_theta, u[0]*sin_theta, u[1]])
@@ -53,10 +44,10 @@ def unicyle_dynamics(x, u):
 
 # Cost function
 def cost_function(x, u, target):
-    Q = np.diag([10, 10, 0.0, 0, 0, 0])  # State costs
+    Q = np.diag([10, 10])  # State costs
     R = np.diag([0.0,0.0])  # Input costs
 
-    x_des= np.array([target[0], target[1], target[2], 0, 0, 0])
+    x_des= np.array([target[0], target[1]])
     state_diff = x_des - x
     state_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
 
@@ -64,24 +55,23 @@ def cost_function(x, u, target):
     return cost
 
 def terminal_cost(x, target):
-    Q = np.diag([50, 50, 0.0, 0, 0, 0]);
-    x_des= np.array([target[0], target[1], target[2], 0, 0, 0])
+    Q = np.diag([50, 50]);
+    x_des= np.array([target[0], target[1]])
     state_diff = x_des - x
     terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
     return terminal_cost
 
-X_calc = np.zeros((K, T + 1, 6))
+X_calc = np.zeros((K, T + 1, 2))
 traj_weight_single = np.zeros(K)
 # MPPI control
 def mppi(x, target, prev_U):
     #U = np.random.randn(K, T, 2) * sigma  # Random initial control inputs
 
     U = np.stack([
-        np.random.normal(loc=1, scale=3, size=(K, T)),
-        np.random.normal(loc=0, scale=15*np.pi, size=(K, T))
+        np.random.normal(loc=1, scale=3, size=(K, T)), #vx
+        np.random.normal(loc=0, scale=3, size=(K, T)), #vy
     ], axis=-1)
 
-    # X = np.zeros((K, T + 1, 6))  # Array to store states
     for k in range(K):
         X_calc[k, 0, :] = x  # Initialize all trajectories with the current state
 
@@ -90,9 +80,9 @@ def mppi(x, target, prev_U):
     for k in range(K):
         for t in range(T):
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], U[k, t])
-            current_target = np.array([target[0][t],target[1][t], target[2][t], target[3][t], target[4][t], target[5][t]])
+            current_target = np.array([target[0][t],target[1][t]])
             costs[k] += cost_function(X_calc[k, t + 1, :], U[k, t], current_target)
-        final_target = np.array([target[0][T-1],target[1][T-1], target[2][T-1], target[3][T-1], target[4][T-1], target[5][T-1]])
+        final_target = np.array([target[0][T-1],target[1][T-1]])
         terminal_cost_val = terminal_cost(X_calc[k, T, :], final_target) #Terminal cost of final state
         costs[k] += terminal_cost_val
 
@@ -132,25 +122,10 @@ def generate_trajectory_from_waypoints(waypoints, num_points=100):
     y_vals = interp_y(t_interp)
     theta_vals = interp_theta(t_interp)
 
-    return x_vals, y_vals, theta_vals
-
-# Plotting function
-def plot(time, x_pos, y_pos, theta, x_vel, y_vel, omega):
-    plt.title("Unicycle States")
-    #plt.plot(time, x_pos, label="x")
-    #plt.plot(time, y_pos, label="y")
-    #plt.plot(time, theta, label="theta")
-    plt.plot(time, x_vel, label="x velocity")
-    plt.plot(time, y_vel, label="y velocity")
-    plt.plot(time, omega, label="omega")
-    plt.xlabel("time")
-    plt.ylabel("Y")
-    plt.legend()
-    plt.show()
+    return x_vals, y_vals
 
 
-
-def animate(x_vals, y_vals, theta_vals, x_traj, y_traj, sample_trajs, weights):
+def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
     """
     Animates the movement of an object in 2D space given its state variables over time.
     Also plots a given trajectory as a dotted line.
@@ -181,12 +156,11 @@ def animate(x_vals, y_vals, theta_vals, x_traj, y_traj, sample_trajs, weights):
     line, = ax.plot([], [], 'r-', linewidth=2)  # History line
     point, = ax.plot([], [], 'bo', markersize=8)  # Current position
     ghost,  = ax.plot([], [], 'gx', markersize=6)  # Desired position
-    arrow = ax.quiver([], [], [], [], angles='xy', scale_units='xy', scale=30, color='y')  # Orientation arrow
 
 
     # Update function
     def update(frame):
-        x, y, theta = x_vals[frame], y_vals[frame], theta_vals[frame]
+        x, y = x_vals[frame], y_vals[frame]
 
         # Update history path
         line.set_data(x_vals[:frame + 1], y_vals[:frame + 1])
@@ -205,16 +179,12 @@ def animate(x_vals, y_vals, theta_vals, x_traj, y_traj, sample_trajs, weights):
             samples[i].set_color([0, intensity/max_intensity , 0, intensity/max_intensity])
             samples[i].set_data(sample_trajs[frame, i, 0, 0 : T], sample_trajs[frame, i, 1, 0 : T])
 
-        
         # Update ghost point if reference trajectory exists
         if x_traj is not None and y_traj is not None:
             ghost.set_data([x_traj[frame]], [y_traj[frame]])
 
-        # Fix quiver arrow update
-        arrow.set_offsets([[x, y]])  # Move arrow to (x, y)
-        arrow.set_UVC(np.array([np.cos(theta)]), np.array([np.sin(theta)]))  # Ensure proper array input
 
-        return [line, point, arrow, ghost].append(samples)
+        return [line, point, ghost].append(samples)
 
     # Create animation
     ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=50, blit=False)
@@ -230,8 +200,8 @@ def animate(x_vals, y_vals, theta_vals, x_traj, y_traj, sample_trajs, weights):
 # Main function
 def main():
     Tx = 1000
-    x = np.array([0,0,3.14/2, 0, 0,0])  # Initial state [x, theta, x_dot, theta_dot]
-    X = np.zeros((Tx, 6))
+    x = np.array([0,0])  # Initial state [x, theta, x_dot, theta_dot]
+    X = np.zeros((Tx, 2))
     U = np.zeros((Tx, 2))
     all_weights = np.zeros((Tx+1, K))
     
@@ -261,23 +231,17 @@ def main():
     
     last_u = np.zeros(2)
     for t in range(Tx - 1):
-        # targets = [traj[0][t:t+T], traj[1][t:t+T], traj[2][t:t+T], 0, 0, 0]
         targets = np.array([
-            traj[0][t:t+T], traj[1][t:t+T], traj[2][t:t+T], np.zeros(T), np.zeros(T), np.zeros(T)
+            traj[0][t:t+T], traj[1][t:t+T]
         ])
-        print(f'{t}:{targets[t]}')
         U[t] = mppi(x, targets, last_u)
         x = unicyle_dynamics(x, U[t])
         X[t + 1, :] = x
         time.append(t)
         x_pos.append(X[t + 1, 0])
         y_pos.append(X[t+1, 1])
-        theta.append(X[t+1, 2])
-        x_vel.append(X[t + 1, 3])
-        y_vel.append(X[t + 1, 4])
-        omega.append(X[t + 1, 5])
-        last_u = U[t]
 
+        last_u = U[t]
         for k in range(K):
             for t_ in range (T):
                 sample_trajectories_one[k, 0, t_] = X_calc[k, t_, 0] #should be 0
@@ -287,7 +251,7 @@ def main():
 
     
 
-    animate(x_pos, y_pos, theta, traj[0], traj[1], sample_trajectories, all_weights)
+    animate(x_pos, y_pos, traj[0], traj[1], sample_trajectories, all_weights)
 
 
 if __name__ == "__main__":
