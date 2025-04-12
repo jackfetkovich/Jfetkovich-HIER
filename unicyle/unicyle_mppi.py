@@ -220,9 +220,9 @@ def animate(x_vals, y_vals, theta_vals, x_traj, y_traj, sample_trajs, weights):
     ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=50, blit=False)
     plt.title(f"K={K}, T={T}")
     plt.legend()
-    filename=f"unicyle{K}-{T}-green.gif"
-    ani.save(filename, writer='pillow', fps=20)
-    print(f"Animation saved as {filename}")
+    # filename=f"unicyle{K}-{T}-green.gif"
+    # ani.save(filename, writer='pillow', fps=20)
+    # print(f"Animation saved as {filename}")
     plt.show()
 
 
@@ -265,6 +265,7 @@ def main():
         targets = np.array([
             traj[0][t:t+T], traj[1][t:t+T], traj[2][t:t+T], np.zeros(T), np.zeros(T), np.zeros(T)
         ])
+        print(f'{t}:{targets[t]}')
         U[t] = mppi(x, targets, last_u)
         x = unicyle_dynamics(x, U[t])
         X[t + 1, :] = x
