@@ -10,9 +10,9 @@ matplotlib.use("TkAgg")
 # system parameters
 dt = 0.01 # time step
 K = 500   # number of samples
-T = 15 # time steps (HORIZON)
+T = 10 # time steps (HORIZON)
 sigma = 1.0
-lambda_ = 1
+lambda_ = 0.7
 
 # Simulation Parameters
 init_x = 0.0
@@ -33,7 +33,7 @@ target_theta_dot = 0.0
 # Unicyle dynamics
 def unicyle_dynamics(x, u):    
     # Next states that depend on time differential
-    td_states = np.array([u[0], u[1]]) # should be cos, sin
+    td_states = np.array([u[0]*np.cos(x[2]), u[0]*np.sin(x[2]), u[1]]) # 
     
      # Next states that don't depend on time differentia
     # ntd_states = np.array([x[0], x[1], x[2], u[0]*cos_theta, u[0]*sin_theta, u[1]])
@@ -44,10 +44,10 @@ def unicyle_dynamics(x, u):
 
 # Cost function
 def cost_function(x, u, target):
-    Q = np.diag([10, 10])  # State costs
+    Q = np.diag([10, 10,0.1])  # State costs
     R = np.diag([0.0,0.0])  # Input costs
 
-    x_des= np.array([target[0], target[1]])
+    x_des = np.array([target[0], target[1], target[2]])
     state_diff = x_des - x
     state_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
 
@@ -55,21 +55,21 @@ def cost_function(x, u, target):
     return cost
 
 def terminal_cost(x, target):
-    Q = np.diag([50, 50]);
-    x_des= np.array([target[0], target[1]])
+    Q = np.diag([20, 20, 0.5])
+    x_des= np.array([target[0], target[1], target[2]])
     state_diff = x_des - x
     terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
     return terminal_cost
 
-X_calc = np.zeros((K, T + 1, 2))
+X_calc = np.zeros((K, T + 1, 3))
 traj_weight_single = np.zeros(K)
 # MPPI control
 def mppi(x, target, prev_U):
     #U = np.random.randn(K, T, 2) * sigma  # Random initial control inputs
 
     U = np.stack([
-        np.random.normal(loc=1, scale=3, size=(K, T)), #vx
-        np.random.normal(loc=0, scale=3, size=(K, T)), #vy
+        np.random.normal(loc=0, scale=5, size=(K, T)), #v
+        np.random.normal(loc=0, scale=15, size=(K, T)), #omega
     ], axis=-1)
 
     for k in range(K):
@@ -80,9 +80,9 @@ def mppi(x, target, prev_U):
     for k in range(K):
         for t in range(T):
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], U[k, t])
-            current_target = np.array([target[0][t],target[1][t]])
+            current_target = np.array([target[0][t],target[1][t], target[2][t]])
             costs[k] += cost_function(X_calc[k, t + 1, :], U[k, t], current_target)
-        final_target = np.array([target[0][T-1],target[1][T-1]])
+        final_target = np.array([target[0][T-1],target[1][T-1], target[2][T-1]])
         terminal_cost_val = terminal_cost(X_calc[k, T, :], final_target) #Terminal cost of final state
         costs[k] += terminal_cost_val
 
@@ -122,7 +122,7 @@ def generate_trajectory_from_waypoints(waypoints, num_points=100):
     y_vals = interp_y(t_interp)
     theta_vals = interp_theta(t_interp)
 
-    return x_vals, y_vals
+    return x_vals, y_vals, theta_vals
 
 
 def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
@@ -200,8 +200,8 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
 # Main function
 def main():
     Tx = 1000
-    x = np.array([0,0])  # Initial state [x, theta, x_dot, theta_dot]
-    X = np.zeros((Tx, 2))
+    x = np.array([0,0,0])  # Initial state [x, theta, x_dot, theta_dot]
+    X = np.zeros((Tx, 3))
     U = np.zeros((Tx, 2))
     all_weights = np.zeros((Tx+1, K))
     
@@ -213,26 +213,26 @@ def main():
     y_vel = []
     omega = []
     waypoints = [
-        (0, 0, 0),
-        (0.1, 0.2, np.pi / 8),
-        (0.3, 0.5, np.pi / 6),
-        (0.6, 0.7, np.pi / 4),
-        (1.0, 0.8, np.pi / 3),
-        (1.3, 0.6, np.pi / 2),
-        (1.5, 0.3, 3*np.pi / 4),
-        (1.66, 0, np.pi)
+        (0.0, 0.0, 1.1071487177940904),
+        (0.1, 0.2, 0.982793723247329),
+        (0.3, 0.5, 0.5880026035475675),
+        (0.6, 0.7, 0.24497866312686414),
+        (1.0, 0.8, -0.46364760900080615),
+        (1.3, 0.6, -0.5880026035475675),
+        (1.5, 0.3, -1.0636978224025597),
+        (1.66, 0.0, -1.0899093659292262)
     ]
 
 
     traj = generate_trajectory_from_waypoints(waypoints, 1000+T)
-    sample_trajectories = np.zeros((Tx, K, 2, T))
-    sample_trajectories_one = np.zeros((K, 2, T))
+    sample_trajectories = np.zeros((Tx, K, 3, T))
+    sample_trajectories_one = np.zeros((K, 3, T))
 
     
     last_u = np.zeros(2)
     for t in range(Tx - 1):
         targets = np.array([
-            traj[0][t:t+T], traj[1][t:t+T]
+            traj[0][t:t+T], traj[1][t:t+T], traj[2][t:t+T]
         ])
         U[t] = mppi(x, targets, last_u)
         x = unicyle_dynamics(x, U[t])
