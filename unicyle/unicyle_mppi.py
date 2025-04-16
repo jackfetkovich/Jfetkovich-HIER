@@ -29,6 +29,8 @@ target_x_dot = 0.0
 target_y_dot = 0.0
 target_theta_dot = 0.0
 
+obstacle = np.array([0.3, 0.5])
+
 
 # Unicyle dynamics
 def unicyle_dynamics(x, u):    
@@ -44,22 +46,32 @@ def unicyle_dynamics(x, u):
 
 # Cost function
 def cost_function(x, u, target):
-    Q = np.diag([10, 10,0.01])  # State costs
+    Q = np.diag([10, 10,0.005])  # State costs
     R = np.diag([0.0,0.0])  # Input costs
+    O = 100
 
     x_des = np.array([target[0], target[1], target[2]])
     state_diff = x_des - x
     state_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
+    
+    obstacle_cost = 0
+    if(abs(x[0] - obstacle[0]) < 0.1 and abs(x[1] - obstacle[1]) < 0.1):
+        obstacle_cost = O
+    
 
-    cost = state_cost + np.dot(u.T, np.dot(R, u))
+    cost = state_cost + np.dot(u.T, np.dot(R, u)) + obstacle_cost
     return cost
 
 def terminal_cost(x, target):
-    Q = np.diag([20, 20, 0.05])
+    Q = np.diag([20, 20, 0.025])
     x_des= np.array([target[0], target[1], target[2]])
     state_diff = x_des - x
-    terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
-    return terminal_cost
+    O = 100
+    obstacle_cost = 0
+    if(abs(x[0] - obstacle[0]) < 0.1 and abs(x[1] - obstacle[1])< 0.1):
+        obstacle_cost = O
+    terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff)) + obstacle_cost
+    return terminal_cost 
 
 X_calc = np.zeros((K, T + 1, 3))
 traj_weight_single = np.zeros(K)
@@ -69,7 +81,7 @@ def mppi(x, target, prev_U):
 
     U = np.stack([
         np.random.normal(loc=0, scale=5, size=(K, T)), #v
-        np.random.normal(loc=0, scale=15, size=(K, T)), #omega
+        np.random.normal(loc=0, scale=30, size=(K, T)), #omega
     ], axis=-1)
 
     for k in range(K):
@@ -93,23 +105,7 @@ def mppi(x, target, prev_U):
     traj_weight_single[:] = weights
 
     # Compute the weighted sum of control inputs
-    # u_star = np.sum(weights[:, None, None] * U, axis=0)
-    
-
-    top_k = K // 10
-
-    # Get indices of top K/4 weights
-    top_indices = np.argpartition(weights, -top_k)[-top_k:]
-
-    # Optionally normalize the top weights (to keep sum meaningful)
-    top_weights = weights[top_indices]
-    top_weights = top_weights / np.sum(top_weights)
-
-    # Select corresponding control sequences
-    top_U = U[top_indices]
-
-    # Compute weighted sum
-    u_star = np.sum(top_weights[:, None, None] * top_U, axis=0)
+    u_star = np.sum(weights[:, None, None] * U, axis=0)
     
     return u_star[0]
 
@@ -158,6 +154,8 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
     ax.set_ylim(min(y_vals) - 1, max(y_vals) + 1)
     ax.set_xlabel("X Position")
     ax.set_ylabel("Y Position")
+
+    plt.plot(0.3, 0.5, 'yo') #obstacle
 
     # Plot the trajectory if provided
     if x_traj is not None and y_traj is not None:
