@@ -12,7 +12,7 @@ dt = 0.01 # time step
 K = 500   # number of samples
 T = 10 # time steps (HORIZON)
 sigma = 1.0
-lambda_ = 0.7
+lambda_ = 1
 
 # Simulation Parameters
 init_x = 0.0
@@ -44,7 +44,7 @@ def unicyle_dynamics(x, u):
 
 # Cost function
 def cost_function(x, u, target):
-    Q = np.diag([10, 10,0.1])  # State costs
+    Q = np.diag([10, 10,0.01])  # State costs
     R = np.diag([0.0,0.0])  # Input costs
 
     x_des = np.array([target[0], target[1], target[2]])
@@ -55,7 +55,7 @@ def cost_function(x, u, target):
     return cost
 
 def terminal_cost(x, target):
-    Q = np.diag([20, 20, 0.5])
+    Q = np.diag([20, 20, 0.05])
     x_des= np.array([target[0], target[1], target[2]])
     state_diff = x_des - x
     terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
@@ -93,8 +93,23 @@ def mppi(x, target, prev_U):
     traj_weight_single[:] = weights
 
     # Compute the weighted sum of control inputs
-    u_star = np.sum(weights[:, None, None] * U, axis=0)
+    # u_star = np.sum(weights[:, None, None] * U, axis=0)
+    
 
+    top_k = K // 10
+
+    # Get indices of top K/4 weights
+    top_indices = np.argpartition(weights, -top_k)[-top_k:]
+
+    # Optionally normalize the top weights (to keep sum meaningful)
+    top_weights = weights[top_indices]
+    top_weights = top_weights / np.sum(top_weights)
+
+    # Select corresponding control sequences
+    top_U = U[top_indices]
+
+    # Compute weighted sum
+    u_star = np.sum(top_weights[:, None, None] * top_U, axis=0)
     
     return u_star[0]
 
