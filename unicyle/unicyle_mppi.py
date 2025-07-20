@@ -9,10 +9,10 @@ matplotlib.use("TkAgg")
 
 # system parameters
 dt = 0.01 # time step
-K = 500   # number of samples
+K = 600   # number of samples
 T = 10 # time steps (HORIZON)
 sigma = 1.0
-lambda_ = 1
+lambda_ = 6
 
 # Simulation Parameters
 init_x = 0.0
@@ -36,18 +36,14 @@ obstacle = np.array([0.3, 0.5])
 def unicyle_dynamics(x, u):    
     # Next states that depend on time differential
     td_states = np.array([u[0]*np.cos(x[2]), u[0]*np.sin(x[2]), u[1]]) # 
-    
-     # Next states that don't depend on time differentia
-    # ntd_states = np.array([x[0], x[1], x[2], u[0]*cos_theta, u[0]*sin_theta, u[1]])
-    # x_star = td_states*dt + ntd_states
     x_star = x + td_states*dt
 
     return x_star
 
 # Cost function
 def cost_function(x, u, target):
-    Q = np.diag([10, 10,0.005])  # State costs
-    R = np.diag([0.0,0.0])  # Input costs
+    Q = np.diag([5, 5,0.0005])  # State costs
+    R = np.diag([0.001,0.001])  # Input costs
     O = 100
 
     x_des = np.array([target[0], target[1], target[2]])
@@ -55,21 +51,21 @@ def cost_function(x, u, target):
     state_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
     
     obstacle_cost = 0
-    if(abs(x[0] - obstacle[0]) < 0.1 and abs(x[1] - obstacle[1]) < 0.1):
-        obstacle_cost = O
+    # if(abs(x[0] - obstacle[0]) < 0.1 and abs(x[1] - obstacle[1]) < 0.1):
+    #     obstacle_cost = O
     
 
     cost = state_cost + np.dot(u.T, np.dot(R, u)) + obstacle_cost
     return cost
 
 def terminal_cost(x, target):
-    Q = np.diag([20, 20, 0.025])
+    Q = np.diag([6, 6, 0.0005])
     x_des= np.array([target[0], target[1], target[2]])
     state_diff = x_des - x
     O = 100
     obstacle_cost = 0
-    if(abs(x[0] - obstacle[0]) < 0.1 and abs(x[1] - obstacle[1])< 0.1):
-        obstacle_cost = O
+    # if(abs(x[0] - obstacle[0]) < 0.1 and abs(x[1] - obstacle[1])< 0.1):
+    #     obstacle_cost = O
     terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff)) + obstacle_cost
     return terminal_cost 
 
@@ -80,20 +76,20 @@ def mppi(x, target, prev_U):
     #U = np.random.randn(K, T, 2) * sigma  # Random initial control inputs
 
     U = np.stack([
-        np.random.normal(loc=0, scale=5, size=(K, T)), #v
-        np.random.normal(loc=0, scale=30, size=(K, T)), #omega
-    ], axis=-1)
+        np.random.normal(loc=0, scale=10, size=(K, T)), #v
+        np.random.normal(loc=0, scale=50, size=(K, T)), #omega
+    ], axis=-1) # Generate random (normal) control inputs
 
     for k in range(K):
         X_calc[k, 0, :] = x  # Initialize all trajectories with the current state
 
-    costs = np.zeros(K)
+    costs = np.zeros(K) # initialize all costs
     
     for k in range(K):
-        for t in range(T):
+        for t in range(T-1):
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], U[k, t])
             current_target = np.array([target[0][t],target[1][t], target[2][t]])
-            costs[k] += cost_function(X_calc[k, t + 1, :], U[k, t], current_target)
+            costs[k] += cost_function(X_calc[k, t+1, :], U[k, t], current_target)
         final_target = np.array([target[0][T-1],target[1][T-1], target[2][T-1]])
         terminal_cost_val = terminal_cost(X_calc[k, T, :], final_target) #Terminal cost of final state
         costs[k] += terminal_cost_val
@@ -213,10 +209,10 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
 # Main function
 def main():
     Tx = 1000
-    x = np.array([0,0,0])  # Initial state [x, theta, x_dot, theta_dot]
-    X = np.zeros((Tx, 3))
-    U = np.zeros((Tx, 2))
-    all_weights = np.zeros((Tx+1, K))
+    x = np.array([0,0,0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
+    X = np.zeros((Tx, 3)) # list of historical states
+    U = np.zeros((Tx, 2)) # list of historical control inputs
+    all_weights = np.zeros((Tx+1, K)) # Weights of every generated trajectory, organized by time step
     
     time = []
     x_pos = []
@@ -225,42 +221,77 @@ def main():
     x_vel = []
     y_vel = []
     omega = []
+    # waypoints = [
+    #     (0.0, 0.0, 1.1071487177940904),
+    #     (0.1, 0.2, 0.982793723247329),
+    #     (0.3, 0.5, 0.5880026035475675),
+    #     (0.6, 0.7, 0.24497866312686414),
+    #     (1.0, 0.8, -0.46364760900080615),
+    #     (1.3, 0.6, -0.5880026035475675),
+    #     (1.5, 0.3, -1.0636978224025597),
+    #     (1.66, 0.0, -1.0899093659292262)
+    # ]
     waypoints = [
-        (0.0, 0.0, 1.1071487177940904),
-        (0.1, 0.2, 0.982793723247329),
-        (0.3, 0.5, 0.5880026035475675),
-        (0.6, 0.7, 0.24497866312686414),
-        (1.0, 0.8, -0.46364760900080615),
-        (1.3, 0.6, -0.5880026035475675),
-        (1.5, 0.3, -1.0636978224025597),
-        (1.66, 0.0, -1.0899093659292262)
+        (0.0, 0.0, 0.0),
+        (0.5, 0.0, 0.0),
+        (1.0, 0.0, 0.0),
+        (1.5, 0.0, 0.0),
+        (2.0, 0.1, 0.19739555984988078),
+        (2.5, 0.4, 0.3805063771123649),
+        (3.0, 0.9, 0.5880026035475675),
+        (3.4, 1.4, 0.7853981633974483),
+        (3.7, 2.0, 1.1071487177940904),
+        (3.85, 2.6, 1.3734007669450158),
+        (3.9, 3.2, 1.4711276743037347),
+        (3.85, 3.8, 1.6814535479687923),
+        (3.7, 4.3, 1.8157749899217608),
+        (3.4, 4.8, 2.1112158270654806),
+        (3.0, 5.1, 2.356194490192345),
+        (2.5, 5.3, 2.677945044588987),
+        (2.0, 5.4, 2.9441970937399127),
+        (1.5, 5.4, 3.141592653589793),
+        (1.0, 5.3, -3.078760800517997),
+        (0.5, 5.1, -2.9441970937399127),
+        (0.1, 4.8, -2.677945044588987),
+        (-0.2, 4.4, -2.356194490192345),
+        (-0.4, 4.0, -2.1112158270654806),
+        (-0.5, 3.5, -1.8925468811915387),
+        (-0.5, 3.0, -1.5707963267948966),
+        (-0.4, 2.5, -1.3734007669450158),
+        (-0.2, 2.0, -1.1071487177940904),
+        (0.1, 1.6, -0.7853981633974483),
+        (0.5, 1.3, -0.5880026035475675),
+        (1.0, 1.1, -0.3805063771123649),
+        (1.5, 1.0, -0.19739555984988078),
+        (2.0, 1.0, 0.0),
+        (2.5, 1.0, 0.0)
     ]
 
 
-    traj = generate_trajectory_from_waypoints(waypoints, 1000+T)
+    traj = generate_trajectory_from_waypoints(waypoints, 1000+T) # trajectory of waypoints
     sample_trajectories = np.zeros((Tx, K, 3, T))
-    sample_trajectories_one = np.zeros((K, 3, T))
+    sample_trajectories_one = np.zeros((K, 3, T)) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
 
     
-    last_u = np.zeros(2)
+    last_u = np.zeros(2) # the control input from the previous iteration
     for t in range(Tx - 1):
-        targets = np.array([
-            traj[0][t:t+T], traj[1][t:t+T], traj[2][t:t+T]
+        targets = np.array([ # Get the target state at this timestep
+            traj[0][t+1:t+1+T], traj[1][t+1:t+1+T], traj[2][t+1:t+1+T]
         ])
-        U[t] = mppi(x, targets, last_u)
-        x = unicyle_dynamics(x, U[t])
-        X[t + 1, :] = x
+        U[t] = mppi(x, targets, last_u) # Calculate the optimal control input
+        x = unicyle_dynamics(x, U[t]) # Calculate what happens when you apply that input
+        X[t + 1, :] = x # Store the new state
         time.append(t)
-        x_pos.append(X[t + 1, 0])
-        y_pos.append(X[t+1, 1])
+        x_pos.append(X[t + 1, 0]) # Save the x position at this timestep
+        y_pos.append(X[t+1, 1]) # Save the y position at this timestep
 
-        last_u = U[t]
+        last_u = U[t] # Save the control input 
         for k in range(K):
-            for t_ in range (T):
+            for t_ in range (T): # Reshaping trajectory weight list for use in animation
                 sample_trajectories_one[k, 0, t_] = X_calc[k, t_, 0] #should be 0
                 sample_trajectories_one[k, 1, t_] = X_calc[k, t_, 1] #should be 1
-        sample_trajectories[t] = sample_trajectories_one
-        all_weights[t] = traj_weight_single
+        sample_trajectories[t] = sample_trajectories_one # Save the sampled trajectories
+        all_weights[t] = traj_weight_single # List of the weights, populated in mppi function
 
     
 
