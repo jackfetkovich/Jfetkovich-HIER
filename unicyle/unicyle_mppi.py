@@ -6,11 +6,11 @@ from scipy.interpolate import interp1d
 matplotlib.use("TkAgg")
 
 # system parameters
-dt = 0.01 # time step
-K = 600   # number of samples
-T = 10 # time steps (HORIZON)
-sigma = 1.0
-lambda_ = 6
+dt = 0.05 # time step
+K = 500   # number of samples
+T = 15 # time steps (HORIZON)
+sigma = 2
+lambda_ = 2
 
 # Simulation Parameters
 init_x = 0.0
@@ -29,62 +29,67 @@ target_theta_dot = 0.0
 
 obstacle = np.array([0.3, 0.5])
 
-max_vx = 2 # max x velocity
-max_vy = 2 # max y velocity
-max_w = 0.5 # max angular velocity
-max_v_dot = 1 # max linear acceleration
-max_w_dot = 1 # max angular acceleration
+max_v = 1 # max x velocity
+max_w = 2 # max angular velocity
+max_v_dot = 50 # max linear acceleration
+max_w_dot = 75 # max angular acceleration
+
+
 
 
 # Unicyle dynamics
 def unicyle_dynamics(x, u):    
     # Next states that depend on time differential
-    raw_vx = u[0]*np.cos(x[2])
-    raw_vy = u[0]*np.sin(x[2])
-    raw_w  = u[1]
-    td_states = np.array([min(max_vx, raw_vx), min(max_vy, raw_vy), min(max_w, raw_w), 0, 0, 0]) # 
-    x_star = x + td_states*dt
+    v = np.clip(u[0], -max_v, max_v)
+    w  = np.clip(u[1], -max_w, max_w)
+
+    ## Aceleration Limiting
+    last_v = x[3]
+    if abs(v - last_v) > max_v_dot * dt: 
+        v = x[3] + max_v_dot * dt * np.sign(v - x[3])
+    
+    if abs(w - x[4]) > max_w_dot * dt:
+        w  = x[4] + max_w_dot * dt * np.sign(w - x[4])
+
+    x_star = np.zeros(5)
+    x_star[0] = x[0] + v * np.cos(x[2]) * dt
+    x_star[1] = x[1] + v * np.sin(x[2]) * dt
+    x_star[2] = x[2] + w                * dt
+    x_star[3] = v
+    x_star[4] = w
+
+    x_star[2] = (x_star[2] + np.pi) % (2 * np.pi) - np.pi
 
     return x_star
 
 # Cost function
 def cost_function(x, u, target):
-    Q = np.diag([5, 5,0.0005, 0, 0, 0])  # State costs
-    R = np.diag([0.001,0.001])  # Input costs
-    O = 100
+    Q = np.diag([6, 6, 0.009, 0.00, 0.00])  # State costs
+    R = np.diag([0.0005,0.001])  # Input costs
 
-    x_des = np.array([target[0], target[1], target[2], 0, 0, 0])
+    x_des = np.array([target[0], target[1], target[2], 0, 0])
     state_diff = x_des - x
+    state_diff[2] = (state_diff[2] + np.pi) % (2 * np.pi) - np.pi
     state_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
-    
-    obstacle_cost = 0
-    # if(abs(x[0] - obstacle[0]) < 0.1 and abs(x[1] - obstacle[1]) < 0.1):
-    #     obstacle_cost = O
-    
 
-    cost = state_cost + np.dot(u.T, np.dot(R, u)) + obstacle_cost
+    cost = state_cost + np.dot(u.T, np.dot(R, u))
     return cost
 
 def terminal_cost(x, target):
-    Q = np.diag([6, 6, 0.0005, 0, 0, 0])
-    x_des= np.array([target[0], target[1], target[2], 0, 0, 0])
+    Q = np.diag([20, 20, 0.5, 0.00, 0.00])
+    x_des= np.array([target[0], target[1], target[2], 0, 0])
     state_diff = x_des - x
-    O = 100
-    obstacle_cost = 0
-    # if(abs(x[0] - obstacle[0]) < 0.1 and abs(x[1] - obstacle[1])< 0.1):
-    #     obstacle_cost = O
-    terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff)) + obstacle_cost
+    state_diff[2] = (state_diff[2] + np.pi) % (2 * np.pi) - np.pi
+    terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
     return terminal_cost 
 
-X_calc = np.zeros((K, T + 1, 6))
+X_calc = np.zeros((K, T + 1, 5))
 traj_weight_single = np.zeros(K)
 # MPPI control
 def mppi(x, target, prev_U):
-
-
     U = np.stack([
-        np.random.normal(loc=0, scale=10, size=(K, T)), #v
-        np.random.normal(loc=0, scale=50, size=(K, T)), #omega
+        np.random.normal(loc=0.3, scale=0.1, size=(K, T)), #v
+        np.random.normal(loc=0, scale=6, size=(K, T)), #omega
     ], axis=-1) # Generate random (normal) control inputs
 
     for k in range(K):
@@ -102,8 +107,13 @@ def mppi(x, target, prev_U):
         costs[k] += terminal_cost_val
 
     # Calculate weights for each trajectory
-    weights = np.exp(-1/lambda_ * (costs))
-    weights /= np.sum(weights)
+    weights = np.exp(-(costs - np.min(costs)) / lambda_)
+    sum_weights = np.sum(weights)
+    if sum_weights < 1e-10:
+        weights = np.ones_like(weights) / len(weights)  # fallback to uniform
+    else:
+        weights /= sum_weights
+    
     global traj_weight_single
     traj_weight_single[:] = weights
 
@@ -211,29 +221,17 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
     # print(f"Animation saved as {filename}")
     plt.show()
 
-
-
 # Main function
 def main():
     Tx = 1000
-    x = np.array([0,0,0, 0, 0, 0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
-    X = np.zeros((Tx, 6)) # list of historical states
+    x = np.array([0,0,0, 0, 0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
+    X = np.zeros((Tx, 5)) # list of historical states
     U = np.zeros((Tx, 2)) # list of historical control inputs
     all_weights = np.zeros((Tx+1, K)) # Weights of every generated trajectory, organized by time step
     
     time = []
     x_pos = []
     y_pos = []
-    # waypoints = [
-    #     (0.0, 0.0, 1.1071487177940904),
-    #     (0.1, 0.2, 0.982793723247329),
-    #     (0.3, 0.5, 0.5880026035475675),
-    #     (0.6, 0.7, 0.24497866312686414),
-    #     (1.0, 0.8, -0.46364760900080615),
-    #     (1.3, 0.6, -0.5880026035475675),
-    #     (1.5, 0.3, -1.0636978224025597),
-    #     (1.66, 0.0, -1.0899093659292262)
-    # ]
     waypoints = [
         (0.0, 0.0, 0.0),
         (0.5, 0.0, 0.0),
@@ -270,11 +268,9 @@ def main():
         (2.5, 1.0, 0.0)
     ]
 
-
     traj = generate_trajectory_from_waypoints(waypoints, 1000+T) # trajectory of waypoints
     sample_trajectories = np.zeros((Tx, K, 3, T))
     sample_trajectories_one = np.zeros((K, 3, T)) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
-
     
     last_u = np.zeros(2) # the control input from the previous iteration
     for t in range(Tx - 1):
