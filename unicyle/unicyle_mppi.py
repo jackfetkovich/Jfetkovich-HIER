@@ -3,9 +3,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from scipy.interpolate import interp1d
-import random
 matplotlib.use("TkAgg")
-
 
 # system parameters
 dt = 0.01 # time step
@@ -31,22 +29,31 @@ target_theta_dot = 0.0
 
 obstacle = np.array([0.3, 0.5])
 
+max_vx = 2 # max x velocity
+max_vy = 2 # max y velocity
+max_w = 0.5 # max angular velocity
+max_v_dot = 1 # max linear acceleration
+max_w_dot = 1 # max angular acceleration
+
 
 # Unicyle dynamics
 def unicyle_dynamics(x, u):    
     # Next states that depend on time differential
-    td_states = np.array([u[0]*np.cos(x[2]), u[0]*np.sin(x[2]), u[1]]) # 
+    raw_vx = u[0]*np.cos(x[2])
+    raw_vy = u[0]*np.sin(x[2])
+    raw_w  = u[1]
+    td_states = np.array([min(max_vx, raw_vx), min(max_vy, raw_vy), min(max_w, raw_w), 0, 0, 0]) # 
     x_star = x + td_states*dt
 
     return x_star
 
 # Cost function
 def cost_function(x, u, target):
-    Q = np.diag([5, 5,0.0005])  # State costs
+    Q = np.diag([5, 5,0.0005, 0, 0, 0])  # State costs
     R = np.diag([0.001,0.001])  # Input costs
     O = 100
 
-    x_des = np.array([target[0], target[1], target[2]])
+    x_des = np.array([target[0], target[1], target[2], 0, 0, 0])
     state_diff = x_des - x
     state_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
     
@@ -59,8 +66,8 @@ def cost_function(x, u, target):
     return cost
 
 def terminal_cost(x, target):
-    Q = np.diag([6, 6, 0.0005])
-    x_des= np.array([target[0], target[1], target[2]])
+    Q = np.diag([6, 6, 0.0005, 0, 0, 0])
+    x_des= np.array([target[0], target[1], target[2], 0, 0, 0])
     state_diff = x_des - x
     O = 100
     obstacle_cost = 0
@@ -69,11 +76,11 @@ def terminal_cost(x, target):
     terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff)) + obstacle_cost
     return terminal_cost 
 
-X_calc = np.zeros((K, T + 1, 3))
+X_calc = np.zeros((K, T + 1, 6))
 traj_weight_single = np.zeros(K)
 # MPPI control
 def mppi(x, target, prev_U):
-    #U = np.random.randn(K, T, 2) * sigma  # Random initial control inputs
+
 
     U = np.stack([
         np.random.normal(loc=0, scale=10, size=(K, T)), #v
@@ -209,18 +216,14 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
 # Main function
 def main():
     Tx = 1000
-    x = np.array([0,0,0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
-    X = np.zeros((Tx, 3)) # list of historical states
+    x = np.array([0,0,0, 0, 0, 0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
+    X = np.zeros((Tx, 6)) # list of historical states
     U = np.zeros((Tx, 2)) # list of historical control inputs
     all_weights = np.zeros((Tx+1, K)) # Weights of every generated trajectory, organized by time step
     
     time = []
     x_pos = []
     y_pos = []
-    theta = []
-    x_vel = []
-    y_vel = []
-    omega = []
     # waypoints = [
     #     (0.0, 0.0, 1.1071487177940904),
     #     (0.1, 0.2, 0.982793723247329),
@@ -282,7 +285,7 @@ def main():
         x = unicyle_dynamics(x, U[t]) # Calculate what happens when you apply that input
         X[t + 1, :] = x # Store the new state
         time.append(t)
-        x_pos.append(X[t + 1, 0]) # Save the x position at this timestep
+        x_pos.append(X[t+1, 0]) # Save the x position at this timestep
         y_pos.append(X[t+1, 1]) # Save the y position at this timestep
 
         last_u = U[t] # Save the control input 

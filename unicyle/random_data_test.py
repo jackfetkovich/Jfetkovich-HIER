@@ -46,11 +46,13 @@ dy = -dy
 
 
 fig = plt.figure()
-# ax = fig.add_subplot(111, projection='3d')
-# ax.plot_surface(x, y, three_d_points, cmap='viridis')
-skip = 1
-plt.quiver(x[::skip], y[::skip], dx[::skip], dy[::skip], scale=30)
-plt.contour(x, y, three_d_points, levels = 40)
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_surface(x, y, three_d_points, cmap='viridis')
+plt.title("GMM Representation of Obstacle Field")
+# skip = 1
+# plt.quiver(x[::skip], y[::skip], dx[::skip], dy[::skip], scale=30)
+# plt.contour(x, y, three_d_points, levels = 20)
+# plt.title("Gradient and Topology of Obstacle Field")
 plt.show()
 
 
