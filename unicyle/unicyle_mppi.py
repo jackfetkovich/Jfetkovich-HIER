@@ -88,7 +88,7 @@ traj_weight_single = np.zeros(K)
 # MPPI control
 def mppi(x, target, prev_U):
     U = np.stack([
-        np.random.normal(loc=0.3, scale=0.1, size=(K, T)), #v
+        np.random.normal(loc=0.3, scale=0.2, size=(K, T)), #v
         np.random.normal(loc=0, scale=6, size=(K, T)), #omega
     ], axis=-1) # Generate random (normal) control inputs
 
