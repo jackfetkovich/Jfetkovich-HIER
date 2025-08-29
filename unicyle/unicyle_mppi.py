@@ -3,6 +3,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from scipy.interpolate import interp1d
+import cvxpy as cp
 matplotlib.use("TkAgg")
 
 # system parameters
@@ -20,13 +21,6 @@ init_x_dot = 0.0
 init_y_dot = 0.0
 init_theta_dot = 0.0
 
-target_x = -0.3
-target_y = 0.0
-target_theta = 0.5
-target_x_dot = 0.0
-target_y_dot = 0.0
-target_theta_dot = 0.0
-
 obstacle = np.array([0.3, 0.5])
 
 max_v = 1 # max x velocity
@@ -34,12 +28,8 @@ max_w = 2 # max angular velocity
 max_v_dot = 50 # max linear acceleration
 max_w_dot = 75 # max angular acceleration
 
-
-
-
 # Unicyle dynamics
 def unicyle_dynamics(x, u):    
-    # Next states that depend on time differential
     v = np.clip(u[0], -max_v, max_v)
     w  = np.clip(u[1], -max_w, max_w)
 
@@ -75,6 +65,7 @@ def cost_function(x, u, target):
     cost = state_cost + np.dot(u.T, np.dot(R, u))
     return cost
 
+# Terminal Cost Function
 def terminal_cost(x, target):
     Q = np.diag([20, 20, 0.5, 0.00, 0.00])
     x_des= np.array([target[0], target[1], target[2], 0, 0])
@@ -168,7 +159,9 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
     ax.set_xlabel("X Position")
     ax.set_ylabel("Y Position")
 
-    plt.plot(0.3, 0.5, 'yo') #obstacle
+    # plt.plot(3.85, 3.8, 'yo') #obstacle
+    circle1 = plt.Circle((3.85, 3.8), 0.5, color='r')
+    ax.add_patch(circle1)
 
     # Plot the trajectory if provided
     if x_traj is not None and y_traj is not None:
@@ -221,9 +214,36 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
     # print(f"Animation saved as {filename}")
     plt.show()
 
+def safety_filter(u_nom, x):
+    c = np.array([3.85, 3.8])       # obstacle center
+    r = 0.5                        # obstacle radius
+
+    # Variables
+    u = cp.Variable(2)        # [v, omega]
+
+    # Compute h and derivatives
+    dx = x[0] - c[0]
+    dy = x[1] - c[1]
+    h = dx**2 + dy**2 - r**2
+    Lg_h = np.array([[2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2]), 0]])
+
+    alpha = 1.0
+    constraint = Lg_h @ u + alpha * h >= 0
+
+    # Define QP
+    cost = cp.sum_squares(u - u_nom)
+    prob = cp.Problem(cp.Minimize(cost), [constraint])
+
+    # Solve
+    prob.solve(solver=cp.OSQP)
+
+    return u.value
+
+
 # Main function
 def main():
-    Tx = 1000
+    # Tx = 1000
+    Tx=1000
     x = np.array([0,0,0, 0, 0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
     X = np.zeros((Tx, 5)) # list of historical states
     U = np.zeros((Tx, 2)) # list of historical control inputs
@@ -277,7 +297,8 @@ def main():
         targets = np.array([ # Get the target state at this timestep
             traj[0][t+1:t+1+T], traj[1][t+1:t+1+T], traj[2][t+1:t+1+T]
         ])
-        U[t] = mppi(x, targets, last_u) # Calculate the optimal control input
+        u_nom = mppi(x, targets, last_u) # Calculate the optimal control input
+        U[t] = safety_filter(u_nom, x)
         x = unicyle_dynamics(x, U[t]) # Calculate what happens when you apply that input
         X[t + 1, :] = x # Store the new state
         time.append(t)
