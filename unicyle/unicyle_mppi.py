@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from scipy.interpolate import interp1d
 import cvxpy as cp
+from numba import njit
 matplotlib.use("TkAgg")
 
 # system parameters
@@ -29,9 +30,12 @@ max_v_dot = 50 # max linear acceleration
 max_w_dot = 75 # max angular acceleration
 
 # Unicyle dynamics
+@njit
 def unicyle_dynamics(x, u):    
-    v = np.clip(u[0], -max_v, max_v)
-    w  = np.clip(u[1], -max_w, max_w)
+    # v = np.clip(u[0], -max_v, max_v)
+    v = max(min(u[0], max_v), -max_v)
+    # w  = np.clip(u[1], -max_w, max_w)
+    w = max(min(u[1], max_w), -max_w )
 
     ## Aceleration Limiting
     last_v = x[3]
@@ -53,9 +57,10 @@ def unicyle_dynamics(x, u):
     return x_star
 
 # Cost function
+@njit
 def cost_function(x, u, target):
-    Q = np.diag([6, 6, 0.009, 0.00, 0.00])  # State costs
-    R = np.diag([0.0005,0.001])  # Input costs
+    Q = np.diag(np.array([6, 6, 0.009, 0.00, 0.00]))  # State costs
+    R = np.diag(np.array([0.0005,0.001]))  # Input costs
 
     x_des = np.array([target[0], target[1], target[2], 0, 0])
     state_diff = x_des - x
@@ -66,22 +71,25 @@ def cost_function(x, u, target):
     return cost
 
 # Terminal Cost Function
+@njit
 def terminal_cost(x, target):
-    Q = np.diag([20, 20, 0.5, 0.00, 0.00])
+    Q = np.diag(np.array([20, 20, 0.5, 0.00, 0.00]))
     x_des= np.array([target[0], target[1], target[2], 0, 0])
     state_diff = x_des - x
     state_diff[2] = (state_diff[2] + np.pi) % (2 * np.pi) - np.pi
     terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
     return terminal_cost 
 
-X_calc = np.zeros((K, T + 1, 5))
-traj_weight_single = np.zeros(K)
+
 # MPPI control
+@njit
 def mppi(x, target, prev_U):
-    U = np.stack([
+    X_calc = np.zeros((K, T + 1, 5))
+    
+    U = np.dstack((
         np.random.normal(loc=0.3, scale=0.2, size=(K, T)), #v
         np.random.normal(loc=0, scale=6, size=(K, T)), #omega
-    ], axis=-1) # Generate random (normal) control inputs
+    )) # Generate random (normal) control inputs
 
     for k in range(K):
         X_calc[k, 0, :] = x  # Initialize all trajectories with the current state
@@ -105,13 +113,13 @@ def mppi(x, target, prev_U):
     else:
         weights /= sum_weights
     
-    global traj_weight_single
+    traj_weight_single = np.zeros(K)
     traj_weight_single[:] = weights
 
     # Compute the weighted sum of control inputs
     u_star = np.sum(weights[:, None, None] * U, axis=0)
     
-    return u_star[0]
+    return u_star[0], X_calc, traj_weight_single
 
 def generate_trajectory_from_waypoints(waypoints, num_points=100):
     """
@@ -295,9 +303,9 @@ def main():
     last_u = np.zeros(2) # the control input from the previous iteration
     for t in range(Tx - 1):
         targets = np.array([ # Get the target state at this timestep
-            traj[0][t+1:t+1+T], traj[1][t+1:t+1+T], traj[2][t+1:t+1+T]
+            np.array(traj[0][t+1:t+1+T]), np.array(traj[1][t+1:t+1+T]), np.array(traj[2][t+1:t+1+T])
         ])
-        u_nom = mppi(x, targets, last_u) # Calculate the optimal control input
+        u_nom, X_calc, traj_weight_single = mppi(x, targets, last_u) # Calculate the optimal control input
         U[t] = safety_filter(u_nom, x)
         x = unicyle_dynamics(x, U[t]) # Calculate what happens when you apply that input
         X[t + 1, :] = x # Store the new state
