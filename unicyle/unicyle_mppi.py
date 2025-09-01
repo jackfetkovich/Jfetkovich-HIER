@@ -57,6 +57,44 @@ def unicyle_dynamics(x, u):
 
     return x_star
 
+@njit
+def closest_point_on_path(waypoints, point, last_index):
+    """
+    waypoints: (N,2) array
+    point: (2,) array
+    Returns: (closest_x, closest_y, distance, seg_idx, t)
+    """
+    best_d2 = 1e18
+    best_point = np.zeros(2)
+    best_idx = last_index
+    best_t = 0.0
+
+    for i in range(max(best_idx, 0), min(best_idx + 10, waypoints.shape[0]-2)):
+        A = waypoints[i]
+        B = waypoints[i + 1]
+        AB = B - A
+        AP = point - A
+        denom = AB[0] * AB[0] + AB[1] * AB[1]
+        if denom > 1e-12:
+            t = (AP[0] * AB[0] + AP[1] * AB[1]) / denom
+            if t < 0.0:
+                t = 0.0
+            elif t > 1.0:
+                t = 1.0
+        else:
+            t = 0.0
+        proj = A + t * AB
+        dx = point[0] - proj[0]
+        dy = point[1] - proj[1]
+        d2 = dx * dx + dy * dy
+        if d2 < best_d2:
+            best_d2 = d2
+            best_point = proj
+            best_idx = i
+            best_t = t
+
+    return best_point[0], best_point[1], best_idx
+
 # Cost function
 @njit
 def cost_function(x, u, target):
@@ -84,7 +122,7 @@ def terminal_cost(x, target):
 
 # MPPI control
 @njit
-def mppi(x, target, prev_U):
+def mppi(x, prev_U, traj, starting_traj_idx):
     X_calc = np.zeros((K, T + 1, 5))
     
     U = np.dstack((
@@ -96,16 +134,19 @@ def mppi(x, target, prev_U):
         X_calc[k, 0, :] = x  # Initialize all trajectories with the current state
 
     costs = np.zeros(K) # initialize all costs
-    
     for k in range(K):
+        target_idx = starting_traj_idx
         for t in range(T-1):
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], U[k, t])
-            current_target = np.array([target[0][t],target[1][t], target[2][t]])
+            current_target_raw = closest_point_on_path(traj, X_calc[k, t+1, 0:2], target_idx) 
+            current_target = np.array([current_target_raw[0], current_target_raw[1]])
+            target_idx = current_target_raw[2]    
             costs[k] += cost_function(X_calc[k, t+1, :], U[k, t], current_target)
-        final_target = np.array([target[0][T-1],target[1][T-1], target[2][T-1]])
+        final_target_raw = closest_point_on_path(traj, X_calc[k, T-1, 0:2], target_idx)
+        final_target = np.array([final_target_raw[0], final_target_raw[1]])
+        target_idx = final_target_raw[2]     
         terminal_cost_val = terminal_cost(X_calc[k, T, :], final_target) #Terminal cost of final state
         costs[k] += terminal_cost_val
-
     # Calculate weights for each trajectory
     weights = np.exp(-(costs - np.min(costs)) / lambda_)
     sum_weights = np.sum(weights)
@@ -119,7 +160,6 @@ def mppi(x, target, prev_U):
 
     # Compute the weighted sum of control inputs
     u_star = np.sum(weights[:, None, None] * U, axis=0)
-    
     return u_star[0], X_calc, traj_weight_single
 
 def generate_trajectory_from_waypoints(waypoints, num_points=100):
@@ -298,25 +338,18 @@ def main():
     ]
 
     traj = generate_trajectory_from_waypoints(waypoints, 1000+T) # trajectory of waypoints
-    # print(traj.shape)
-    # tree = KDTree(traj)
+    traj_x_y = traj[:, :2]
     sample_trajectories = np.zeros((Tx, K, 3, T))
     sample_trajectories_one = np.zeros((K, 3, T)) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
     last_u = np.zeros(2) # the control input from the previous iteration
-    
+    best_traj_idx = 0
     for t in range(Tx - 1):
-        # nearest_point = tree.query(x[0:2])
-        # targets = np.array([ # Get the target state at this timestep
-        #     np.array(traj[0][t+1:t+1+T]), np.array(traj[1][t+1:t+1+T]), np.array(traj[2][t+1:t+1+T])
-        # ])
-
-        targets = np.array([ # Get the target state at this timestep
-            traj[t+1:t+1+T, 0], traj[t+1:t+1+T, 1], traj[t+1:t+1+T, 2]
-        ])
-        
-        u_nom, X_calc, traj_weight_single = mppi(x, targets, last_u) # Calculate the optimal control input
-        U[t] = safety_filter(u_nom, x)
+        u_nom, X_calc, traj_weight_single = mppi(x, last_u, traj_x_y, best_traj_idx) # Calculate the optimal control input
+        # U[t] = safety_filter(u_nom, x)
+        U[t] = u_nom
         x = unicyle_dynamics(x, U[t]) # Calculate what happens when you apply that input
+        best_traj_idx = closest_point_on_path(traj_x_y, x[:2], best_traj_idx)[2]
+        print(best_traj_idx)
         X[t + 1, :] = x # Store the new state
         time.append(t)
         x_pos.append(X[t+1, 0]) # Save the x position at this timestep
