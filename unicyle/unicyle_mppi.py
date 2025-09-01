@@ -3,6 +3,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from scipy.interpolate import interp1d
+from scipy.spatial import KDTree
 import cvxpy as cp
 from numba import njit
 matplotlib.use("TkAgg")
@@ -145,7 +146,7 @@ def generate_trajectory_from_waypoints(waypoints, num_points=100):
     y_vals = interp_y(t_interp)
     theta_vals = interp_theta(t_interp)
 
-    return x_vals, y_vals, theta_vals
+    return np.dstack(np.array([x_vals, y_vals, theta_vals]))[0]
 
 
 def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
@@ -297,14 +298,22 @@ def main():
     ]
 
     traj = generate_trajectory_from_waypoints(waypoints, 1000+T) # trajectory of waypoints
+    # print(traj.shape)
+    # tree = KDTree(traj)
     sample_trajectories = np.zeros((Tx, K, 3, T))
     sample_trajectories_one = np.zeros((K, 3, T)) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
-    
     last_u = np.zeros(2) # the control input from the previous iteration
+    
     for t in range(Tx - 1):
+        # nearest_point = tree.query(x[0:2])
+        # targets = np.array([ # Get the target state at this timestep
+        #     np.array(traj[0][t+1:t+1+T]), np.array(traj[1][t+1:t+1+T]), np.array(traj[2][t+1:t+1+T])
+        # ])
+
         targets = np.array([ # Get the target state at this timestep
-            np.array(traj[0][t+1:t+1+T]), np.array(traj[1][t+1:t+1+T]), np.array(traj[2][t+1:t+1+T])
+            traj[t+1:t+1+T, 0], traj[t+1:t+1+T, 1], traj[t+1:t+1+T, 2]
         ])
+        
         u_nom, X_calc, traj_weight_single = mppi(x, targets, last_u) # Calculate the optimal control input
         U[t] = safety_filter(u_nom, x)
         x = unicyle_dynamics(x, U[t]) # Calculate what happens when you apply that input
@@ -323,7 +332,7 @@ def main():
 
     
 
-    animate(x_pos, y_pos, traj[0], traj[1], sample_trajectories, all_weights)
+    animate(x_pos, y_pos, traj[:, 0], traj[:, 1], sample_trajectories, all_weights)
 
 
 if __name__ == "__main__":
