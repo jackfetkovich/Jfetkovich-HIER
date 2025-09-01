@@ -11,7 +11,7 @@ matplotlib.use("TkAgg")
 # system parameters
 dt = 0.05 # time step
 K = 500   # number of samples
-T = 15 # time steps (HORIZON)
+T = 20 # time steps (HORIZON)
 sigma = 2
 lambda_ = 2
 
@@ -25,10 +25,10 @@ init_theta_dot = 0.0
 
 obstacle = np.array([0.3, 0.5])
 
-max_v = 1 # max x velocity
-max_w = 2 # max angular velocity
-max_v_dot = 50 # max linear acceleration
-max_w_dot = 75 # max angular acceleration
+max_v = 2 # max x velocity
+max_w = 10 # max angular velocity
+max_v_dot = 2 # max linear acceleration
+max_w_dot = 10 # max angular acceleration
 
 # Unicyle dynamics
 @njit
@@ -69,7 +69,7 @@ def closest_point_on_path(waypoints, point, last_index):
     best_idx = last_index
     best_t = 0.0
 
-    for i in range(max(best_idx, 0), min(best_idx + 10, waypoints.shape[0]-2)):
+    for i in range(max(best_idx, 0), min(best_idx + 60, waypoints.shape[0]-2)):
         A = waypoints[i]
         B = waypoints[i + 1]
         AB = B - A
@@ -98,7 +98,7 @@ def closest_point_on_path(waypoints, point, last_index):
 # Cost function
 @njit
 def cost_function(x, u, target):
-    Q = np.diag(np.array([6, 6, 0.009, 0.00, 0.00]))  # State costs
+    Q = np.diag(np.array([8, 8, 1.2, 0.00, 0.00]))  # State costs
     R = np.diag(np.array([0.0005,0.001]))  # Input costs
 
     x_des = np.array([target[0], target[1], target[2], 0, 0])
@@ -112,7 +112,7 @@ def cost_function(x, u, target):
 # Terminal Cost Function
 @njit
 def terminal_cost(x, target):
-    Q = np.diag(np.array([20, 20, 0.5, 0.00, 0.00]))
+    Q = np.diag(np.array([20, 20, 3.3, 0.00, 0.00]))
     x_des= np.array([target[0], target[1], target[2], 0, 0])
     state_diff = x_des - x
     state_diff[2] = (state_diff[2] + np.pi) % (2 * np.pi) - np.pi
@@ -139,12 +139,12 @@ def mppi(x, prev_U, traj, starting_traj_idx):
         for t in range(T-1):
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], U[k, t])
             current_target_raw = closest_point_on_path(traj, X_calc[k, t+1, 0:2], target_idx) 
-            current_target = np.array([current_target_raw[0], current_target_raw[1]])
             target_idx = current_target_raw[2]    
+            current_target = np.array([current_target_raw[0], current_target_raw[1], traj[target_idx][2]])
             costs[k] += cost_function(X_calc[k, t+1, :], U[k, t], current_target)
         final_target_raw = closest_point_on_path(traj, X_calc[k, T-1, 0:2], target_idx)
-        final_target = np.array([final_target_raw[0], final_target_raw[1]])
-        target_idx = final_target_raw[2]     
+        target_idx = final_target_raw[2]
+        final_target = np.array([final_target_raw[0], final_target_raw[1], traj[target_idx][2]])     
         terminal_cost_val = terminal_cost(X_calc[k, T, :], final_target) #Terminal cost of final state
         costs[k] += terminal_cost_val
     # Calculate weights for each trajectory
