@@ -141,12 +141,17 @@ def mppi(x, prev_U, traj, starting_traj_idx):
             current_target_raw = closest_point_on_path(traj, X_calc[k, t+1, 0:2], target_idx) 
             target_idx = current_target_raw[2]    
             current_target = np.array([current_target_raw[0], current_target_raw[1], traj[target_idx][2]])
-            costs[k] += cost_function(X_calc[k, t+1, :], U[k, t], current_target)
+            cur_x, cur_y = X_calc[k, t + 1, :2]
+            if(cur_x * cur_x + cur_y * cur_y - 0.5 >= 0):
+                costs[k] += cost_function(X_calc[k, t+1, :], U[k, t], current_target)
+            else:
+                costs[k] = -1
         final_target_raw = closest_point_on_path(traj, X_calc[k, T-1, 0:2], target_idx)
         target_idx = final_target_raw[2]
         final_target = np.array([final_target_raw[0], final_target_raw[1], traj[target_idx][2]])     
         terminal_cost_val = terminal_cost(X_calc[k, T, :], final_target) #Terminal cost of final state
         costs[k] += terminal_cost_val
+        
     # Calculate weights for each trajectory
     weights = np.exp(-(costs - np.min(costs)) / lambda_)
     sum_weights = np.sum(weights)
@@ -302,41 +307,6 @@ def main():
     time = []
     x_pos = []
     y_pos = []
-    # waypoints = [
-    #     (0.0, 0.0, 0.0),
-    #     (0.5, 0.0, 0.0),
-    #     (1.0, 0.0, 0.0),
-    #     (1.5, 0.0, 0.19739555984988078),
-    #     (2.0, 0.1, 0.5404195002705843),
-    #     (2.5, 0.4, 0.7853981633974483),
-    #     (3.0, 0.9, 0.8960553845713439),
-    #     (3.4, 1.4, 1.1071487177940902),
-    #     (3.7, 2.0, 1.3258176636680326),
-    #     (3.85, 2.6, 1.4876550949064558),
-    #     (3.9, 3.2, 1.6539375586833376),
-    #     (3.85, 3.8, 1.8622531212727635),
-    #     (3.7, 4.3, 2.111215827065481),
-    #     (3.4, 4.8, 2.498091544796509),
-    #     (3.0, 5.1, 2.761086276477428),
-    #     (2.5, 5.3, 2.9441970937399113),
-    #     (2.0, 5.4, 2.9441970937399127),
-    #     (1.5, 5.4, 3.141592653589793),
-    #     (1.0, 5.3, -2.761086276477428),
-    #     (0.5, 5.1, -2.4980915447965093),
-    #     (0.1, 4.8, -2.2142974355881817),
-    #     (-0.2, 4.4, -2.0344439357957023),
-    #     (-0.4, 4.0, -1.7681918866447774),
-    #     (-0.5, 3.5, -1.5707963267948966),
-    #     (-0.5, 3.0, -1.373400766945016),
-    #     (-0.4, 2.5, -1.1902899496825317),
-    #     (-0.2, 2.0, -0.9272952180016121),
-    #     (0.1, 1.6, -0.6435011087932845),
-    #     (0.5, 1.3, -0.3805063771123648),
-    #     (1.0, 1.1, -0.19739555984988094),
-    #     (1.5, 1.0, 0.0),
-    #     (2.0, 1.0, 0.0),
-    #     (2.5, 1.0, 0.0)
-    # ]
    
     #### NEW
 
