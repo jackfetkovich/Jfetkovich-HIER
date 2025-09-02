@@ -11,7 +11,7 @@ matplotlib.use("TkAgg")
 # system parameters
 dt = 0.05 # time step
 K = 500   # number of samples
-T = 20 # time steps (HORIZON)
+T = 40 # time steps (HORIZON)
 sigma = 2
 lambda_ = 2
 
@@ -53,7 +53,7 @@ def unicyle_dynamics(x, u):
     x_star[3] = v
     x_star[4] = w
 
-    x_star[2] = (x_star[2] + np.pi) % (2 * np.pi) - np.pi
+    # x_star[2] = (x_star[2] + np.pi) % (2 * np.pi) - np.pi
 
     return x_star
 
@@ -98,7 +98,7 @@ def closest_point_on_path(waypoints, point, last_index):
 # Cost function
 @njit
 def cost_function(x, u, target):
-    Q = np.diag(np.array([8, 8, 1.2, 0.00, 0.00]))  # State costs
+    Q = np.diag(np.array([16, 16, 1, 0.00, 0.00]))  # State costs
     R = np.diag(np.array([0.0005,0.001]))  # Input costs
 
     x_des = np.array([target[0], target[1], target[2], 0, 0])
@@ -112,7 +112,7 @@ def cost_function(x, u, target):
 # Terminal Cost Function
 @njit
 def terminal_cost(x, target):
-    Q = np.diag(np.array([20, 20, 3.3, 0.00, 0.00]))
+    Q = np.diag(np.array([20, 20, 1.6, 0.00, 0.00]))
     x_des= np.array([target[0], target[1], target[2], 0, 0])
     state_diff = x_des - x
     state_diff[2] = (state_diff[2] + np.pi) % (2 * np.pi) - np.pi
@@ -127,7 +127,7 @@ def mppi(x, prev_U, traj, starting_traj_idx):
     
     U = np.dstack((
         np.random.normal(loc=0.3, scale=0.2, size=(K, T)), #v
-        np.random.normal(loc=0, scale=6, size=(K, T)), #omega
+        np.random.normal(loc=0, scale=8, size=(K, T)), #omega
     )) # Generate random (normal) control inputs
 
     for k in range(K):
@@ -185,8 +185,9 @@ def generate_trajectory_from_waypoints(waypoints, num_points=100):
     x_vals = interp_x(t_interp)
     y_vals = interp_y(t_interp)
     theta_vals = interp_theta(t_interp)
+    # np.savetxt("output.txt", np.array(theta_vals), fmt="%.6f")  # 6 decimal places
 
-    return np.dstack(np.array([x_vals, y_vals, theta_vals]))[0]
+    return np.dstack(np.array([x_vals, y_vals, np.unwrap(np.array(theta_vals))]))[0]
 
 
 def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
@@ -255,7 +256,7 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
         return [line, point, ghost].append(samples)
 
     # Create animation
-    ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=50, blit=False)
+    ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=15, blit=False)
     plt.title(f"K={K}, T={T}")
     plt.legend()
     # filename=f"unicyle{K}-{T}-green.gif"
@@ -301,41 +302,98 @@ def main():
     time = []
     x_pos = []
     y_pos = []
-    waypoints = [
-        (0.0, 0.0, 0.0),
-        (0.5, 0.0, 0.0),
-        (1.0, 0.0, 0.0),
-        (1.5, 0.0, 0.0),
-        (2.0, 0.1, 0.19739555984988078),
-        (2.5, 0.4, 0.3805063771123649),
-        (3.0, 0.9, 0.5880026035475675),
-        (3.4, 1.4, 0.7853981633974483),
-        (3.7, 2.0, 1.1071487177940904),
-        (3.85, 2.6, 1.3734007669450158),
-        (3.9, 3.2, 1.4711276743037347),
-        (3.85, 3.8, 1.6814535479687923),
-        (3.7, 4.3, 1.8157749899217608),
-        (3.4, 4.8, 2.1112158270654806),
-        (3.0, 5.1, 2.356194490192345),
-        (2.5, 5.3, 2.677945044588987),
-        (2.0, 5.4, 2.9441970937399127),
-        (1.5, 5.4, 3.141592653589793),
-        (1.0, 5.3, -3.078760800517997),
-        (0.5, 5.1, -2.9441970937399127),
-        (0.1, 4.8, -2.677945044588987),
-        (-0.2, 4.4, -2.356194490192345),
-        (-0.4, 4.0, -2.1112158270654806),
-        (-0.5, 3.5, -1.8925468811915387),
-        (-0.5, 3.0, -1.5707963267948966),
-        (-0.4, 2.5, -1.3734007669450158),
-        (-0.2, 2.0, -1.1071487177940904),
-        (0.1, 1.6, -0.7853981633974483),
-        (0.5, 1.3, -0.5880026035475675),
-        (1.0, 1.1, -0.3805063771123649),
-        (1.5, 1.0, -0.19739555984988078),
-        (2.0, 1.0, 0.0),
-        (2.5, 1.0, 0.0)
+    # waypoints = [
+    #     (0.0, 0.0, 0.0),
+    #     (0.5, 0.0, 0.0),
+    #     (1.0, 0.0, 0.0),
+    #     (1.5, 0.0, 0.19739555984988078),
+    #     (2.0, 0.1, 0.5404195002705843),
+    #     (2.5, 0.4, 0.7853981633974483),
+    #     (3.0, 0.9, 0.8960553845713439),
+    #     (3.4, 1.4, 1.1071487177940902),
+    #     (3.7, 2.0, 1.3258176636680326),
+    #     (3.85, 2.6, 1.4876550949064558),
+    #     (3.9, 3.2, 1.6539375586833376),
+    #     (3.85, 3.8, 1.8622531212727635),
+    #     (3.7, 4.3, 2.111215827065481),
+    #     (3.4, 4.8, 2.498091544796509),
+    #     (3.0, 5.1, 2.761086276477428),
+    #     (2.5, 5.3, 2.9441970937399113),
+    #     (2.0, 5.4, 2.9441970937399127),
+    #     (1.5, 5.4, 3.141592653589793),
+    #     (1.0, 5.3, -2.761086276477428),
+    #     (0.5, 5.1, -2.4980915447965093),
+    #     (0.1, 4.8, -2.2142974355881817),
+    #     (-0.2, 4.4, -2.0344439357957023),
+    #     (-0.4, 4.0, -1.7681918866447774),
+    #     (-0.5, 3.5, -1.5707963267948966),
+    #     (-0.5, 3.0, -1.373400766945016),
+    #     (-0.4, 2.5, -1.1902899496825317),
+    #     (-0.2, 2.0, -0.9272952180016121),
+    #     (0.1, 1.6, -0.6435011087932845),
+    #     (0.5, 1.3, -0.3805063771123648),
+    #     (1.0, 1.1, -0.19739555984988094),
+    #     (1.5, 1.0, 0.0),
+    #     (2.0, 1.0, 0.0),
+    #     (2.5, 1.0, 0.0)
+    # ]
+   
+    #### NEW
+
+    # Original (x, y) points
+    points = [
+        (0.0, 0.0),
+        (0.5, 0.0),
+        (1.0, 0.0),
+        (1.5, 0.0),
+        (2.0, 0.1),
+        (2.5, 0.4),
+        (3.0, 0.9),
+        (3.4, 1.4),
+        (3.7, 2.0),
+        (3.85, 2.6),
+        (3.9, 3.2),
+        (3.85, 3.8),
+        (3.7, 4.3),
+        (3.4, 4.8),
+        (3.0, 5.1),
+        (2.5, 5.3),
+        (2.0, 5.4),
+        (1.5, 5.4),
+        (1.0, 5.3),
+        (0.5, 5.1),
+        (0.1, 4.8),
+        (-0.2, 4.4),
+        (-0.4, 4.0),
+        (-0.5, 3.5),
+        (-0.5, 3.0),
+        (-0.4, 2.5),
+        (-0.2, 2.0),
+        (0.1, 1.6),
+        (0.5, 1.3),
+        (1.0, 1.1),
+        (1.5, 1.0),
+        (2.0, 1.0),
+        (2.5, 1.0)
     ]
+
+    # Compute forward tangents
+    headings = []
+    for i in range(len(points)):
+        if i < len(points)-1:
+            dx = points[i+1][0] - points[i][0]
+            dy = points[i+1][1] - points[i][1]
+            headings.append(np.arctan2(dy, dx))
+        else:
+            headings.append(headings[-1])  # reuse last heading for final point
+
+    # Unwrap for continuity
+    headings_unwrapped = np.unwrap(headings)
+
+    # Combine into (x, y, theta)
+    waypoints = [(p[0], p[1], th) for p, th in zip(points, headings_unwrapped)]
+
+    ### END NEW
 
     traj = generate_trajectory_from_waypoints(waypoints, 1000+T) # trajectory of waypoints
     traj_x_y = traj[:, :2]
@@ -343,13 +401,12 @@ def main():
     sample_trajectories_one = np.zeros((K, 3, T)) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
     last_u = np.zeros(2) # the control input from the previous iteration
     best_traj_idx = 0
-    for t in range(Tx - 1):
+    for t in range(Tx-1):
         u_nom, X_calc, traj_weight_single = mppi(x, last_u, traj_x_y, best_traj_idx) # Calculate the optimal control input
         # U[t] = safety_filter(u_nom, x)
         U[t] = u_nom
         x = unicyle_dynamics(x, U[t]) # Calculate what happens when you apply that input
         best_traj_idx = closest_point_on_path(traj_x_y, x[:2], best_traj_idx)[2]
-        print(best_traj_idx)
         X[t + 1, :] = x # Store the new state
         time.append(t)
         x_pos.append(X[t+1, 0]) # Save the x position at this timestep
@@ -362,7 +419,12 @@ def main():
                 sample_trajectories_one[k, 1, t_] = X_calc[k, t_, 1] #should be 1
         sample_trajectories[t] = sample_trajectories_one # Save the sampled trajectories
         all_weights[t] = traj_weight_single # List of the weights, populated in mppi function
-
+        
+        # with open("data2.txt", "a") as f:  # 'a' means append mode
+        #     f.write(f"t: {t},  X=(x={x[0]}, y={x[1]}, th={x[2]}), U=(v={u_nom[0]}, w={u_nom[1]})\n")
+        #     f.write(f"Close pt x={traj[best_traj_idx][0]}, y={traj[best_traj_idx][1]}, th={traj[best_traj_idx][2]}\n")
+        #     f.write(f"idx{best_traj_idx}\n")
+        #     f.write("-------------------\n")
     
 
     animate(x_pos, y_pos, traj[:, 0], traj[:, 1], sample_trajectories, all_weights)
