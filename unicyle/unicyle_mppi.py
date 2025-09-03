@@ -11,7 +11,7 @@ matplotlib.use("TkAgg")
 # system parameters
 dt = 0.05 # time step
 K = 500   # number of samples
-T = 40 # time steps (HORIZON)
+T = 30 # time steps (HORIZON)
 sigma = 2
 lambda_ = 2
 
@@ -23,12 +23,12 @@ init_x_dot = 0.0
 init_y_dot = 0.0
 init_theta_dot = 0.0
 
-obstacle = np.array([0.3, 0.5])
+obstacles = np.array([[3.85, 3.8, 0.5]])
 
 max_v = 2 # max x velocity
 max_w = 10 # max angular velocity
 max_v_dot = 2 # max linear acceleration
-max_w_dot = 10 # max angular acceleration
+max_w_dot = 12 # max angular acceleration
 
 # Unicyle dynamics
 @njit
@@ -69,7 +69,7 @@ def closest_point_on_path(waypoints, point, last_index):
     best_idx = last_index
     best_t = 0.0
 
-    for i in range(max(best_idx, 0), min(best_idx + 60, waypoints.shape[0]-2)):
+    for i in range(max(best_idx, 0), min(best_idx + 20, waypoints.shape[0]-2)):
         A = waypoints[i]
         B = waypoints[i + 1]
         AB = B - A
@@ -119,39 +119,75 @@ def terminal_cost(x, target):
     terminal_cost = np.dot(state_diff.T, np.dot(Q,state_diff))
     return terminal_cost 
 
+@njit
+def gen_normal_control_seq(mu_v, sigma_v, mu_w, sigma_w, K, T):
+    return np.dstack((
+        np.random.normal(loc=mu_v, scale=sigma_v, size=(K, T)), #v
+        np.random.normal(loc=mu_w, scale=sigma_w, size=(K, T)), #omega
+    )) 
+
+# @njit 
+# def remove_points_colliding_with_obstacle(path, obstacles):
+#     num_points_removed = 0
+#     filtered_path = np.copy(path)
+#     for pt in filtered_path:
+#         pt_x = pt[0]
+#         pt_y = pt[1]
+#         for ob in obstacles:
+#             if (pt_x - ob[0])**2 + (pt_y - ob[1])**2 - ob[3]**2 <= 0:
+#                 pt[0] = np.inf
+#                 pt[1] = np.inf
+#                 num_points_removed += 1
+                
+#     return filtered_path, num_points_removed
+
+@njit
+def point_in_obstacle(point, obstacles):
+    pt_x = point[0]
+    pt_y = point[1]
+    for ob in obstacles:
+        if (pt_x - ob[0])**2 + (pt_y - ob[1])**2 - ob[3]**2 <= 0:
+            return True
+    return False
+    
 
 # MPPI control
 @njit
 def mppi(x, prev_U, traj, starting_traj_idx):
     X_calc = np.zeros((K, T + 1, 5))
     
-    U = np.dstack((
-        np.random.normal(loc=0.3, scale=0.2, size=(K, T)), #v
-        np.random.normal(loc=0, scale=8, size=(K, T)), #omega
-    )) # Generate random (normal) control inputs
+    U = gen_normal_control_seq(0.3, 0.2, 0, 12, K, T) # Generate control sequences
 
     for k in range(K):
         X_calc[k, 0, :] = x  # Initialize all trajectories with the current state
-
+            
     costs = np.zeros(K) # initialize all costs
     for k in range(K):
         target_idx = starting_traj_idx
         for t in range(T-1):
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], U[k, t])
             current_target_raw = closest_point_on_path(traj, X_calc[k, t+1, 0:2], target_idx) 
-            target_idx = current_target_raw[2]    
+            target_idx = current_target_raw[2]
+            
+            while point_in_obstacle(np.array(current_target_raw[0], current_target_raw[1])):
+                target_idx += 1
+                current_target_raw[0] = traj[target_idx][0]
+                current_target_raw[1] = traj[target_idx][1]
+            
             current_target = np.array([current_target_raw[0], current_target_raw[1], traj[target_idx][2]])
             cur_x, cur_y = X_calc[k, t + 1, :2]
-            if(cur_x * cur_x + cur_y * cur_y - 0.5 >= 0):
+            if((cur_x - 3.85)**2 + (cur_y-3.8)**2 - 0.5*0.5 > 0):
                 costs[k] += cost_function(X_calc[k, t+1, :], U[k, t], current_target)
             else:
-                costs[k] = -1
+                costs[k] = np.inf
+                break
         final_target_raw = closest_point_on_path(traj, X_calc[k, T-1, 0:2], target_idx)
         target_idx = final_target_raw[2]
         final_target = np.array([final_target_raw[0], final_target_raw[1], traj[target_idx][2]])     
         terminal_cost_val = terminal_cost(X_calc[k, T, :], final_target) #Terminal cost of final state
-        costs[k] += terminal_cost_val
-        
+        if costs[k] != np.inf:
+            costs[k] += terminal_cost_val
+
     # Calculate weights for each trajectory
     weights = np.exp(-(costs - np.min(costs)) / lambda_)
     sum_weights = np.sum(weights)
@@ -193,7 +229,6 @@ def generate_trajectory_from_waypoints(waypoints, num_points=100):
     # np.savetxt("output.txt", np.array(theta_vals), fmt="%.6f")  # 6 decimal places
 
     return np.dstack(np.array([x_vals, y_vals, np.unwrap(np.array(theta_vals))]))[0]
-
 
 def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
     """
@@ -264,7 +299,7 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
     ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=15, blit=False)
     plt.title(f"K={K}, T={T}")
     plt.legend()
-    # filename=f"unicyle{K}-{T}-green.gif"
+    # filename=f"unicyle{K}-{T}-obs_avoidance.gif"
     # ani.save(filename, writer='pillow', fps=20)
     # print(f"Animation saved as {filename}")
     plt.show()
@@ -390,11 +425,11 @@ def main():
         sample_trajectories[t] = sample_trajectories_one # Save the sampled trajectories
         all_weights[t] = traj_weight_single # List of the weights, populated in mppi function
         
-        # with open("data2.txt", "a") as f:  # 'a' means append mode
-        #     f.write(f"t: {t},  X=(x={x[0]}, y={x[1]}, th={x[2]}), U=(v={u_nom[0]}, w={u_nom[1]})\n")
-        #     f.write(f"Close pt x={traj[best_traj_idx][0]}, y={traj[best_traj_idx][1]}, th={traj[best_traj_idx][2]}\n")
-        #     f.write(f"idx{best_traj_idx}\n")
-        #     f.write("-------------------\n")
+        with open("data3.txt", "a") as f: 
+            f.write(f"t: {t},  X=(x={x[0]}, y={x[1]}, th={x[2]}), U=(v={u_nom[0]}, w={u_nom[1]})\n")
+            f.write(f"Close pt x={traj[best_traj_idx][0]}, y={traj[best_traj_idx][1]}, th={traj[best_traj_idx][2]}\n")
+            f.write(f"idx{best_traj_idx}\n")
+            f.write("-------------------\n")
     
 
     animate(x_pos, y_pos, traj[:, 0], traj[:, 1], sample_trajectories, all_weights)
