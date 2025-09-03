@@ -313,15 +313,15 @@ def safety_filter(u_nom, x):
 
     return u.value
 
+def distance_of_path(p):
+    distance = 0
+    for x in range(len(p)-1):
+        distance += np.sqrt((p[x+1,0] - p[x, 0])**2 + (p[x+1,1] - p[x, 1])**2)
+    return distance
+
 
 # Main function
 def main():
-    Tx=160 #Avg 1.5 m/s (max 4m/s)
-    x = np.array([0,0,0, 0, 0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
-    X = np.zeros((Tx, 5)) # list of historical states
-    U = np.zeros((Tx, 2)) # list of historical control inputs
-    all_weights = np.zeros((Tx, K)) # Weights of every generated trajectory, organized by time step
-    
     time = []
     x_pos = []
     y_pos = []
@@ -354,7 +354,11 @@ def main():
 
     # Combine into (x, y, theta)
     waypoints = [(p[0], p[1], th) for p, th in zip(points, headings_unwrapped)]
-
+    Tx = int(distance_of_path(np.array(points)) / (max_v*0.375*dt))
+    x = np.array([0,0,0, 0, 0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
+    X = np.zeros((Tx, 5)) # list of historical states
+    U = np.zeros((Tx, 2)) # list of historical control inputs
+    all_weights = np.zeros((Tx, K)) # Weights of every generated trajectory, organized by time step
 
     traj = generate_trajectory_from_waypoints(waypoints, Tx) # trajectory of waypoints
     np.savetxt('trajectory.csv', traj, delimiter=',', fmt='%.4f')
