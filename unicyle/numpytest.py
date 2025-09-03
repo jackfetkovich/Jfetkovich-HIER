@@ -1,7 +1,10 @@
 import numpy as np
 
-x = (np.pi-0.1 + np.pi) % (2 * np.pi) - np.pi
-y = (-np.pi+0.1 + np.pi) % (2 * np.pi) - np.pi
-b = x-y
-b = (b + np.pi) % (2 * np.pi) - np.pi
-print(b)
+
+
+traj = np.linspace(0, 19, 20)
+T = 10
+Tx = 160
+print(traj)
+for t in range(Tx):
+    print(traj[t+1: min(t+1+T, len(traj))])
