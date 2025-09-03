@@ -11,7 +11,7 @@ matplotlib.use("TkAgg")
 # system parameters
 dt = 0.05 # time step
 K = 500   # number of samples
-T = 15 # time steps (HORIZON)
+T = 20 # time steps (HORIZON)
 sigma = 2
 lambda_ = 2
 
@@ -26,9 +26,9 @@ init_theta_dot = 0.0
 obstacles = np.array([[3.85, 3.8, 0.5]])
 
 max_v = 4.0 # max x velocity (m/s)
-max_w = 3.0 # max angular velocity (radians/s)
+max_w = 4.0 # max angular velocity (radians/s)
 max_v_dot = 2.6 # max linear acceleration (m/s^2)
-max_w_dot = 6.0 # max angular acceleration (radians/s^2)
+max_w_dot = 8.0 # max angular acceleration (radians/s^2)
 
 # Unicyle dynamics
 @njit
@@ -156,7 +156,7 @@ def point_in_obstacle(point, obstacles):
 def mppi(x, prev_U, targets):
     X_calc = np.zeros((K, T + 1, 5))
     
-    U = gen_normal_control_seq(0.3, 3, 0, 2.5, K, T) # Generate control sequences
+    U = gen_normal_control_seq(0.3, 3, 0, 4, K, T) # Generate control sequences
 
     for k in range(K):
         X_calc[k, 0, :] = x  # Initialize all trajectories with the current state
@@ -357,6 +357,8 @@ def main():
 
 
     traj = generate_trajectory_from_waypoints(waypoints, Tx) # trajectory of waypoints
+    np.savetxt('trajectory.csv', traj, delimiter=',', fmt='%.4f')
+
     sample_trajectories = np.zeros((Tx, K, 3, T))
     sample_trajectories_one = np.zeros((K, 3, T)) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
     last_u = np.zeros(2) # the control input from the previous iteration
