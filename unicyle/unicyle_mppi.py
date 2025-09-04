@@ -6,6 +6,7 @@ from scipy.interpolate import interp1d
 from scipy.spatial import KDTree
 import cvxpy as cp
 from numba import njit
+import csv
 matplotlib.use("TkAgg")
 
 # system parameters
@@ -26,9 +27,9 @@ init_theta_dot = 0.0
 obstacles = np.array([[3.85, 3.8, 0.5]])
 
 max_v = 5.1 # max x velocity (m/s)
-max_w = 6.0 # max angular velocity (radians/s)
-max_v_dot = 2.6 # max linear acceleration (m/s^2)
-max_w_dot = 12.0 # max angular acceleration (radians/s^2) (8.0)
+max_w = 12.0 # max angular velocity (radians/s)
+max_v_dot = 8.0 # max linear acceleration (m/s^2)
+max_w_dot = 30.0 # max angular acceleration (radians/s^2) (8.0)
 
 # Unicyle dynamics
 @njit
@@ -98,7 +99,7 @@ def closest_point_on_path(waypoints, point, last_index):
 # Cost function
 @njit
 def cost_function(x, u, target):
-    Q = np.diag(np.array([8, 8, 0.05, 0.00, 0.00]))  # State costs
+    Q = np.diag(np.array([12, 12, 0.005, 0.00, 0.00]))  # State costs
     R = np.diag(np.array([0.0005,0.001]))  # Input costs
 
     x_des = np.array([target[0], target[1], target[2], 0, 0])
@@ -112,7 +113,7 @@ def cost_function(x, u, target):
 # Terminal Cost Function
 @njit
 def terminal_cost(x, target):
-    Q = np.diag(np.array([20, 20, 0.07, 0.00, 0.00]))
+    Q = np.diag(np.array([8, 8, 0.007, 0.00, 0.00]))
     x_des= np.array([target[0], target[1], target[2], 0, 0])
     state_diff = x_des - x
     state_diff[2] = (state_diff[2] + np.pi) % (2 * np.pi) - np.pi
@@ -156,7 +157,7 @@ def point_in_obstacle(point, obstacles):
 def mppi(x, prev_U, targets):
     X_calc = np.zeros((K, T + 1, 5))
     
-    U = gen_normal_control_seq(0.3, 4, 0, max_w*0.75, K, T) # Generate control sequences
+    U = gen_normal_control_seq(0.3, 6, 0, max_w*2, K, T) # Generate control sequences
 
     for k in range(K):
         X_calc[k, 0, :] = x  # Initialize all trajectories with the current state
@@ -171,7 +172,7 @@ def mppi(x, prev_U, targets):
         final_target = targets[-1]    
         terminal_cost_val = terminal_cost(X_calc[k, T, :], final_target) #Terminal cost of final state
         costs[k] += terminal_cost_val
-
+        
     # Calculate weights for each trajectory
     weights = np.exp(-(costs - np.min(costs)) / lambda_)
     sum_weights = np.sum(weights)
@@ -227,11 +228,11 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
     y_traj (list or np.array, optional): Y values of the reference trajectory.
     """
     # Set up the figure
-    fig, ax = plt.subplots()
-    # ax.set_xlim(min(x_vals) - 1, max(x_vals) + 1)
-    # ax.set_ylim(min(y_vals) - 1, max(y_vals) + 1)
-    ax.set_xlim(-3, 3)
-    ax.set_ylim(-3, 3)
+    fig, ax = plt.subplots(figsize=(19.2, 10.8), dpi=100)
+    ax.set_xlim(min(x_vals) - 1, max(x_vals) + 1)
+    ax.set_ylim(min(y_vals) - 1, max(y_vals) + 1)
+    # ax.set_xlim(-3, 3)
+    # ax.set_ylim(-3, 3)
     ax.set_xlabel("X Position")
     ax.set_ylabel("Y Position")
 
@@ -285,9 +286,9 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
     ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=15, blit=False)
     plt.title(f"K={K}, T={T}")
     plt.legend()
-    # filename=f"unicyle{K}-{T}-obs_avoidance.gif"
-    # ani.save(filename, writer='pillow', fps=20)
-    # print(f"Animation saved as {filename}")
+    filename=f"unicyle{K}-{T}-obs_avoidance.gif"
+    ani.save(filename, writer='pillow', fps=20, )
+    print(f"Animation saved as {filename}")
     plt.show()
 
 def safety_filter(u_nom, x):
@@ -322,6 +323,7 @@ def distance_of_path(p):
     return distance
 
 
+
 # Main function
 def main():
     time = []
@@ -332,13 +334,18 @@ def main():
     points = [
         (0.0, 0.0),
         (1.0, 0.0),
-        (1+1/np.sqrt(2), 1/np.sqrt(2)),
-        (1+1/np.sqrt(2), 1+1/np.sqrt(2)),
-        (1, 1+2/np.sqrt(2)),
-        (0, 1+2/np.sqrt(2)),
-        (-1/np.sqrt(2), 1+1/np.sqrt(2)),
-        (-1/np.sqrt(2), 1/np.sqrt(2)),
-        (0,0)
+        (2.0, 0.0), 
+        (2.0, 1.0),
+        (1.0, 1.0),
+        (0.0, 1.0),
+        (0.0, 2.0),
+        (0.0, 3.0),
+        (0.0, 4.0),
+        (1.0, 4.0),
+        (2.0, 4.0),
+        (3.0, 4.0),
+        (3.0, 5.0),
+        (2.0, 5.0) 
     ]
 
     # Compute forward tangents
@@ -367,14 +374,15 @@ def main():
         7*np.pi /4 * np.ones(14)
     ])
     Tx = int(distance_of_path(np.array(points)) / (max_v*0.2941176*dt))
+    print(Tx)
     x = np.array([0,0,0, 0, 0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
     X = np.zeros((Tx, 5)) # list of historical states
     U = np.zeros((Tx, 2)) # list of historical control inputs
     all_weights = np.zeros((Tx, K)) # Weights of every generated trajectory, organized by time step
 
     traj = generate_trajectory_from_waypoints(waypoints, Tx) # trajectory of waypoints
-    traj[:, 2] = new_thetas
-    np.savetxt('trajectory.csv', traj, delimiter=',', fmt='%.4f')
+    # traj[:, 2] = new_thetas
+    # np.savetxt('trajectory.csv', traj, delimiter=',', fmt='%.4f')
 
     sample_trajectories = np.zeros((Tx, K, 3, T))
     sample_trajectories_one = np.zeros((K, 3, T)) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
@@ -388,8 +396,9 @@ def main():
         time.append(t)
         x_pos.append(X[t+1, 0]) # Save the x position at this timestep
         y_pos.append(X[t+1, 1]) # Save the y position at this timestep
-
         last_u = U[t] # Save the control input 
+
+
         for k in range(K):
             for t_ in range (T): # Reshaping trajectory weight list for use in animation
                 sample_trajectories_one[k, 0, t_] = X_calc[k, t_, 0] #should be 0
@@ -403,6 +412,12 @@ def main():
         #     f.write(f"idx{best_traj_idx}\n")
         #     f.write("-------------------\n")
     
+    # with open('discrepancy_time.csv', 'w', newline='', encoding='utf-8') as file:
+    #     writer = csv.writer(file)
+    #     writer.writerow(['Step',  'X_d', 'Y_d', 'Theta_d', 'X', 'Y', 'Theta'])
+    #     for t in range(Tx):
+    #         writer.writerow(np.array([t,traj[t][0], traj[t][1], traj[t][2],X[t][0], X[t][1], X[t][2]]))
+
 
     animate(x_pos, y_pos, traj[:, 0], traj[:, 1], sample_trajectories, all_weights)
 
