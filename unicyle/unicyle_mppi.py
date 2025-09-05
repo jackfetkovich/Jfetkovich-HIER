@@ -416,7 +416,7 @@ def main():
         x_pos.append(X[t+1, 0]) # Save the x position at this timestep
         y_pos.append(X[t+1, 1]) # Save the y position at this timestep
         last_u = U[t] # Save the control input 
-        costs += cost_function(x, U[t], traj[t+1])
+        costs[t] = cost_function(x, U[t], traj[t+1])
 
         for k in range(K):
             for t_ in range (T): # Reshaping trajectory weight list for use in animation
