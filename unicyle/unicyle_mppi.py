@@ -26,18 +26,18 @@ init_theta_dot = 0.0
 
 obstacles = np.array([[3.85, 3.8, 0.5]])
 
-max_v = 5.1 # max x velocity (m/s)
-max_w = 12.0 # max angular velocity (radians/s)
+max_v = 2.0 # max x velocity (m/s)
+max_w = 10.0 # max angular velocity (radians/s)
 max_v_dot = 8.0 # max linear acceleration (m/s^2)
 max_w_dot = 30.0 # max angular acceleration (radians/s^2) (8.0)
 
 # Unicyle dynamics
 @njit
 def unicyle_dynamics(x, u):    
-    # v = np.clip(u[0], -max_v, max_v)
     v = max(min(u[0], max_v), -max_v)
-    # w  = np.clip(u[1], -max_w, max_w)
     w = max(min(u[1], max_w), -max_w )
+    # v = u[0]
+    # w = u[1]
 
     ## Aceleration Limiting
     last_v = x[3]
@@ -54,8 +54,6 @@ def unicyle_dynamics(x, u):
     x_star[3] = v
     x_star[4] = w
 
-    # x_star[2] = (x_star[2] + np.pi) % (2 * np.pi) - np.pi
-
     return x_star
 
 @njit
@@ -70,7 +68,7 @@ def closest_point_on_path(waypoints, point, last_index):
     best_idx = last_index
     best_t = 0.0
 
-    for i in range(max(best_idx, 0), min(best_idx + 20, waypoints.shape[0]-2)):
+    for i in range(max(best_idx, 0), min(best_idx + 40, waypoints.shape[0]-2)):
         A = waypoints[i]
         B = waypoints[i + 1]
         AB = B - A
@@ -99,7 +97,7 @@ def closest_point_on_path(waypoints, point, last_index):
 # Cost function
 @njit
 def cost_function(x, u, target):
-    Q = np.diag(np.array([12, 12, 0.005, 0.00, 0.00]))  # State costs
+    Q = np.diag(np.array([12, 12, 0.0, 0.00, 0.00]))  # State costs
     R = np.diag(np.array([0.0005,0.001]))  # Input costs
 
     x_des = np.array([target[0], target[1], target[2], 0, 0])
@@ -113,7 +111,7 @@ def cost_function(x, u, target):
 # Terminal Cost Function
 @njit
 def terminal_cost(x, target):
-    Q = np.diag(np.array([8, 8, 0.007, 0.00, 0.00]))
+    Q = np.diag(np.array([20, 20, 0.0, 0.00, 0.00]))
     x_des= np.array([target[0], target[1], target[2], 0, 0])
     state_diff = x_des - x
     state_diff[2] = (state_diff[2] + np.pi) % (2 * np.pi) - np.pi
@@ -154,22 +152,27 @@ def point_in_obstacle(point, obstacles):
 
 # MPPI control
 @njit
-def mppi(x, prev_U, targets):
+def mppi(x, prev_U, traj_x_y, traj, starting_traj_idx):
     X_calc = np.zeros((K, T + 1, 5))
     
-    U = gen_normal_control_seq(0.3, 6, 0, max_w*2, K, T) # Generate control sequences
+    U = gen_normal_control_seq(0.3, 2, 0, max_w, K, T) # Generate control sequences
 
     for k in range(K):
         X_calc[k, 0, :] = x  # Initialize all trajectories with the current state
             
     costs = np.zeros(K) # initialize all costs
     for k in range(K):
-        for t in range(len(targets)-1):
+        target_idx = starting_traj_idx
+        for t in range(T-1):
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], U[k, t])
-            current_target = targets[t]
+            current_target_raw = closest_point_on_path(traj_x_y, X_calc[k, t+1, 0:2], target_idx)
+            current_target = np.array([current_target_raw[0], current_target_raw[1], traj[target_idx][2]])
+            target_idx = current_target_raw[2]
             cost = cost_function(X_calc[k, t+1, :], U[k, t], current_target)
             costs[k] += cost
-        final_target = targets[-1]    
+        final_target_raw = closest_point_on_path(traj_x_y, X_calc[k, T-1, 0:2], target_idx)
+        target_idx = final_target_raw[2]
+        final_target = np.array([final_target_raw[0], final_target_raw[1], traj[target_idx][2]])  
         terminal_cost_val = terminal_cost(X_calc[k, T, :], final_target) #Terminal cost of final state
         costs[k] += terminal_cost_val
         
@@ -215,7 +218,7 @@ def generate_trajectory_from_waypoints(waypoints, num_points=100):
 
     return np.dstack(np.array([x_vals, y_vals, np.unwrap(np.array(theta_vals))]))[0]
 
-def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
+def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights, goal_points_x, goal_points_y):
     """
     Animates the movement of an object in 2D space given its state variables over time.
     Also plots a given trajectory as a dotted line.
@@ -228,7 +231,8 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
     y_traj (list or np.array, optional): Y values of the reference trajectory.
     """
     # Set up the figure
-    fig, ax = plt.subplots(figsize=(19.2, 10.8), dpi=100)
+    # fig, ax = plt.subplots(figsize=(19.2, 10.8), dpi=100)
+    fig, ax = plt.subplots()
     ax.set_xlim(min(x_vals) - 1, max(x_vals) + 1)
     ax.set_ylim(min(y_vals) - 1, max(y_vals) + 1)
     # ax.set_xlim(-3, 3)
@@ -277,18 +281,18 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
 
         # Update ghost point if reference trajectory exists
         if x_traj is not None and y_traj is not None:
-            ghost.set_data([x_traj[frame]], [y_traj[frame]])
+            ghost.set_data([goal_points_x[frame]], [goal_points_y[frame]])
 
 
         return [line, point, ghost].append(samples)
 
     # Create animation
     ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=15, blit=False)
-    plt.title(f"K={K}, T={T}")
-    plt.legend()
-    filename=f"unicyle{K}-{T}-obs_avoidance.gif"
-    ani.save(filename, writer='pillow', fps=20, )
-    print(f"Animation saved as {filename}")
+    # plt.title(f"K={K}, T={T}")
+    # plt.legend()
+    # filename=f"unicyle{K}-{T}-no_time_dep.gif"
+    # ani.save(filename, writer='pillow', fps=20, )
+    # print(f"Animation saved as {filename}")
     plt.show()
 
 def safety_filter(u_nom, x):
@@ -373,26 +377,32 @@ def main():
         3 * np.pi / 2 *np.ones(13),
         7*np.pi /4 * np.ones(14)
     ])
-    Tx = int(distance_of_path(np.array(points)) / (max_v*0.2941176*dt))
-    print(Tx)
+    Tx = 3000
     x = np.array([0,0,0, 0, 0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
     X = np.zeros((Tx, 5)) # list of historical states
     U = np.zeros((Tx, 2)) # list of historical control inputs
     all_weights = np.zeros((Tx, K)) # Weights of every generated trajectory, organized by time step
 
     traj = generate_trajectory_from_waypoints(waypoints, Tx) # trajectory of waypoints
-    # traj[:, 2] = new_thetas
-    # np.savetxt('trajectory.csv', traj, delimiter=',', fmt='%.4f')
+    traj_x_y = traj[:, :2]
 
     sample_trajectories = np.zeros((Tx, K, 3, T))
     sample_trajectories_one = np.zeros((K, 3, T)) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
     last_u = np.zeros(2) # the control input from the previous iteration
+    best_traj_idx = 0
+    trajectory_indices = np.zeros(Tx)
+    goal_points = np.zeros((2, Tx))
     for t in range(Tx-1): # From 0 -> 159
-        u_nom, X_calc, traj_weight_single = mppi(x, last_u, traj[t+1: min(t+1+T, len(traj))]) # Calculate the optimal control input
+        trajectory_indices[t] = best_traj_idx
+        u_nom, X_calc, traj_weight_single = mppi(x, last_u, traj_x_y, traj, best_traj_idx) # Calculate the optimal control input
         # U[t] = safety_filter(u_nom, x)
         U[t] = u_nom
         x = unicyle_dynamics(x, U[t]) # Calculate what happens when you apply that input
         X[t + 1, :] = x # Store the new state
+        best_traj_idx = closest_point_on_path(traj_x_y, x[:2], best_traj_idx)[2]
+        print(best_traj_idx)
+        goal_points[0,t] = traj_x_y[best_traj_idx, 0]
+        goal_points[1,t] = traj_x_y[best_traj_idx, 1]
         time.append(t)
         x_pos.append(X[t+1, 0]) # Save the x position at this timestep
         y_pos.append(X[t+1, 1]) # Save the y position at this timestep
@@ -412,14 +422,15 @@ def main():
         #     f.write(f"idx{best_traj_idx}\n")
         #     f.write("-------------------\n")
     
-    # with open('discrepancy_time.csv', 'w', newline='', encoding='utf-8') as file:
-    #     writer = csv.writer(file)
-    #     writer.writerow(['Step',  'X_d', 'Y_d', 'Theta_d', 'X', 'Y', 'Theta'])
-    #     for t in range(Tx):
-    #         writer.writerow(np.array([t,traj[t][0], traj[t][1], traj[t][2],X[t][0], X[t][1], X[t][2]]))
+    with open('discrepancy_pos.csv', 'w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Step',  'X_d', 'Y_d', 'Theta_d', 'X', 'Y', 'Theta'])
+        for t in range(Tx):
+            idx = int(trajectory_indices[t])
+            writer.writerow(np.array([t,traj[idx][0], traj[idx][1], traj[idx][2],X[t][0], X[t][1], X[t][2]]))
 
 
-    animate(x_pos, y_pos, traj[:, 0], traj[:, 1], sample_trajectories, all_weights)
+    animate(x_pos, y_pos, traj[:, 0], traj[:, 1], sample_trajectories, all_weights, goal_points[0, :], goal_points[1, :])
 
 
 if __name__ == "__main__":
