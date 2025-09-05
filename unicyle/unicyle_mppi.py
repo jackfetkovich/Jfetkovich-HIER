@@ -12,7 +12,7 @@ matplotlib.use("TkAgg")
 # system parameters
 dt = 0.05 # time step
 K = 500   # number of samples
-T = 15 # time steps (HORIZON)
+T = 8 # time steps (HORIZON)
 sigma = 2
 lambda_ = 2
 
@@ -99,7 +99,7 @@ def closest_point_on_path(waypoints, point, last_index):
 # Cost function
 @njit
 def cost_function(x, u, target):
-    Q = np.diag(np.array([12, 12, 0.005, 0.00, 0.00]))  # State costs
+    Q = np.diag(np.array([16, 16, 1.0, 0.00, 0.00]))  # State costs
     R = np.diag(np.array([0.0005,0.001]))  # Input costs
 
     x_des = np.array([target[0], target[1], target[2], 0, 0])
@@ -113,7 +113,7 @@ def cost_function(x, u, target):
 # Terminal Cost Function
 @njit
 def terminal_cost(x, target):
-    Q = np.diag(np.array([8, 8, 0.007, 0.00, 0.00]))
+    Q = np.diag(np.array([20, 20, 1.6, 0.00, 0.00]))
     x_des= np.array([target[0], target[1], target[2], 0, 0])
     state_diff = x_des - x
     state_diff[2] = (state_diff[2] + np.pi) % (2 * np.pi) - np.pi
@@ -284,9 +284,9 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights):
 
     # Create animation
     ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=15, blit=False)
-    plt.title(f"K={K}, T={T}")
+    plt.title(f"K={K}, T={T} Time Based")
     plt.legend()
-    filename=f"unicyle{K}-{T}-obs_avoidance.gif"
+    filename=f"unicyle{K}-{T}-time_based.gif"
     ani.save(filename, writer='pillow', fps=20, )
     print(f"Animation saved as {filename}")
     plt.show()
@@ -398,7 +398,7 @@ def main():
     X = np.zeros((Tx, 5)) # list of historical states
     U = np.zeros((Tx, 2)) # list of historical control inputs
     all_weights = np.zeros((Tx, K)) # Weights of every generated trajectory, organized by time step
-
+    costs = np.zeros(Tx)
     traj = generate_trajectory_from_waypoints(waypoints, Tx) # trajectory of waypoints
     # traj[:, 2] = new_thetas
     # np.savetxt('trajectory.csv', traj, delimiter=',', fmt='%.4f')
@@ -416,7 +416,7 @@ def main():
         x_pos.append(X[t+1, 0]) # Save the x position at this timestep
         y_pos.append(X[t+1, 1]) # Save the y position at this timestep
         last_u = U[t] # Save the control input 
-
+        costs += cost_function(x, U[t], traj[t+1])
 
         for k in range(K):
             for t_ in range (T): # Reshaping trajectory weight list for use in animation
@@ -431,11 +431,11 @@ def main():
         #     f.write(f"idx{best_traj_idx}\n")
         #     f.write("-------------------\n")
     
-    # with open('discrepancy_time.csv', 'w', newline='', encoding='utf-8') as file:
-    #     writer = csv.writer(file)
-    #     writer.writerow(['Step',  'X_d', 'Y_d', 'Theta_d', 'X', 'Y', 'Theta'])
-    #     for t in range(Tx):
-    #         writer.writerow(np.array([t,traj[t][0], traj[t][1], traj[t][2],X[t][0], X[t][1], X[t][2]]))
+    with open('circle_discrepancy_time.csv', 'w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Step',  'X_d', 'Y_d', 'Theta_d', 'X', 'Y', 'Theta', 'Cost'])
+        for t in range(Tx):
+            writer.writerow(np.array([t,traj[t][0], traj[t][1], traj[t][2],X[t][0], X[t][1], X[t][2], costs[t]]))
 
 
     animate(x_pos, y_pos, traj[:, 0], traj[:, 1], sample_trajectories, all_weights)
