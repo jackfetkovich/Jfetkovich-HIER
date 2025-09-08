@@ -24,7 +24,9 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights, params):
     ax.set_xlabel("X Position")
     ax.set_ylabel("Y Position")
 
-    # plt.plot(3.85, 3.8, 'yo') #obstacle
+    for i in range(len(params.obstacles)):
+        circle = plt.Circle((params.obstacles[i][0], params.obstacles[i][1]), params.obstacles[i][2], color='y')
+        ax.add_patch(circle)
     # circle1 = plt.Circle((3.85, 3.8), 0.5, color='r')
     # ax.add_patch(circle1)
 
@@ -74,7 +76,7 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights, params):
     ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=15, blit=False)
     plt.title(f"K={params.K}, T={params.T} Time Based")
     plt.legend()
-    filename=f"unicyle{params.K}-{params.T}-time_based.gif"
-    ani.save(filename, writer='pillow', fps=20, )
-    print(f"Animation saved as {filename}")
+    # filename=f"unicyle{params.K}-{params.T}-time_based.gif"
+    # ani.save(filename, writer='pillow', fps=20, )
+    # print(f"Animation saved as {filename}")
     plt.show()
