@@ -1,7 +1,15 @@
 import numpy as np
 
-x = (np.pi-0.1 + np.pi) % (2 * np.pi) - np.pi
-y = (-np.pi+0.1 + np.pi) % (2 * np.pi) - np.pi
-b = x-y
-b = (b + np.pi) % (2 * np.pi) - np.pi
-print(b)
+
+new_thetas = np.hstack([
+        np.zeros(14),
+        np.pi/4 * np.ones(13),
+        np.pi/2 * np.ones(13),
+        3*np.pi /4 * np.ones(13),
+        np.pi * np.ones(13),
+        5*np.pi /4 * np.ones(13),
+        3 * np.pi / 2 *np.ones(13),
+        7*np.pi /4 * np.ones(14)
+])
+
+print(new_thetas)
