@@ -10,15 +10,15 @@ from parameters import *
 
 params = Parameters(
     dt = 0.05, # time step
-    K = 500,   # number of samples
-    T = 8, # time steps (HORIZON)
+    K = 1000,   # number of samples
+    T = 12, # time steps (HORIZON)
     sigma = 2,
     lambda_ = 2,
     max_v = 5.1, # max x velocity (m/s)
-    max_w = 12.0, # max angular velocity (radians/s)
+    max_w = 10.0, # max angular velocity (radians/s)
     max_v_dot = 8.0, # max linear acceleration (m/s^2)
     max_w_dot = 30.0, # max angular acceleration (radians/s^2) (8.0)
-    obstacles = np.array([[3.85, 3.8, 0.5], [0, 1, 0.25]])
+    obstacles = np.array([[3.85, 3.8, 0.5], [2.0, 0.1, 0.25]])
 )
 
 # Main function
