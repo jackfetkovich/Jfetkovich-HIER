@@ -2,7 +2,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights, params):
+def animate(x_vals, y_vals, x_traj, y_traj, x_ob, y_ob, sample_trajs, weights, params):
     """
     Animates the movement of an object in 2D space given its state variables over time.
     Also plots a given trajectory as a dotted line.
@@ -18,15 +18,17 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights, params):
     # Set up the figure
     fig, ax = plt.subplots(figsize=(19.2, 10.8), dpi=100)
     # fig, ax = plt.subplots()
-    ax.set_xlim(min(x_vals) - 1, max(x_vals) + 1)
-    ax.set_ylim(min(y_vals) - 1, max(y_vals) + 1)
+    # ax.set_xlim(min(x_vals) - 1, max(x_vals) + 1)
+    # ax.set_ylim(min(y_vals) - 1, max(y_vals) + 1)
+    ax.set_xlim(-5, 5)
+    ax.set_ylim(-1, 6)
 
     ax.set_xlabel("X Position")
     ax.set_ylabel("Y Position")
 
-    for i in range(len(params.obstacles)):
-        circle = plt.Circle((params.obstacles[i][0], params.obstacles[i][1]), params.obstacles[i][2], color='y')
-        ax.add_patch(circle)
+
+    circle = plt.Circle((params.obstacles[0][0], params.obstacles[0][1]), params.obstacles[0][2], color='y')
+    ax.add_patch(circle)
     # circle1 = plt.Circle((3.85, 3.8), 0.5, color='r')
     # ax.add_patch(circle1)
 
@@ -46,6 +48,8 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights, params):
 
     # Update function
     def update(frame):
+        print(x_ob[frame])
+        circle.set_center((x_ob[frame], y_ob[frame]))
         x, y = x_vals[frame], y_vals[frame]
 
         # Update history path
