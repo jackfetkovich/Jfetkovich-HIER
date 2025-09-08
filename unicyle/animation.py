@@ -71,7 +71,7 @@ def animate(x_vals, y_vals, x_traj, y_traj, x_ob, y_ob, sample_trajs, weights, p
 
         # Update ghost point if reference trajectory exists
         if x_traj is not None and y_traj is not None:
-            ghost.set_data([x_traj[frame]], [y_traj[frame]])
+            ghost.set_data([x_traj[int(frame/2)]], [y_traj[int(frame/2)]])
 
 
         return [line, point, ghost].append(samples)

@@ -72,30 +72,33 @@ def terminal_cost(x, target):
 
 # Unicyle dynamics
 @njit
-def unicyle_dynamics(x, u, params):    
+def unicyle_dynamics(x, u, params, dt=-1.0):    
+    if(dt == -1.0):
+        dt = params.dt
+    
     v = max(min(u[0], params.max_v), -params.max_v)
     w = max(min(u[1], params.max_w), -params.max_w )
 
     ## Aceleration Limiting
     last_v = x[3]
-    if abs(v - last_v) > params.max_v_dot * params.dt: 
-        v = x[3] + params.max_v_dot * params.dt * np.sign(v - x[3])
+    if abs(v - last_v) > params.max_v_dot * dt: 
+        v = x[3] + params.max_v_dot * dt * np.sign(v - x[3])
     
-    if abs(w - x[4]) > params.max_w_dot * params.dt:
-        w  = x[4] + params.max_w_dot * params.dt * np.sign(w - x[4])
+    if abs(w - x[4]) > params.max_w_dot * dt:
+        w  = x[4] + params.max_w_dot * dt * np.sign(w - x[4])
 
     x_star = np.zeros(5)
-    x_star[0] = x[0] + v * np.cos(x[2]) * params.dt
-    x_star[1] = x[1] + v * np.sin(x[2]) * params.dt
-    x_star[2] = x[2] + w                * params.dt
+    x_star[0] = x[0] + v * np.cos(x[2]) * dt
+    x_star[1] = x[1] + v * np.sin(x[2]) * dt
+    x_star[2] = x[2] + w                * dt
     x_star[3] = v
     x_star[4] = w
 
     return x_star
 
-def safety_filter(u_nom, x):
-    c = np.array([3.85, 3.8])       # obstacle center
-    r = 0.5                        # obstacle radius
+def safety_filter(u_nom, x, params):
+    c = params.obstacles[0][0:2]   # obstacle center
+    r = params.obstacles[0][2]      # obstacle radius
 
     # Variables
     u = cp.Variable(2)        # [v, omega]
@@ -105,7 +108,7 @@ def safety_filter(u_nom, x):
     dy = x[1] - c[1]
     h = dx**2 + dy**2 - r**2
     Lg_h = np.array([[2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2]), 0]])
-    alpha = 1.0
+    alpha = 2.0
     constraint = Lg_h @ u + alpha * h >= 0
     # Define QP
     cost = cp.sum_squares(u - u_nom)

@@ -4,6 +4,7 @@ from numba.experimental import jitclass
 
 spec = [
     ('dt', float64),
+    ('safety_dt', float64),
     ('K', int64), 
     ('T', int64), 
     ('sigma', int64), 
@@ -17,8 +18,9 @@ spec = [
 
 @jitclass(spec)
 class Parameters(object):
-    def __init__(self, dt, K, T, sigma, lambda_, max_v, max_w, max_v_dot, max_w_dot, obstacles):
+    def __init__(self, dt, safety_dt, K, T, sigma, lambda_, max_v, max_w, max_v_dot, max_w_dot, obstacles):
         self.dt = dt
+        self.safety_dt = safety_dt
         self.K = K
         self.T = T
         self.sigma = sigma
