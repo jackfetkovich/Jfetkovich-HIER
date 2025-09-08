@@ -9,8 +9,9 @@ from mppi import *
 from parameters import *
 
 params = Parameters(
-    dt = 0.05, # time step
-    K = 1000,   # number of samples
+    dt = 0.05, # time step for MPPI
+    safety_dt = 0.025, # time step for safety
+    K = 1500,   # number of samples
     T = 12, # time steps (HORIZON)
     sigma = 2,
     lambda_ = 2,
@@ -65,42 +66,42 @@ def main():
     ]
 
     obstacle_points = [
-        (0.5, 0.4),
-        (0.5, 0.3),
-        (1.7, -0.3),
-        (1.8, 0.05),
-        (2.0, 0.45),
-        (2.8, 0.3),
-        (3.0, 1.2),
-        (3.7, 1.3),
-        (3.5, 2.25),
-        (4.0, 2.6),
-        (3.6, 3.3), #11
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
-        (0.0, 0.0),
+        (0.5, 0.2),
+        (0.5, 0.1),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
+        (0.5, 0.0),
     ]
 
     ### Zeroed arrays used for calcuation
-    Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2941176*params.dt))
+    Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2941176*params.dt))*2
     x = np.array([0,0,0,0,0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
     X = np.zeros((Tx, 5)) # list of historical states
     U = np.zeros((Tx, 2)) # list of historical control inputs
@@ -115,45 +116,41 @@ def main():
     ## Zeroed arrays used for calculation
     
     ## Generation of waypoints for obstacle and robot
-    traj = generate_trajectory_from_waypoints(points, Tx) # trajectory of waypoints
-    obstacle_traj = generate_trajectory_x_y(obstacle_points, Tx) # Moving obstacle trajectory
+    traj = generate_trajectory_from_waypoints(points, int(Tx/2)+1) # trajectory of waypoints
+    obstacle_traj = generate_trajectory_x_y(obstacle_points, int(Tx/2)+1) # Moving obstacle trajectory
 
-    
     for t in range(Tx-1):
-        params.obstacles[0] = np.array([obstacle_traj[t, 0], obstacle_traj[t,1], params.obstacles[0,2]])
+        if t % 2 == 0:
+            u_nom, X_calc, traj_weight_single = mppi(x, last_u, traj[int(t/2)+1: min(int(t/2)+1+params.T, len(traj))], params) # Calculate the optimal control input
+            for k in range(params.K):
+                for t_ in range (params.T): # Reshaping trajectory weight list for use in animation
+                    sample_trajectories_one[k, 0, t_] = X_calc[k, t_, 0] #should be 0
+                    sample_trajectories_one[k, 1, t_] = X_calc[k, t_, 1] #should be 1
+            sample_trajectories[t] = sample_trajectories_one # Save the sampled trajectories
+            all_weights[t] = traj_weight_single # List of the weights, populated in mppi function
+            costs[t] = cost_function(x, U[t], traj[int(t/2)+1])
+        else:
+            params.obstacles[0] = np.array([obstacle_traj[int(t/2), 0], obstacle_traj[int(t/2),1], params.obstacles[0,2]])
+            base = np.array([np.ones(params.T) * X[t, 0], np.ones(params.T) * X[t, 1], np.zeros(params.T)])
+            sample_trajectories[t] = np.repeat(base[np.newaxis, :, :], params.K, axis=0)
+            all_weights[t] = np.ones(params.K)
+            costs[t] = cost_function(x, U[t], traj[int(t/2)+1])
+        
         x_ob[t] = params.obstacles[0][0]
         y_ob[t] = params.obstacles[0][1]
-        u_nom, X_calc, traj_weight_single = mppi(x, last_u, traj[t+1: min(t+1+params.T, len(traj))], params) # Calculate the optimal control input
-        # U[t] = safety_filter(u_nom, x)
+        # U[t] = safety_filter(u_nom, x, params)
         U[t] = u_nom
-        x = unicyle_dynamics(x, U[t], params) # Calculate what happens when you apply that input
+        
+        x = unicyle_dynamics(x, U[t], params, dt=params.safety_dt) # Calculate what happens when you apply that input
         X[t + 1, :] = x # Store the new state
         time.append(t)
         x_pos.append(X[t+1, 0]) # Save the x position at this timestep
         y_pos.append(X[t+1, 1]) # Save the y position at this timestep
         last_u = U[t] # Save the control input 
-        costs[t] = cost_function(x, U[t], traj[t+1])
-
-        for k in range(params.K):
-            for t_ in range (params.T): # Reshaping trajectory weight list for use in animation
-                sample_trajectories_one[k, 0, t_] = X_calc[k, t_, 0] #should be 0
-                sample_trajectories_one[k, 1, t_] = X_calc[k, t_, 1] #should be 1
-        sample_trajectories[t] = sample_trajectories_one # Save the sampled trajectories
-        all_weights[t] = traj_weight_single # List of the weights, populated in mppi function
         
-        # with open("data3.txt", "a") as f: 
-        #     f.write(f"t: {t},  X=(x={x[0]}, y={x[1]}, th={x[2]}), U=(v={u_nom[0]}, w={u_nom[1]})\n")
-        #     f.write(f"Close pt x={traj[best_traj_idx][0]}, y={traj[best_traj_idx][1]}, th={traj[best_traj_idx][2]}\n")
-        #     f.write(f"idx{best_traj_idx}\n")
-        #     f.write("-------------------\n")
-    
-    # with open('circle_discrepancy_time.csv', 'w', newline='', encoding='utf-8') as file:
-    #     writer = csv.writer(file)
-    #     writer.writerow(['Step',  'X_d', 'Y_d', 'Theta_d', 'X', 'Y', 'Theta', 'Cost'])
-    #     for t in range(Tx):
-    #         writer.writerow(np.array([t,traj[t][0], traj[t][1], traj[t][2],X[t][0], X[t][1], X[t][2], costs[t]]))
-
-
+        
+        
+        
     animate(x_pos, y_pos, traj[:, 0], traj[:, 1], x_ob, y_ob, sample_trajectories, all_weights, params)
 
 
