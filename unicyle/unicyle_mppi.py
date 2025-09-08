@@ -17,10 +17,9 @@ params = Parameters(
     max_v = 5.1, # max x velocity (m/s)
     max_w = 12.0, # max angular velocity (radians/s)
     max_v_dot = 8.0, # max linear acceleration (m/s^2)
-    max_w_dot = 30.0 # max angular acceleration (radians/s^2) (8.0)
+    max_w_dot = 30.0, # max angular acceleration (radians/s^2) (8.0)
+    obstacles = np.array([[3.85, 3.8, 0.5], [0, 1, 0.25]])
 )
-
-obstacles = np.array([[3.85, 3.8, 0.5]])
 
 # Main function
 def main():
@@ -119,11 +118,11 @@ def main():
         #     f.write(f"idx{best_traj_idx}\n")
         #     f.write("-------------------\n")
     
-    with open('circle_discrepancy_time.csv', 'w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        writer.writerow(['Step',  'X_d', 'Y_d', 'Theta_d', 'X', 'Y', 'Theta', 'Cost'])
-        for t in range(Tx):
-            writer.writerow(np.array([t,traj[t][0], traj[t][1], traj[t][2],X[t][0], X[t][1], X[t][2], costs[t]]))
+    # with open('circle_discrepancy_time.csv', 'w', newline='', encoding='utf-8') as file:
+    #     writer = csv.writer(file)
+    #     writer.writerow(['Step',  'X_d', 'Y_d', 'Theta_d', 'X', 'Y', 'Theta', 'Cost'])
+    #     for t in range(Tx):
+    #         writer.writerow(np.array([t,traj[t][0], traj[t][1], traj[t][2],X[t][0], X[t][1], X[t][2], costs[t]]))
 
 
     animate(x_pos, y_pos, traj[:, 0], traj[:, 1], sample_trajectories, all_weights, params)
