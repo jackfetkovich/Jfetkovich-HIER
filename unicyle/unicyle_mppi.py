@@ -232,7 +232,7 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights, goal_points_x
     """
     # Set up the figure
     # fig, ax = plt.subplots(figsize=(19.2, 10.8), dpi=100)
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(19.2, 10.8), dpi=100)
     ax.set_xlim(min(x_vals) - 1, max(x_vals) + 1)
     ax.set_ylim(min(y_vals) - 1, max(y_vals) + 1)
     # ax.set_xlim(-3, 3)
@@ -288,11 +288,11 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights, goal_points_x
 
     # Create animation
     ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=15, blit=False)
-    # plt.title(f"K={K}, T={T}")
-    # plt.legend()
-    # filename=f"unicyle{K}-{T}-no_time_dep.gif"
-    # ani.save(filename, writer='pillow', fps=20, )
-    # print(f"Animation saved as {filename}")
+    plt.title(f"K={K}, T={T} Position Based")
+    plt.legend()
+    filename=f"unicyle{K}-{T}-position_based.gif"
+    ani.save(filename, writer='pillow', fps=20, )
+    print(f"Animation saved as {filename}")
     plt.show()
 
 def safety_filter(u_nom, x):
@@ -411,6 +411,7 @@ def main():
     best_traj_idx = 0
     trajectory_indices = np.zeros(Tx)
     goal_points = np.zeros((2, Tx))
+    costs = np.zeros(Tx)
     for t in range(Tx-1): # From 0 -> 159
         trajectory_indices[t] = best_traj_idx
         u_nom, X_calc, traj_weight_single = mppi(x, last_u, traj_x_y, traj, best_traj_idx) # Calculate the optimal control input
@@ -425,6 +426,7 @@ def main():
         time.append(t)
         x_pos.append(X[t+1, 0]) # Save the x position at this timestep
         y_pos.append(X[t+1, 1]) # Save the y position at this timestep
+        costs[t] = cost_function(x, U[t], traj[best_traj_idx])
         last_u = U[t] # Save the control input 
 
 
@@ -441,12 +443,12 @@ def main():
         #     f.write(f"idx{best_traj_idx}\n")
         #     f.write("-------------------\n")
     
-    with open('discrepancy_pos.csv', 'w', newline='', encoding='utf-8') as file:
+    with open('circle_discrepancy_pos.csv', 'w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        writer.writerow(['Step',  'X_d', 'Y_d', 'Theta_d', 'X', 'Y', 'Theta'])
+        writer.writerow(['Step',  'X_d', 'Y_d', 'Theta_d', 'X', 'Y', 'Theta', 'Cost'])
         for t in range(Tx):
             idx = int(trajectory_indices[t])
-            writer.writerow(np.array([t,traj[idx][0], traj[idx][1], traj[idx][2],X[t][0], X[t][1], X[t][2]]))
+            writer.writerow(np.array([t,traj[idx][0], traj[idx][1], traj[idx][2],X[t][0], X[t][1], X[t][2], costs[t]]))
 
 
     animate(x_pos, y_pos, traj[:, 0], traj[:, 1], sample_trajectories, all_weights, goal_points[0, :], goal_points[1, :])
