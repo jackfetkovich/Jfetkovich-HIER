@@ -14,14 +14,22 @@ def mppi(x, prev_U, targets, params):
             
     costs = np.zeros(params.K) # initialize all costs
     for k in range(params.K):
+        path_safe = True
         for t in range(len(targets)-1):
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], U[k, t], params)
+            next_x = X_calc[k, t+1, :]
+            for o in params.obstacles: # check for obstacle collision
+                if (next_x[0]-o[0]) ** 2 + (next_x[1] - o[1]) ** 2 <= o[2]**2:
+                    path_safe = False
+                    costs[k] = np.inf
+                    break
             current_target = targets[t]
             cost = cost_function(X_calc[k, t+1, :], U[k, t], current_target)
             costs[k] += cost
-        final_target = targets[-1]    
-        terminal_cost_val = terminal_cost(X_calc[k, params.T, :], final_target) #Terminal cost of final state
-        costs[k] += terminal_cost_val
+        if path_safe:
+            final_target = targets[-1]    
+            terminal_cost_val = terminal_cost(X_calc[k, params.T, :], final_target) #Terminal cost of final state
+            costs[k] += terminal_cost_val
         
     # Calculate weights for each trajectory
     weights = np.exp(-(costs - np.min(costs)) / params.lambda_)
@@ -41,7 +49,7 @@ def mppi(x, prev_U, targets, params):
 # Cost function
 @njit
 def cost_function(x, u, target):
-    Q = np.diag(np.array([16, 16, 1.0, 0.00, 0.00]))  # State costs
+    Q = np.diag(np.array([16, 16, 0.0, 0.00, 0.00]))  # State costs
     R = np.diag(np.array([0.0005,0.001]))  # Input costs
 
     x_des = np.array([target[0], target[1], target[2], 0, 0])
@@ -55,7 +63,7 @@ def cost_function(x, u, target):
 # Terminal Cost Function
 @njit
 def terminal_cost(x, target):
-    Q = np.diag(np.array([20, 20, 1.6, 0.00, 0.00]))
+    Q = np.diag(np.array([20, 20, 0.0, 0.00, 0.00]))
     x_des= np.array([target[0], target[1], target[2], 0, 0])
     state_diff = x_des - x
     state_diff[2] = (state_diff[2] + np.pi) % (2 * np.pi) - np.pi

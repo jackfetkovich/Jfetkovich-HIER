@@ -16,8 +16,8 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights, params):
     """
     matplotlib.use("TkAgg")
     # Set up the figure
-    # fig, ax = plt.subplots(figsize=(19.2, 10.8), dpi=100)
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(19.2, 10.8), dpi=100)
+    # fig, ax = plt.subplots()
     ax.set_xlim(min(x_vals) - 1, max(x_vals) + 1)
     ax.set_ylim(min(y_vals) - 1, max(y_vals) + 1)
 
@@ -74,9 +74,9 @@ def animate(x_vals, y_vals, x_traj, y_traj, sample_trajs, weights, params):
 
     # Create animation
     ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=15, blit=False)
-    plt.title(f"K={params.K}, T={params.T} Time Based")
+    plt.title(f"K={params.K}, T={params.T} No Safety Filter, Removal of unsafe paths")
     plt.legend()
-    # filename=f"unicyle{params.K}-{params.T}-time_based.gif"
+    # filename=f"./animations/{params.K}-{params.T}-No_safety_2_ob.gif"
     # ani.save(filename, writer='pillow', fps=20, )
     # print(f"Animation saved as {filename}")
     plt.show()
