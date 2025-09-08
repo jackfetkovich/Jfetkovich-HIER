@@ -6,19 +6,14 @@ from animation import animate
 from utils import *
 from trajectory import *
 from mppi import *
+from parameters import *
 
-params = dict(
+params = Parameters(
     dt = 0.05, # time step
     K = 500,   # number of samples
     T = 8, # time steps (HORIZON)
     sigma = 2,
     lambda_ = 2,
-    init_x = 0.0,
-    init_y = 0.0,
-    init_theta = 0.0,
-    init_x_dot = 0.0,
-    init_y_dot = 0.0,
-    init_theta_dot = 0.0,
     max_v = 5.1, # max x velocity (m/s)
     max_w = 12.0, # max angular velocity (radians/s)
     max_v_dot = 8.0, # max linear acceleration (m/s^2)
@@ -87,7 +82,7 @@ def main():
     waypoints = [(p[0], p[1], th) for p, th in zip(points, headings_unwrapped)]
     
     Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2941176*params.dt))
-    x = np.array([0,0,0, 0, 0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
+    x = np.array([0,0,0,0,0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
     X = np.zeros((Tx, 5)) # list of historical states
     U = np.zeros((Tx, 2)) # list of historical control inputs
     all_weights = np.zeros((Tx, params.K)) # Weights of every generated trajectory, organized by time step
@@ -100,7 +95,7 @@ def main():
     sample_trajectories_one = np.zeros((params.K, 3, params.T)) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
     last_u = np.zeros(2) # the control input from the previous iteration
     for t in range(Tx-1): # From 0 -> 159
-        u_nom, X_calc, traj_weight_single = mppi(x, last_u, traj[t+1: min(t+1+params.T, len(traj))]) # Calculate the optimal control input
+        u_nom, X_calc, traj_weight_single = mppi(x, last_u, traj[t+1: min(t+1+params.T, len(traj))], params) # Calculate the optimal control input
         # U[t] = safety_filter(u_nom, x)
         U[t] = u_nom
         x = unicyle_dynamics(x, U[t], params) # Calculate what happens when you apply that input
