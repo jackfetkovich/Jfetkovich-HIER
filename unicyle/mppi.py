@@ -106,9 +106,14 @@ def safety_filter(u_nom, x, params):
     # Compute h and derivatives
     dx = x[0] - c[0]
     dy = x[1] - c[1]
-    h = dx**2 + dy**2 - r**2
-    Lg_h = np.array([[2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2]), 0]])
-    alpha = 2.0
+    
+    h = (dx+params.l*np.cos(x[2]))**2 + (dy+params.l*np.sin(x[2]))**2 - 0.5*r**2
+    Lg_h = np.array(
+        [
+            2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2])+params.l, 
+            -2*(dx * params.l * np.cos(x[2])*params.l*np.sin(x[2]))+2*(dy+params.l*np.sin(x[2]))*params.l*np.cos(x[2])
+        ])
+    alpha = 5.0
     constraint = Lg_h @ u + alpha * h >= 0
     # Define QP
     cost = cp.sum_squares(u - u_nom)
@@ -116,5 +121,6 @@ def safety_filter(u_nom, x, params):
 
     # Solve
     prob.solve(solver=cp.OSQP)
-
+    print("u_nom", u_nom)
+    print("sol", u.value)
     return u.value

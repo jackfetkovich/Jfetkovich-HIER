@@ -48,7 +48,6 @@ def animate(x_vals, y_vals, x_traj, y_traj, x_ob, y_ob, sample_trajs, weights, p
 
     # Update function
     def update(frame):
-        print(x_ob[frame])
         circle.set_center((x_ob[frame], y_ob[frame]))
         x, y = x_vals[frame], y_vals[frame]
 
@@ -77,10 +76,10 @@ def animate(x_vals, y_vals, x_traj, y_traj, x_ob, y_ob, sample_trajs, weights, p
         return [line, point, ghost].append(samples)
 
     # Create animation
-    ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=15, blit=False)
-    plt.title(f"K={params.K}, T={params.T} No Safety Filter, Removal of unsafe paths")
+    ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=1, blit=False)
+    plt.title(f"K={params.K}, T={params.T} - Safety Filter, Removal of unsafe paths")
     plt.legend()
-    # filename=f"./animations/{params.K}-{params.T}-No_safety_2_ob.gif"
+    # filename=f"./animations/{params.K}-{params.T}-moving_ob_no_filter.gif"
     # ani.save(filename, writer='pillow', fps=20, )
     # print(f"Animation saved as {filename}")
     plt.show()
