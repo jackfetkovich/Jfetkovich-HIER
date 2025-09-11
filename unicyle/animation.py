@@ -1,6 +1,7 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import numpy as np
 
 def animate(x_vals, y_vals, x_traj, y_traj, x_ob, y_ob, sample_trajs, weights, params):
     """
@@ -26,11 +27,11 @@ def animate(x_vals, y_vals, x_traj, y_traj, x_ob, y_ob, sample_trajs, weights, p
     ax.set_xlabel("X Position")
     ax.set_ylabel("Y Position")
 
+    circles = np.empty(len(params.obstacles), dtype=plt.Circle)
 
-    circle = plt.Circle((params.obstacles[0][0], params.obstacles[0][1]), params.obstacles[0][2], color='y')
-    ax.add_patch(circle)
-    # circle1 = plt.Circle((3.85, 3.8), 0.5, color='r')
-    # ax.add_patch(circle1)
+    for i in range(len(params.obstacles)):
+        circles[i] = plt.Circle((params.obstacles[i][0], params.obstacles[i][1]), params.obstacles[i][2], color='y')
+        ax.add_patch(circles[i])
 
     # Plot the trajectory if provided
     if x_traj is not None and y_traj is not None:
@@ -48,7 +49,11 @@ def animate(x_vals, y_vals, x_traj, y_traj, x_ob, y_ob, sample_trajs, weights, p
 
     # Update function
     def update(frame):
-        circle.set_center((x_ob[frame], y_ob[frame]))
+        for i in range(len(circles)):
+            circles[i].set_center((x_ob[i][frame], y_ob[i][frame]))
+ 
+        # circle.set_center((x_ob[frame], y_ob[frame]))
+        
         x, y = x_vals[frame], y_vals[frame]
 
         # Update history path
