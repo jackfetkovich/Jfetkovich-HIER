@@ -20,7 +20,7 @@ params = Parameters(
     max_w = 10.0, # max angular velocity (radians/s)
     max_v_dot = 8.0, # max linear acceleration (m/s^2)
     max_w_dot = 30.0, # max angular acceleration (radians/s^2) (8.0)
-    obstacles = np.array([[0.5, 0.05, 0.1]])
+    obstacles = np.array([[0.5, 0.05, 0.1], [3.0, 3.0, 0.2]])
 )
 
 # Main function
@@ -62,7 +62,7 @@ def main():
         (0.008, -0.009),
     ]
 
-    obstacle_points = [
+    obstacle_points = [[
         (-0.485, 2.830),
         (-0.328, 1.746),
         (-0.018, 1.414),
@@ -92,49 +92,25 @@ def main():
         (1.673, 0.066),
         (1.673, 0.066),
         (1.673, 0.066)
+    ], 
+    [
+        (3.0, 3.0),
+        (3.0, 3.0)
+    ]
     ]
 
-    # obstacle_points = [
-    #     (0.5, 0.4),
-    #     (0.5, 0.3),
-    #     (1.7, -0.3),
-    #     (1.8, 0.05),
-    #     (2.0, 0.45),
-    #     (2.8, 0.3),
-    #     (3.0, 1.2),
-    #     (3.7, 1.3),
-    #     (3.5, 2.25),
-    #     (4.0, 2.6),
-    #     (3.6, 3.3), #11
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0),
-    #     (0.0, 0.0)
-    # ]
 
     ### Zeroed arrays used for calcuation
     Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2941176*params.dt))*2
     ## Generation of waypoints for obstacle and robot
     traj = generate_trajectory_from_waypoints(points, int(Tx/2)+1) # trajectory of waypoints
-    obstacle_traj = generate_trajectory_x_y(obstacle_points, int(Tx/2)+1) # Moving obstacle trajectory
+    
+
+    obstacle_traj = np.zeros((len(params.obstacles), int(Tx/2)+1, 2)) # Generate trajectory for each obstacle
+    for i in range(len(params.obstacles)):
+        obstacle_traj[i] = generate_trajectory_x_y(obstacle_points[i], int(Tx/2)+1)
+    
+
     x = np.array([traj[0,0],traj[0,1],traj[0,2],0,0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
     X = np.zeros((Tx, 5)) # list of historical states
     U = np.zeros((Tx, 2)) # list of historical control inputs
@@ -144,8 +120,8 @@ def main():
     sample_trajectories_one = np.zeros((params.K, 3, params.T)) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
     last_u = np.zeros(2) # the control input from the previous 
     
-    x_ob = np.zeros(Tx)
-    y_ob = np.zeros(Tx)
+    x_ob = np.zeros((len(params.obstacles),Tx))
+    y_ob = np.zeros((len(params.obstacles),Tx))
     ## Zeroed arrays used for calculation
     
 
@@ -165,14 +141,18 @@ def main():
             all_weights[t] = traj_weight_single # List of the weights, populated in mppi function
             costs[t] = cost_function(x, U[t], traj[int(t/2)+1])
         else:
-            params.obstacles[0] = np.array([obstacle_traj[int(t/2), 0], obstacle_traj[int(t/2),1], params.obstacles[0,2]])
-            # params.obstacles[0] = np.array([obstacle_traj[int(t/2), 0], 0.05, params.obstacles[0,2]])
+            for i in range(len(params.obstacles)):
+                params.obstacles[i] = np.array([obstacle_traj[i, int(t/2), 0], obstacle_traj[i,int(t/2),1], params.obstacles[i,2]])
+            
             base = np.array([np.ones(params.T) * X[t, 0], np.ones(params.T) * X[t, 1], np.zeros(params.T)])
             sample_trajectories[t] = np.repeat(base[np.newaxis, :, :], params.K, axis=0)
             all_weights[t] = np.ones(params.K)
             costs[t] = cost_function(x, U[t], traj[int(t/2)+1])
-        x_ob[t] = params.obstacles[0][0]
-        y_ob[t] = params.obstacles[0][1]
+
+        for i in range(len(params.obstacles)): # Populate obstacle positions with time
+            x_ob[i][t] = params.obstacles[i][0]
+            y_ob[i][t] = params.obstacles[i][1]
+        
         U[t] = safety_filter(u_nom, x, params)
         # U[t] = u_nom
         
