@@ -113,7 +113,7 @@ def safety_filter(u_nom, x, params):
             2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2])+params.l, 
             -2*(dx * params.l * np.cos(x[2])*params.l*np.sin(x[2]))+2*(dy+params.l*np.sin(x[2]))*params.l*np.cos(x[2])
         ])
-    alpha = 5.0
+    alpha = 3.0
     constraint = Lg_h @ u + alpha * h >= 0
     # Define QP
     cost = cp.sum_squares(u - u_nom)
