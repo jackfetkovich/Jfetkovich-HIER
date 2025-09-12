@@ -19,10 +19,9 @@ def animate(x_vals, y_vals, x_traj, y_traj, x_ob, y_ob, sample_trajs, weights, p
     # Set up the figure
     fig, ax = plt.subplots(figsize=(19.2, 10.8), dpi=100)
     # fig, ax = plt.subplots()
-    # ax.set_xlim(min(x_vals) - 1, max(x_vals) + 1)
-    # ax.set_ylim(min(y_vals) - 1, max(y_vals) + 1)
-    ax.set_xlim(-5, 5)
-    ax.set_ylim(-1, 6)
+    ax.set_xlim(min(x_vals) - 1, max(x_vals) + 1)
+    ax.set_ylim(min(y_vals) - 1, max(y_vals) + 1)
+
 
     ax.set_xlabel("X Position")
     ax.set_ylabel("Y Position")
