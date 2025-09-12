@@ -80,10 +80,10 @@ def animate(x_vals, y_vals, x_traj, y_traj, x_ob, y_ob, sample_trajs, weights, p
         return [line, point, ghost].append(samples)
 
     # Create animation
-    ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=30, blit=False)
+    ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=60, blit=False)
     plt.title(f"K={params.K}, T={params.T} - Safety Filter, Removal of unsafe paths")
     plt.legend()
-    # filename=f"./animations/{params.K}-{params.T}-moving_ob_no_filter.gif"
+    # filename=f"./animations/{params.K}-{params.T}-modified_filter.gif"
     # ani.save(filename, writer='pillow', fps=20, )
     # print(f"Animation saved as {filename}")
     plt.show()

@@ -19,7 +19,7 @@ def mppi(x, prev_U, targets, params):
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], U[k, t], params)
             next_x = X_calc[k, t+1, :]
             for o in params.obstacles: # check for obstacle collision
-                if (next_x[0]-o[0]) ** 2 + (next_x[1] - o[1]) ** 2 <= o[2]**2:
+                if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= o[2]**2:
                     path_safe = False
                     costs[k] = np.inf
                     break
@@ -78,6 +78,8 @@ def unicyle_dynamics(x, u, params, dt=-1.0):
     
     v = max(min(u[0], params.max_v), -params.max_v)
     w = max(min(u[1], params.max_w), -params.max_w )
+    v = u[0]
+    w = u[1]
 
     ## Aceleration Limiting
     last_v = x[3]
@@ -96,10 +98,40 @@ def unicyle_dynamics(x, u, params, dt=-1.0):
 
     return x_star
 
-def safety_filter(u_nom, x, params):
+
+# def safety_filter(u_nom, x, params):
+#     c = params.obstacles[0][0:2]   # obstacle center
+#     r = params.obstacles[0][2]      # obstacle radius
+
+#     # Variables
+#     u = cp.Variable(2)        # [v, omega]
+
+#     # Compute h and derivatives
+#     dx = x[0] - c[0]
+#     dy = x[1] - c[1]
+    
+#     h = (dx+params.l*np.cos(x[2]))**2 + (dy+params.l*np.sin(x[2]))**2 - r**2
+#     Lg_h = np.array(
+#         [
+#             2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2])+params.l, 
+#             -2*(dx * params.l * np.cos(x[2])*params.l*np.sin(x[2]))+2*(dy+params.l*np.sin(x[2]))*params.l*np.cos(x[2])
+#         ])
+#     alpha = 3.0
+#     constraint = Lg_h @ u + alpha * h >= 0
+#     # Define QP
+#     cost = cp.sum_squares(u - u_nom)
+#     prob = cp.Problem(cp.Minimize(cost), [constraint])
+
+#     # Solve
+#     prob.solve(solver=cp.OSQP)
+#     print("u_nom", u_nom)
+#     print("sol", u.value)
+#     return u.value
+
+def safety_filter(u_nom, x, params, last_u):
     # Variables
     u = cp.Variable(2)        # [v, omega]
-    alpha = 2.0
+    alpha = 5.0
 
     constraints = []
 
@@ -122,6 +154,14 @@ def safety_filter(u_nom, x, params):
 
         # Add inequality constraint: Lg_h @ u + alpha * h >= 0
         constraints.append(Lg_h @ u + alpha * h >= 0)
+        constraints.append(u[0] <= params.max_v)
+        constraints.append(u[0] >= -params.max_v)
+        constraints.append(u[1] <= params.max_w)
+        constraints.append(u[1] >= -params.max_w)
+        constraints.append(u[0] - last_u[0] <= params.max_v_dot)
+        constraints.append(u[0] - last_u[0] >= -params.max_v_dot)
+        constraints.append(u[1] - last_u[1] <= params.max_w_dot)
+        constraints.append(u[1] - last_u[1] >= -params.max_w_dot)
 
     
     if np.isnan(u_nom[0]) or np.isnan(u_nom[1]):
@@ -134,7 +174,14 @@ def safety_filter(u_nom, x, params):
     # Define QP
     cost = cp.sum_squares(u - u_nom)
     prob = cp.Problem(cp.Minimize(cost), constraints)
+    try:
+        prob.solve(solver=cp.OSQP, warm_start=True)
+        if prob.status not in ["optimal", "optimal_inaccurate"]:
+            raise cp.error.SolverError("Infeasible or failed solve")
+        u = u.value
+    except cp.error.SolverError:
+    # Fallback strategy
+        u = np.array([-1, 0])
 
     # Solve
-    prob.solve(solver=cp.OSQP, warm_start=True)
-    return u.value
+    return u
