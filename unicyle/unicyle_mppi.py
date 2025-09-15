@@ -11,10 +11,10 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 params = Parameters(
-    dt = 0.05, # time step for MPPI
-    safety_dt = 0.025, # time step for safety
-    K = 1500,   # number of samples
-    T = 8, # time steps (HORIZON)
+    dt = 0.025, # time step for MPPI
+    safety_dt = 0.001, # time step for safety
+    K = 100,   # number of samples
+    T = 15, # time steps (HORIZON)
     sigma = 2,
     lambda_ = 2,
     l = 0.2,
@@ -47,16 +47,17 @@ def main():
     ]
     ]
 
+    main_safety_ratio = int(params.dt / params.safety_dt)
 
     ### Zeroed arrays used for calcuation
-    Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2*params.dt))*2
+    Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2*params.dt))*main_safety_ratio
     ## Generation of waypoints for obstacle and robot
-    traj = generate_trajectory_from_waypoints(points, int(Tx/2)+1) # trajectory of waypoints
+    traj = generate_trajectory_from_waypoints(points, int(Tx / main_safety_ratio)+1) # trajectory of waypoints
     
 
-    obstacle_traj = np.zeros((len(params.obstacles), int(Tx/2)+1, 2)) # Generate trajectory for each obstacle
+    obstacle_traj = np.zeros((len(params.obstacles), int(Tx / main_safety_ratio) +1, 2)) # Generate trajectory for each obstacle
     for i in range(len(params.obstacles)):
-        obstacle_traj[i] = generate_trajectory_x_y(obstacle_points[i], int(Tx/2)+1)
+        obstacle_traj[i] = generate_trajectory_x_y(obstacle_points[i], int(Tx/main_safety_ratio)+1)
 
     x = np.array([traj[0,0],traj[0,1],traj[0,2],0,0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
     X = np.zeros((Tx, 5)) # list of historical states
@@ -70,41 +71,46 @@ def main():
     x_ob = np.zeros((len(params.obstacles),Tx))
     y_ob = np.zeros((len(params.obstacles),Tx))
     ## Zeroed arrays used for calculation
+    print("Tx", Tx)
+    print("Main safety ratio", main_safety_ratio)
+    print("Traj size", traj.size)
+    print("Obstacle traj size", obstacle_traj.size)
+    print("Costs size", costs.size)
     
 
 
-    with open('./data/safety_filter_collision.csv', 'w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        writer.writerow(['Step',  'u_nom_v', 'u_nom_w', 'u_safety_v', 'u_safety_w', 'x', 'y'])
+    # with open('./data/safety_filter_collision.csv', 'w', newline='', encoding='utf-8') as file:
+    #     writer = csv.writer(file)
+    #     writer.writerow(['Step',  'u_nom_v', 'u_nom_w', 'u_safety_v', 'u_safety_w', 'x', 'y'])
     
     for t in range(Tx-1):
-        if t % 2 == 0:
-            u_nom, X_calc, traj_weight_single = mppi(x, last_u, traj[int(t/2)+1: min(int(t/2)+1+params.T, len(traj))], params) # Calculate the optimal control input
+        if t % main_safety_ratio == 0:
+            u_nom, X_calc, traj_weight_single = mppi(x, last_u, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params) # Calculate the optimal control input
             for k in range(params.K):
                 for t_ in range (params.T): # Reshaping trajectory weight list for use in animation
                     sample_trajectories_one[k, 0, t_] = X_calc[k, t_, 0] #should be 0
                     sample_trajectories_one[k, 1, t_] = X_calc[k, t_, 1] #should be 1
             sample_trajectories[t] = sample_trajectories_one # Save the sampled trajectories
             all_weights[t] = traj_weight_single # List of the weights, populated in mppi function
-            costs[t] = cost_function(x, U[t], traj[int(t/2)+1])
+            costs[t] = cost_function(x, U[t], traj[int(t/main_safety_ratio)+1])
             for i in range(len(params.obstacles)):
-                params.obstacles[i] = np.array([obstacle_traj[i, int(t/2), 0], obstacle_traj[i,int(t/2),1], params.obstacles[i,2]])
+                params.obstacles[i] = np.array([obstacle_traj[i, int(t/main_safety_ratio), 0], obstacle_traj[i,int(t/main_safety_ratio),1], params.obstacles[i,2]])
         else:
             base = np.array([np.ones(params.T) * X[t, 0], np.ones(params.T) * X[t, 1], np.zeros(params.T)])
             sample_trajectories[t] = np.repeat(base[np.newaxis, :, :], params.K, axis=0)
             all_weights[t] = np.ones(params.K)
-            costs[t] = cost_function(x, U[t], traj[int(t/2)+1])
+            costs[t] = cost_function(x, U[t], traj[int(t/main_safety_ratio)+1])
 
         for i in range(len(params.obstacles)): # Populate obstacle positions with time
             x_ob[i][t] = params.obstacles[i][0]
             y_ob[i][t] = params.obstacles[i][1]
         
-        U[t] = safety_filter(u_nom, x, params, last_u)
-        # U[t] = u_nom
+        # U[t] = safety_filter(u_nom, x, params, last_u)
+        U[t] = u_nom
         
-        with open('./data/safety_filter_collision.csv', 'a', newline='', encoding='utf-8') as file:
-            writer = csv.writer(file)
-            writer.writerow([t, u_nom[0], u_nom[1], U[t][0], U[t][1], X[t][0], X[t][1]])
+        # with open('./data/safety_filter_collision.csv', 'a', newline='', encoding='utf-8') as file:
+        #     writer = csv.writer(file)
+        #     writer.writerow([t, u_nom[0], u_nom[1], U[t][0], U[t][1], X[t][0], X[t][1]])
         
         x = unicyle_dynamics(x, U[t], params, dt=params.safety_dt) # Calculate what happens when you apply that input
         X[t + 1, :] = x # Store the new state
