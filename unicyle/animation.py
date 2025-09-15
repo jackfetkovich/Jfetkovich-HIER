@@ -74,16 +74,16 @@ def animate(x_vals, y_vals, x_traj, y_traj, x_ob, y_ob, sample_trajs, weights, p
 
         # Update ghost point if reference trajectory exists
         if x_traj is not None and y_traj is not None:
-            ghost.set_data([x_traj[int(frame/2)]], [y_traj[int(frame/2)]])
+            ghost.set_data([x_traj[int(frame/int(params.dt/params.safety_dt))]], [y_traj[int(frame/int(params.dt/params.safety_dt))]])
 
 
         return [line, point, ghost].append(samples)
 
     # Create animation
-    ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=60, blit=False)
+    ani = animation.FuncAnimation(fig, update, frames=len(x_vals), interval=1, blit=False)
     plt.title(f"K={params.K}, T={params.T} - Safety Filter, Removal of unsafe paths")
     plt.legend()
-    filename=f"./animations/{params.K}-{params.T}-obstacle_back_away.gif"
+    filename=f"./animations/{params.K}-{params.T}-fast_filter.gif"
     ani.save(filename, writer='pillow', fps=20, )
     print(f"Animation saved as {filename}")
     plt.show()
