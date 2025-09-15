@@ -131,7 +131,7 @@ def unicyle_dynamics(x, u, params, dt=-1.0):
 def safety_filter(u_nom, x, params, last_u):
     # Variables
     u = cp.Variable(2)        # [v, omega]
-    alpha = 20.0
+    alpha = 0.5
 
     constraints = []
 
