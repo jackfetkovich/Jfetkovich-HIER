@@ -7,7 +7,6 @@ from utils import *
 from trajectory import *
 from mppi import *
 from parameters import *
-import matplotlib
 import matplotlib.pyplot as plt
 
 params = Parameters(
@@ -55,21 +54,21 @@ def main():
     traj = generate_trajectory_from_waypoints(points, int(Tx / main_safety_ratio)+1) # trajectory of waypoints
     
 
-    obstacle_traj = np.zeros((len(params.obstacles), int(Tx / main_safety_ratio) +1, 2)) # Generate trajectory for each obstacle
+    obstacle_traj = np.zeros((len(params.obstacles), Tx+1, 2)) # Generate trajectory for each obstacle
     for i in range(len(params.obstacles)):
-        obstacle_traj[i] = generate_trajectory_x_y(obstacle_points[i], int(Tx/main_safety_ratio)+1)
+        obstacle_traj[i] = generate_trajectory_x_y(obstacle_points[i], Tx+1)
 
     x = np.array([traj[0,0],traj[0,1],traj[0,2],0,0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
     X = np.zeros((Tx, 5)) # list of historical states
     U = np.zeros((Tx, 2)) # list of historical control inputs
-    all_weights = np.zeros((Tx, params.K)) # Weights of every generated trajectory, organized by time step
-    costs = np.zeros(Tx)
-    sample_trajectories = np.zeros((Tx, params.K, 3, params.T))
-    sample_trajectories_one = np.zeros((params.K, 3, params.T)) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
+    all_weights = np.zeros((Tx, params.K), dtype=np.float32) # Weights of every generated trajectory, organized by time step
+    costs = np.zeros(Tx, dtype=np.float32)
+    sample_trajectories = np.zeros((Tx, params.K, 3, params.T), dtype=np.float32)
+    sample_trajectories_one = np.zeros((params.K, 3, params.T), dtype=np.float32) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
     last_u = np.zeros(2) # the control input from the previous 
     
-    x_ob = np.zeros((len(params.obstacles),Tx))
-    y_ob = np.zeros((len(params.obstacles),Tx))
+    x_ob = np.zeros((len(params.obstacles),Tx), dtype=np.float32)
+    y_ob = np.zeros((len(params.obstacles),Tx), dtype=np.float32)
     ## Zeroed arrays used for calculation
     print("Tx", Tx)
     print("Main safety ratio", main_safety_ratio)
@@ -93,14 +92,15 @@ def main():
             sample_trajectories[t] = sample_trajectories_one # Save the sampled trajectories
             all_weights[t] = traj_weight_single # List of the weights, populated in mppi function
             costs[t] = cost_function(x, U[t], traj[int(t/main_safety_ratio)+1])
-            for i in range(len(params.obstacles)):
-                params.obstacles[i] = np.array([obstacle_traj[i, int(t/main_safety_ratio), 0], obstacle_traj[i,int(t/main_safety_ratio),1], params.obstacles[i,2]])
+            
         else:
             base = np.array([np.ones(params.T) * X[t, 0], np.ones(params.T) * X[t, 1], np.zeros(params.T)])
             sample_trajectories[t] = np.repeat(base[np.newaxis, :, :], params.K, axis=0)
             all_weights[t] = np.ones(params.K)
             costs[t] = cost_function(x, U[t], traj[int(t/main_safety_ratio)+1])
 
+        for i in range(len(params.obstacles)):
+            params.obstacles[i] = np.array([obstacle_traj[i, t, 0], obstacle_traj[i,t,1], params.obstacles[i,2]])
         for i in range(len(params.obstacles)): # Populate obstacle positions with time
             x_ob[i][t] = params.obstacles[i][0]
             y_ob[i][t] = params.obstacles[i][1]
