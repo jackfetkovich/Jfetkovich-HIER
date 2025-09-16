@@ -98,36 +98,6 @@ def unicyle_dynamics(x, u, params, dt=-1.0):
 
     return x_star
 
-
-# def safety_filter(u_nom, x, params):
-#     c = params.obstacles[0][0:2]   # obstacle center
-#     r = params.obstacles[0][2]      # obstacle radius
-
-#     # Variables
-#     u = cp.Variable(2)        # [v, omega]
-
-#     # Compute h and derivatives
-#     dx = x[0] - c[0]
-#     dy = x[1] - c[1]
-    
-#     h = (dx+params.l*np.cos(x[2]))**2 + (dy+params.l*np.sin(x[2]))**2 - r**2
-#     Lg_h = np.array(
-#         [
-#             2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2])+params.l, 
-#             -2*(dx * params.l * np.cos(x[2])*params.l*np.sin(x[2]))+2*(dy+params.l*np.sin(x[2]))*params.l*np.cos(x[2])
-#         ])
-#     alpha = 3.0
-#     constraint = Lg_h @ u + alpha * h >= 0
-#     # Define QP
-#     cost = cp.sum_squares(u - u_nom)
-#     prob = cp.Problem(cp.Minimize(cost), [constraint])
-
-#     # Solve
-#     prob.solve(solver=cp.OSQP)
-#     print("u_nom", u_nom)
-#     print("sol", u.value)
-#     return u.value
-
 def safety_filter(u_nom, x, params, last_u):
     # Variables
     u = cp.Variable(2)        # [v, omega]
