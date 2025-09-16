@@ -19,17 +19,17 @@ def animate(x_traj, y_traj, output_frames, params):
     # Set up the figure
     fig, ax = plt.subplots(figsize=(19.2, 10.8), dpi=100)
     # fig, ax = plt.subplots()
-    ax.set_xlim(-1, 5)
-    ax.set_ylim(-1, 5)
+    ax.set_xlim(-1, 9)
+    ax.set_ylim(-1, 3)
 
 
     ax.set_xlabel("X Position")
     ax.set_ylabel("Y Position")
 
-    circles = np.empty(len(params.obstacles), dtype=plt.Circle)
+    circles = []
 
     for i in range(len(params.obstacles)):
-        circles[i] = plt.Circle((params.obstacles[i][0], params.obstacles[i][1]), params.obstacles[i][2], color='y')
+        circles.append(plt.Circle((params.obstacles[i][0], params.obstacles[i][1]), params.obstacles[i][2], color='y'))
         ax.add_patch(circles[i])
 
     # Plot the trajectory if provided
@@ -59,37 +59,38 @@ def animate(x_traj, y_traj, output_frames, params):
         y_vals.append(y)
 
         # Obstacles
-        for i, circ in enumerate(circles):
-            circ.set_center((x_ob[i], y_ob[i]))
+        
+        for i in range(len(circles)):
+            circles[i].center = (x_ob[i], y_ob[i])
 
         # History and current position
         line.set_data(x_vals, y_vals)
         point.set_data([x], [y])
 
         # Samples
-        max_intensity = np.max(weights)
-        if max_intensity > 0:
-            norm_weights = weights / max_intensity
-        else:
-            norm_weights = np.zeros_like(weights)
+        # max_intensity = np.max(weights)
+        # if max_intensity > 0:
+        #     norm_weights = weights / max_intensity
+        # else:
+        #     norm_weights = np.zeros_like(weights)
 
-        for i, s in enumerate(samples):
-            w = norm_weights[i]
-            s.set_color([0, w, 0, w])
-            s.set_data(sample_trajs[i, 0, :params.T], sample_trajs[i, 1, :params.T])
+        # for i, s in enumerate(samples):
+        #     w = norm_weights[i]
+        #     s.set_color([0, w, 0, w])
+        #     s.set_data(sample_trajs[i, 0, :params.T], sample_trajs[i, 1, :params.T])
 
         # Ghost point
         if x_traj is not None and y_traj is not None:
             idx = int(t / int(params.dt / params.safety_dt))
             ghost.set_data([x_traj[idx]], [y_traj[idx]])
 
-        return [line, point, ghost, *samples, *circles]
+        return [line, point, ghost, *samples] + circles
 
     # Create animation
     ani = animation.FuncAnimation(fig, update, frames=output_frames, interval=1, blit=True)
     plt.title(f"K={params.K}, T={params.T} - Safety Filter, Removal of unsafe paths")
     plt.legend()
-    # filename=f"./animations/{params.K}-{params.T}-fast_filter.gif"
-    # ani.save(filename, writer='pillow', fps=20, )
-    # print(f"Animation saved as {filename}")
+    filename=f"./animations/{params.K}-{params.T}-fast_filter.gif"
+    ani.save(filename, writer='pillow', fps=10, )
+    print(f"Animation saved as {filename}")
     plt.show()

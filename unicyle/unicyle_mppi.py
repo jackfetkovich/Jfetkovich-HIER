@@ -12,11 +12,12 @@ import matplotlib.pyplot as plt
 params = Parameters(
     dt = 0.025, # time step for MPPI
     safety_dt = 0.001, # time step for safety
-    K = 100,   # number of samples
+    K = 1000,   # number of samples
     T = 15, # time steps (HORIZON)
     sigma = 2,
     lambda_ = 2,
     l = 0.2,
+    r = 0.1, 
     max_v = 6.0, # max x velocity (m/s)
     max_w = 15.0, # max angular velocity (radians/s)
     max_v_dot = 8.0, # max linear acceleration (m/s^2)
@@ -33,7 +34,7 @@ def main():
     # Original (x, y) points
     points = [
         (0.0, 0.0),
-        (7.0, 0.0),
+        (9.0, 0.0),
     ]
 
     obstacle_points = [[
@@ -81,6 +82,7 @@ def main():
         #     writer.writerow(['Step',  'u_nom_v', 'u_nom_w', 'u_safety_v', 'u_safety_w', 'x', 'y'])
         
         for t in range(Tx-1):
+            print(t)
             if t % main_safety_ratio == 0:
                 u_nom, X_calc, traj_weight_single = mppi(x, last_u, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params) # Calculate the optimal control input
                 for k in range(params.K):
@@ -117,15 +119,16 @@ def main():
             y_pos.append(X[t+1, 1]) # Save the y position at this timestep
             last_u = U[t] # Save the control input 
 
-            yield {
-                "x": x[0], 
-                "y": x[1],
-                "x_ob": x_ob,
-                "y_ob": y_ob,
-                "samples": sample_trajectories_one,
-                "weights": traj_weight_single,
-                "t": t
-            }
+            if(t % 100 == 0):
+                yield {
+                    "x": x[0], 
+                    "y": x[1],
+                    "x_ob": x_ob.copy(),
+                    "y_ob": y_ob.copy(),
+                    "samples": sample_trajectories_one.copy(),
+                    "weights": traj_weight_single.copy(),
+                    "t": t
+                }
     
     output_frames = sim()
     animate(traj[:, 0], traj[:, 1], output_frames, params)
