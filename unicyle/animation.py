@@ -58,37 +58,35 @@ def animate(x_traj, y_traj, output_frames, params):
         x_vals.append(x)
         y_vals.append(y)
 
-        for i in range(len(circles)):
-            circles[i].set_center((x_ob[i], y_ob[i]))
- 
+        # Obstacles
+        for i, circ in enumerate(circles):
+            circ.set_center((x_ob[i], y_ob[i]))
 
-        # Update history path
-        line.set_data(x_vals[:t + 1], y_vals[:t + 1])
-        
-        # Update point position
+        # History and current position
+        line.set_data(x_vals, y_vals)
         point.set_data([x], [y])
 
-        max_intensity = -1
-        for i in range(params.K):
-            this_intensity = weights[i]
-            if this_intensity > max_intensity:
-                max_intensity = this_intensity
-        # Update generated trajectories
-        for i in range(params.K):
-            intensity = min(weights[i], 1)
-            samples[i].set_data([], [])  # Clears previous data
-            samples[i].set_color([0, intensity/max_intensity , 0, intensity/max_intensity])
-            samples[i].set_data(sample_trajs[i, 0, 0 : params.T], sample_trajs[i, 1, 0 : params.T])
+        # Samples
+        max_intensity = np.max(weights)
+        if max_intensity > 0:
+            norm_weights = weights / max_intensity
+        else:
+            norm_weights = np.zeros_like(weights)
 
-        # Update ghost point if reference trajectory exists
+        for i, s in enumerate(samples):
+            w = norm_weights[i]
+            s.set_color([0, w, 0, w])
+            s.set_data(sample_trajs[i, 0, :params.T], sample_trajs[i, 1, :params.T])
+
+        # Ghost point
         if x_traj is not None and y_traj is not None:
-            ghost.set_data([x_traj[int(t/int(params.dt/params.safety_dt))]], [y_traj[int(t/int(params.dt/params.safety_dt))]])
+            idx = int(t / int(params.dt / params.safety_dt))
+            ghost.set_data([x_traj[idx]], [y_traj[idx]])
 
-
-        return [line, point, ghost].append(samples)
+        return [line, point, ghost, *samples, *circles]
 
     # Create animation
-    ani = animation.FuncAnimation(fig, update, frames=output_frames, interval=1, blit=False)
+    ani = animation.FuncAnimation(fig, update, frames=output_frames, interval=1, blit=True)
     plt.title(f"K={params.K}, T={params.T} - Safety Filter, Removal of unsafe paths")
     plt.legend()
     # filename=f"./animations/{params.K}-{params.T}-fast_filter.gif"
