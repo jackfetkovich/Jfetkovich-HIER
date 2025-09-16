@@ -108,22 +108,22 @@ def safety_filter(u_nom, x, params, last_u):
     # Loop through all obstacles
     for obs in params.obstacles:
         c = obs[0:2]   # obstacle center (x, y)
-        r = obs[2]     # obstacle radius
+        r_c = obs[2]     # obstacle radius
+        r_v = params.r
 
         dx = x[0] - c[0]
         dy = x[1] - c[1]
 
         # Barrier function
-        h = (dx + params.l * np.cos(x[2]))**2 + (dy + params.l * np.sin(x[2]))**2 - r**2
-
+        h1 = (dx + params.l * np.cos(x[2]))**2 + (dy + params.l * np.sin(x[2]))**2 - (r_c)**2
         # Lie derivative term
-        Lg_h = np.array([
-            2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2]) + params.l,
+        Lg_h1 = np.array([
+            2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2]) + 2*params.l,
             -2*(dx * params.l * np.cos(x[2]) * params.l * np.sin(x[2])) + 2*(dy + params.l*np.sin(x[2]))*params.l*np.cos(x[2])
         ])
 
         # Add inequality constraint: Lg_h @ u + alpha * h >= 0
-        constraints.append(Lg_h @ u + alpha * h >= 0)
+        constraints.append(Lg_h1 @ u + alpha * h1 >= 0)
         constraints.append(u[0] <= params.max_v)
         constraints.append(u[0] >= -params.max_v)
         constraints.append(u[1] <= params.max_w)
