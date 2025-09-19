@@ -20,7 +20,7 @@ def animate(x_traj, y_traj, output_frames, params):
     fig, ax = plt.subplots(figsize=(19.2, 10.8), dpi=100)
     # fig, ax = plt.subplots()
     ax.set_xlim(-1, 9)
-    ax.set_ylim(-1, 3)
+    ax.set_ylim(-1, 2)
 
 
     ax.set_xlabel("X Position")
@@ -68,16 +68,16 @@ def animate(x_traj, y_traj, output_frames, params):
         point.set_data([x], [y])
 
         # Samples
-        # max_intensity = np.max(weights)
-        # if max_intensity > 0:
-        #     norm_weights = weights / max_intensity
-        # else:
-        #     norm_weights = np.zeros_like(weights)
+        max_intensity = np.max(weights)
+        if max_intensity > 0:
+            norm_weights = weights / max_intensity
+        else:
+            norm_weights = np.zeros_like(weights)
 
-        # for i, s in enumerate(samples):
-        #     w = norm_weights[i]
-        #     s.set_color([0, w, 0, w])
-        #     s.set_data(sample_trajs[i, 0, :params.T], sample_trajs[i, 1, :params.T])
+        for i, s in enumerate(samples):
+            w = norm_weights[i]
+            s.set_color([0, w, 0, w])
+            s.set_data(sample_trajs[i, 0, :params.T], sample_trajs[i, 1, :params.T])
 
         # Ghost point
         if x_traj is not None and y_traj is not None:
@@ -88,9 +88,9 @@ def animate(x_traj, y_traj, output_frames, params):
 
     # Create animation
     ani = animation.FuncAnimation(fig, update, frames=output_frames, interval=1, blit=True)
-    plt.title(f"K={params.K}, T={params.T} - Safety Filter, Removal of unsafe paths")
+    plt.title(f"K={params.K}, T={params.T} - Layered Safe-MPPI")
     plt.legend()
-    filename=f"./animations/{params.K}-{params.T}-fast_filter.gif"
+    filename=f"./animations/{params.K}-{params.T}-fast_filter_2.gif"
     ani.save(filename, writer='pillow', fps=10, )
     print(f"Animation saved as {filename}")
     plt.show()

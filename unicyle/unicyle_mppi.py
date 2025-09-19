@@ -12,11 +12,11 @@ import matplotlib.pyplot as plt
 params = Parameters(
     dt = 0.025, # time step for MPPI
     safety_dt = 0.001, # time step for safety
-    K = 1000,   # number of samples
+    K = 2000,   # number of samples
     T = 15, # time steps (HORIZON)
     sigma = 2,
     lambda_ = 2,
-    l = 0.2,
+    l = 0.1,
     r = 0.1, 
     max_v = 6.0, # max x velocity (m/s)
     max_w = 15.0, # max angular velocity (radians/s)
