@@ -19,7 +19,7 @@ def mppi(x, prev_U, targets, params):
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], U[k, t], params)
             next_x = X_calc[k, t+1, :]
             for o in params.obstacles: # check for obstacle collision
-                if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= o[2]**2:
+                if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2]+params.r)**2:
                     path_safe = False
                     costs[k] = np.inf
                     break
@@ -101,7 +101,7 @@ def unicyle_dynamics(x, u, params, dt=-1.0):
 def safety_filter(u_nom, x, params, last_u):
     # Variables
     u = cp.Variable(2)        # [v, omega]
-    alpha = 8.0
+    alpha = 5.0
 
     constraints = []
 
@@ -115,34 +115,60 @@ def safety_filter(u_nom, x, params, last_u):
         dy = x[1] - c[1]
 
         # Barrier function
-        h1 = (dx + params.l * np.cos(x[2]))**2 + (dy + params.l * np.sin(x[2]))**2 - (r_c)**2
+        h1 = (dx + params.l * np.cos(x[2]))**2 + (dy + params.l * np.sin(x[2]))**2 - (r_v+r_c)**2
+        h2 = (dx + params.l * np.cos(x[2] + np.pi))**2 + (dy + params.l * np.sin(x[2] + np.pi))**2 - (r_v+r_c)**2
+        h3 = (dx + params.l * np.cos(x[2] + np.pi/2))**2 + (dy + params.l * np.sin(x[2]+ np.pi/2) )**2 - (r_v+r_c)**2
+        h4 = (dx + params.l * np.cos(x[2] - np.pi/2))**2 + (dy + params.l * np.sin(x[2]- np.pi/2) )**2 - (r_v+r_c)**2
         # Lie derivative term
         Lg_h1 = np.array([
             2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2]) + 2*params.l,
-            -2*(dx * params.l * np.cos(x[2]) * params.l * np.sin(x[2])) + 2*(dy + params.l*np.sin(x[2]))*params.l*np.cos(x[2])
+            -2*(dx + params.l * np.cos(x[2])) * params.l * np.sin(x[2]) + 2*(dy + params.l*np.sin(x[2]))*params.l*np.cos(x[2])
         ])
+
+        Lg_h2 = np.array([
+            2*dx*np.cos(x[2] + np.pi) + 2*dy*np.sin(x[2]+ np.pi) + 2*params.l,
+            -2*(dx + params.l * np.cos(x[2]+ np.pi)) * params.l * np.sin(x[2]+ np.pi) + 2*(dy + params.l*np.sin(x[2]+ np.pi))*params.l*np.cos(x[2]+ np.pi)
+        ])
+
+        Lg_h3 = np.array([
+            2*dx*np.cos(x[2] + np.pi/2) + 2*dy*np.sin(x[2]+ np.pi/2) + 2*params.l,
+            -2*(dx + params.l * np.cos(x[2]+ np.pi/2)) * params.l * np.sin(x[2]+ np.pi/2) + 2*(dy + params.l*np.sin(x[2]+ np.pi/2))*params.l*np.cos(x[2]+ np.pi/2)
+        ])
+
+        Lg_h4 = np.array([
+            2*dx*np.cos(x[2] - np.pi/2) + 2*dy*np.sin(x[2]- np.pi/2) + 2*params.l,
+            -2*(dx + params.l * np.cos(x[2]- np.pi/2)) * params.l * np.sin(x[2]- np.pi/2) + 2*(dy + params.l*np.sin(x[2]- np.pi/2))*params.l*np.cos(x[2]-np.pi/2)
+        ])
+
+
+
 
         # Add inequality constraint: Lg_h @ u + alpha * h >= 0
         constraints.append(Lg_h1 @ u + alpha * h1 >= 0)
+        # constraints.append(Lg_h2 @ u + alpha * h2 >= 0)
+        # constraints.append(Lg_h3 @ u + alpha * h3 >= 0)
+        # constraints.append(Lg_h4 @ u + alpha * h4 >= 0)
         constraints.append(u[0] <= params.max_v)
         constraints.append(u[0] >= -params.max_v)
         constraints.append(u[1] <= params.max_w)
         constraints.append(u[1] >= -params.max_w)
-        constraints.append(u[0] - last_u[0] <= params.max_v_dot)
-        constraints.append(u[0] - last_u[0] >= -params.max_v_dot)
-        constraints.append(u[1] - last_u[1] <= params.max_w_dot)
-        constraints.append(u[1] - last_u[1] >= -params.max_w_dot)
+    constraints.append(u[0] - last_u[0] <= params.max_v_dot)
+    constraints.append(u[0] - last_u[0] >= -params.max_v_dot)
+    constraints.append(u[1] - last_u[1] <= params.max_w_dot)
+    constraints.append(u[1] - last_u[1] >= -params.max_w_dot)
 
     
     if np.isnan(u_nom[0]) or np.isnan(u_nom[1]):
         print("NAN")
         print("x", x)
         print("Ob 1 pos:", params.obstacles[0, :])
-        print("Ob 2 pos:", params.obstacles[1, :])
+        # print("Ob 2 pos:", params.obstacles[1, :])
 
 
     # Define QP
     cost = cp.sum_squares(u - u_nom)
+    # Q = np.diag([5.0, 1.0])  # weight on v is 1.0, weight on w is alpha
+    # cost = cp.quad_form(u - u_nom, Q)
     prob = cp.Problem(cp.Minimize(cost), constraints)
     try:
         prob.solve(solver=cp.OSQP, warm_start=True)
@@ -151,7 +177,13 @@ def safety_filter(u_nom, x, params, last_u):
         u = u.value
     except cp.error.SolverError:
     # Fallback strategy
-        u = np.array([-1, 0])
+        u = np.array([0, 0])
+    
+    print("------")
+    print("h1", h1)
+    print("constraint", Lg_h1 @ u + alpha * h1)
+    print("gtz", Lg_h1 @ u + alpha * h1 >= 0)
+    print("------")
 
     # Solve
     return u

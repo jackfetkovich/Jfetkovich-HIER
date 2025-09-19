@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 params = Parameters(
     dt = 0.025, # time step for MPPI
     safety_dt = 0.001, # time step for safety
-    K = 2000,   # number of samples
+    K = 1000,   # number of samples
     T = 15, # time steps (HORIZON)
     sigma = 2,
     lambda_ = 2,
@@ -22,7 +22,7 @@ params = Parameters(
     max_w = 15.0, # max angular velocity (radians/s)
     max_v_dot = 8.0, # max linear acceleration (m/s^2)
     max_w_dot = 30.0, # max angular acceleration (radians/s^2) (8.0)
-    obstacles = np.array([[1, 0, 0.2], (4, 0, 0.2)])
+    obstacles = np.array([(4, 0, 0.2)])
 )
 
 # Main function
@@ -37,10 +37,7 @@ def main():
         (9.0, 0.0),
     ]
 
-    obstacle_points = [[
-        (7.0, 0.0),
-        (6.0, 0.0)
-    ], 
+    obstacle_points = [ 
     [
         (4, 0), 
         (2, 0)
@@ -82,7 +79,7 @@ def main():
         #     writer.writerow(['Step',  'u_nom_v', 'u_nom_w', 'u_safety_v', 'u_safety_w', 'x', 'y'])
         
         for t in range(Tx-1):
-            print(t)
+            # print(t)
             if t % main_safety_ratio == 0:
                 u_nom, X_calc, traj_weight_single = mppi(x, last_u, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params) # Calculate the optimal control input
                 for k in range(params.K):
@@ -108,7 +105,7 @@ def main():
             U[t] = safety_filter(u_nom, x, params, last_u)
             # U[t] = u_nom
             
-            # with open('./data/safety_filter_collision.csv', 'a', newline='', encoding='utf-8') as file:
+            # with open('./data/4_balls.csv', 'a', newline='', encoding='utf-8') as file:
             #     writer = csv.writer(file)
             #     writer.writerow([t, u_nom[0], u_nom[1], U[t][0], U[t][1], X[t][0], X[t][1]])
             
