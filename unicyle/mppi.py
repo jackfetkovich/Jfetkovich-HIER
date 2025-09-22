@@ -98,6 +98,7 @@ def unicyle_dynamics(x, u, params, dt=-1.0):
 
     return x_star
 
+
 def safety_filter(u_nom, x, params, last_u):
     # Variables
     u = cp.Variable(2)        # [v, omega]
@@ -140,18 +141,19 @@ def safety_filter(u_nom, x, params, last_u):
             -2*(dx + params.l * np.cos(x[2]- np.pi/2)) * params.l * np.sin(x[2]- np.pi/2) + 2*(dy + params.l*np.sin(x[2]- np.pi/2))*params.l*np.cos(x[2]-np.pi/2)
         ])
 
-
+    
 
 
         # Add inequality constraint: Lg_h @ u + alpha * h >= 0
-        constraints.append(Lg_h1 @ u + alpha * h1 >= 0)
+        # constraints.append(Lg_h1 @ u + alpha * h1 >= 0)
         # constraints.append(Lg_h2 @ u + alpha * h2 >= 0)
         # constraints.append(Lg_h3 @ u + alpha * h3 >= 0)
         # constraints.append(Lg_h4 @ u + alpha * h4 >= 0)
-        constraints.append(u[0] <= params.max_v)
-        constraints.append(u[0] >= -params.max_v)
-        constraints.append(u[1] <= params.max_w)
-        constraints.append(u[1] >= -params.max_w)
+
+    constraints.append(u[0] <= params.max_v)
+    constraints.append(u[0] >= -params.max_v)
+    constraints.append(u[1] <= params.max_w)
+    constraints.append(u[1] >= -params.max_w)
     constraints.append(u[0] - last_u[0] <= params.max_v_dot)
     constraints.append(u[0] - last_u[0] >= -params.max_v_dot)
     constraints.append(u[1] - last_u[1] <= params.max_w_dot)
@@ -180,9 +182,9 @@ def safety_filter(u_nom, x, params, last_u):
         u = np.array([0, 0])
     
     print("------")
-    print("h1", h1)
-    print("constraint", Lg_h1 @ u + alpha * h1)
-    print("gtz", Lg_h1 @ u + alpha * h1 >= 0)
+    # print("h1", h1)
+    # print("constraint", Lg_h1 @ u + alpha * h1)
+    # print("gtz", Lg_h1 @ u + alpha * h1 >= 0)
     print("------")
 
     # Solve
