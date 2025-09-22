@@ -98,7 +98,6 @@ def unicyle_dynamics(x, u, params, dt=-1.0):
 
     return x_star
 
-
 def safety_filter(u_nom, x, params, last_u):
     # Variables
     u = cp.Variable(2)        # [v, omega]
@@ -107,48 +106,32 @@ def safety_filter(u_nom, x, params, last_u):
     constraints = []
 
     # Loop through all obstacles
-    for obs in params.obstacles:
-        c = obs[0:2]   # obstacle center (x, y)
-        r_c = obs[2]     # obstacle radius
-        r_v = params.r
+    for i in range(len(params.obstacles)):
+        c = params.obstacles[i][0:2]   # obstacle center (x, y)
+        r = params.obstacles[i][2]     # obstacle radius
 
-        dx = x[0] - c[0]
-        dy = x[1] - c[1]
+        dx = x[0] - c[0] + params.l * np.cos(x[2])
+        dy = x[1] - c[1] + params.l * np.sin(x[2])
+
+        if params.first_filter:
+            vx_obs = 0.0
+            vy_obs = 0.0
+        else:
+            vx_obs = (c[0] - params.last_obstacle_pos[i][0])*params.safety_dt
+            vy_obs = (c[1] - params.last_obstacle_pos[i][1])*params.safety_dt
+        params.last_obstacle_pos[i] = np.array([c[0], c[1]])
+
 
         # Barrier function
-        h1 = (dx + params.l * np.cos(x[2]))**2 + (dy + params.l * np.sin(x[2]))**2 - (r_v+r_c)**2
-        h2 = (dx + params.l * np.cos(x[2] + np.pi))**2 + (dy + params.l * np.sin(x[2] + np.pi))**2 - (r_v+r_c)**2
-        h3 = (dx + params.l * np.cos(x[2] + np.pi/2))**2 + (dy + params.l * np.sin(x[2]+ np.pi/2) )**2 - (r_v+r_c)**2
-        h4 = (dx + params.l * np.cos(x[2] - np.pi/2))**2 + (dy + params.l * np.sin(x[2]- np.pi/2) )**2 - (r_v+r_c)**2
+        h = (dx + params.l * np.cos(x[2]))**2 + (dy + params.l * np.sin(x[2]))**2 - r**2
         # Lie derivative term
-        Lg_h1 = np.array([
-            2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2]) + 2*params.l,
-            -2*(dx + params.l * np.cos(x[2])) * params.l * np.sin(x[2]) + 2*(dy + params.l*np.sin(x[2]))*params.l*np.cos(x[2])
+        Lg_h = np.array([
+            2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2]),
+            -2*dx*params.l*np.sin(x[2]) + 2*dy*params.l*np.cos(x[2])
         ])
-
-        Lg_h2 = np.array([
-            2*dx*np.cos(x[2] + np.pi) + 2*dy*np.sin(x[2]+ np.pi) + 2*params.l,
-            -2*(dx + params.l * np.cos(x[2]+ np.pi)) * params.l * np.sin(x[2]+ np.pi) + 2*(dy + params.l*np.sin(x[2]+ np.pi))*params.l*np.cos(x[2]+ np.pi)
-        ])
-
-        Lg_h3 = np.array([
-            2*dx*np.cos(x[2] + np.pi/2) + 2*dy*np.sin(x[2]+ np.pi/2) + 2*params.l,
-            -2*(dx + params.l * np.cos(x[2]+ np.pi/2)) * params.l * np.sin(x[2]+ np.pi/2) + 2*(dy + params.l*np.sin(x[2]+ np.pi/2))*params.l*np.cos(x[2]+ np.pi/2)
-        ])
-
-        Lg_h4 = np.array([
-            2*dx*np.cos(x[2] - np.pi/2) + 2*dy*np.sin(x[2]- np.pi/2) + 2*params.l,
-            -2*(dx + params.l * np.cos(x[2]- np.pi/2)) * params.l * np.sin(x[2]- np.pi/2) + 2*(dy + params.l*np.sin(x[2]- np.pi/2))*params.l*np.cos(x[2]-np.pi/2)
-        ])
-
-    
-
 
         # Add inequality constraint: Lg_h @ u + alpha * h >= 0
-        # constraints.append(Lg_h1 @ u + alpha * h1 >= 0)
-        # constraints.append(Lg_h2 @ u + alpha * h2 >= 0)
-        # constraints.append(Lg_h3 @ u + alpha * h3 >= 0)
-        # constraints.append(Lg_h4 @ u + alpha * h4 >= 0)
+        constraints.append(Lg_h @ u + alpha * h >= 0)
 
     constraints.append(u[0] <= params.max_v)
     constraints.append(u[0] >= -params.max_v)
@@ -186,6 +169,6 @@ def safety_filter(u_nom, x, params, last_u):
     # print("constraint", Lg_h1 @ u + alpha * h1)
     # print("gtz", Lg_h1 @ u + alpha * h1 >= 0)
     print("------")
-
+    params.first_filter = False
     # Solve
     return u

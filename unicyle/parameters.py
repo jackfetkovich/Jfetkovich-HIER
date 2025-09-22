@@ -1,5 +1,5 @@
 import numpy as np
-from numba import int64, float64    # import the types
+from numba import int64, float64, boolean    # import the types
 from numba.experimental import jitclass
 
 spec = [
@@ -15,12 +15,14 @@ spec = [
     ('max_w', float64),  
     ('max_v_dot', float64), 
     ('max_w_dot', float64) ,
-    ('obstacles', float64[:,:])
+    ('obstacles', float64[:,:]),
+    ('last_obstacle_pos', float64[:,:]),
+    ('first_filter', boolean)
 ]
 
 @jitclass(spec)
 class Parameters(object):
-    def __init__(self, dt, safety_dt, K, T, sigma, lambda_, l, r, max_v, max_w, max_v_dot, max_w_dot, obstacles):
+    def __init__(self, dt, safety_dt, K, T, sigma, lambda_, l, r, max_v, max_w, max_v_dot, max_w_dot, obstacles, last_obstacle_pos, first_filter):
         self.dt = dt
         self.safety_dt = safety_dt
         self.K = K
@@ -34,3 +36,5 @@ class Parameters(object):
         self.max_v_dot = max_v_dot
         self.max_w_dot = max_w_dot
         self.obstacles = obstacles
+        self.last_obstacle_pos = last_obstacle_pos
+        self.first_filter = first_filter
