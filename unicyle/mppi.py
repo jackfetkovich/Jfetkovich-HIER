@@ -121,6 +121,8 @@ def safety_filter(u_nom, x, params, last_u):
             vy_obs = (c[1] - params.last_obstacle_pos[i][1])*params.safety_dt
         params.last_obstacle_pos[i] = np.array([c[0], c[1]])
 
+        print(vx_obs)
+        v_obs = np.array([vx_obs, vy_obs])
 
         # Barrier function
         h = (dx + params.l * np.cos(x[2]))**2 + (dy + params.l * np.sin(x[2]))**2 - r**2
@@ -130,8 +132,10 @@ def safety_filter(u_nom, x, params, last_u):
             -2*dx*params.l*np.sin(x[2]) + 2*dy*params.l*np.cos(x[2])
         ])
 
+        dh_dt = -2*(x[0]-c[0])*vx_obs - 2*(x[1] - c[1])*vy_obs
+
         # Add inequality constraint: Lg_h @ u + alpha * h >= 0
-        constraints.append(Lg_h @ u + alpha * h >= 0)
+        constraints.append(Lg_h @ u + dh_dt + alpha * h >= 0)
 
     constraints.append(u[0] <= params.max_v)
     constraints.append(u[0] >= -params.max_v)
