@@ -19,7 +19,7 @@ def mppi(x, prev_U, targets, params):
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], U[k, t], params)
             next_x = X_calc[k, t+1, :]
             for o in params.obstacles: # check for obstacle collision
-                if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2]+params.r)**2:
+                if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2])**2:
                     path_safe = False
                     costs[k] = np.inf
                     break
@@ -101,7 +101,7 @@ def unicyle_dynamics(x, u, params, dt=-1.0):
 def safety_filter(u_nom, x, params, last_u):
     # Variables
     u = cp.Variable(2)        # [v, omega]
-    alpha = 5.0
+    alpha = 30.0
 
     constraints = []
 
@@ -117,25 +117,27 @@ def safety_filter(u_nom, x, params, last_u):
             vx_obs = 0.0
             vy_obs = 0.0
         else:
-            vx_obs = (c[0] - params.last_obstacle_pos[i][0])*params.safety_dt
-            vy_obs = (c[1] - params.last_obstacle_pos[i][1])*params.safety_dt
+            vx_obs = (c[0] - params.last_obstacle_pos[i][0]) / params.safety_dt
+            vy_obs = (c[1] - params.last_obstacle_pos[i][1]) / params.safety_dt
         params.last_obstacle_pos[i] = np.array([c[0], c[1]])
 
         print(vx_obs)
         v_obs = np.array([vx_obs, vy_obs])
 
         # Barrier function
-        h = (dx + params.l * np.cos(x[2]))**2 + (dy + params.l * np.sin(x[2]))**2 - r**2
+        h = (dx)**2 + (dy)**2 - (r+0.1)**2
         # Lie derivative term
         Lg_h = np.array([
             2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2]),
             -2*dx*params.l*np.sin(x[2]) + 2*dy*params.l*np.cos(x[2])
         ])
 
-        dh_dt = -2*(x[0]-c[0])*vx_obs - 2*(x[1] - c[1])*vy_obs
+        dh_dt = -2*(dx)*vx_obs - 2*(dy)*vy_obs # Obstacle time_varying
 
         # Add inequality constraint: Lg_h @ u + alpha * h >= 0
         constraints.append(Lg_h @ u + dh_dt + alpha * h >= 0)
+
+        print("h", h)
 
     constraints.append(u[0] <= params.max_v)
     constraints.append(u[0] >= -params.max_v)
@@ -155,9 +157,8 @@ def safety_filter(u_nom, x, params, last_u):
 
 
     # Define QP
-    cost = cp.sum_squares(u - u_nom)
-    # Q = np.diag([5.0, 1.0])  # weight on v is 1.0, weight on w is alpha
-    # cost = cp.quad_form(u - u_nom, Q)
+    Q = np.diag([20.0, 1.0])   # heavier cost on v
+    cost = cp.quad_form(u - u_nom, Q)
     prob = cp.Problem(cp.Minimize(cost), constraints)
     try:
         prob.solve(solver=cp.OSQP, warm_start=True)
@@ -168,11 +169,6 @@ def safety_filter(u_nom, x, params, last_u):
     # Fallback strategy
         u = np.array([0, 0])
     
-    print("------")
-    # print("h1", h1)
-    # print("constraint", Lg_h1 @ u + alpha * h1)
-    # print("gtz", Lg_h1 @ u + alpha * h1 >= 0)
-    print("------")
     params.first_filter = False
     # Solve
     return u
