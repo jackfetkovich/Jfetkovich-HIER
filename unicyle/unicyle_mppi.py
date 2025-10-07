@@ -22,8 +22,8 @@ params = Parameters(
     max_w = 20.0, # max angular velocity (radians/s)
     max_v_dot = 8.0, # max linear acceleration (m/s^2)
     max_w_dot = 30.0, # max angular acceleration (radians/s^2) (8.0)
-    obstacles = np.array([(4, 0, 0.2), (6, 0, 0.2) ]),
-    last_obstacle_pos = np.array([[0.0, 0.0], [0.0, 0.0]]),
+    obstacles = np.array([(4.0, 0.0, 0.2), (6.0, 0.0, 0.2)]),
+    last_obstacle_pos = np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]),
     first_filter = True
 )
 

@@ -19,8 +19,8 @@ def animate(x_traj, y_traj, output_frames, params):
     # Set up the figure
     fig, ax = plt.subplots(figsize=(19.2, 10.8), dpi=100)
     # fig, ax = plt.subplots()
-    ax.set_xlim(-1, 9)
-    ax.set_ylim(-1, 2)
+    ax.set_xlim(-1, 6)
+    ax.set_ylim(-1, 6)
 
 
     ax.set_xlabel("X Position")
@@ -88,9 +88,9 @@ def animate(x_traj, y_traj, output_frames, params):
 
     # Create animation
     ani = animation.FuncAnimation(fig, update, frames=output_frames, interval=1, blit=True)
-    plt.title(f"K={params.K}, T={params.T} - Layered Safe-MPPI")
+    plt.title(f"K={params.K}, T={params.T} - Cost on Velocity")
     plt.legend()
-    # filename=f"./animations/{params.K}-{params.T}-fast_filter_2.gif"
-    # ani.save(filename, writer='pillow', fps=10, )
-    # print(f"Animation saved as {filename}")
+    filename=f"./animations/{params.K}-{params.T}-w_v_cost.gif"
+    ani.save(filename, writer='pillow', fps=10, )
+    print(f"Animation saved as {filename}")
     plt.show()
