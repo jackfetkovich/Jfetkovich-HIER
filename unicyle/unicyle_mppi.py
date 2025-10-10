@@ -84,9 +84,9 @@ def main():
         #     writer = csv.writer(file)
         #     writer.writerow(['Step',  'u_nom_v', 'u_nom_w', 'u_safety_v', 'u_safety_w', 'x', 'y', 'obs_x'])
 
-        with open('./data/filter_diff_cost.csv', 'w', newline='', encoding='utf-8') as file:
-            writer = csv.writer(file)
-            writer.writerow(['v_nom', 'v_q1', 'v_q2', 'v_q3', 'w_nom','w_q1', 'w_q2', 'w_q3', 'x', 'y', 'obs_x'])
+        # with open('./data/filter_diff_cost.csv', 'w', newline='', encoding='utf-8') as file:
+        #     writer = csv.writer(file)
+        #     writer.writerow(['v_nom', 'v_q1', 'v_q2', 'v_q3', 'w_nom','w_q1', 'w_q2', 'w_q3', 'x', 'y', 'obs_x'])
         
         for t in range(Tx-1):
             # print(t)
@@ -111,8 +111,8 @@ def main():
             for i in range(len(params.obstacles)): # Populate obstacle positions with time
                 x_ob[i] = params.obstacles[i][0]
                 y_ob[i] = params.obstacles[i][1]
-            
-            U[t] = safety_filter(u_nom, x, params, last_u)
+            safe_outputs = safety_filter(u_nom, x, params, last_u)
+            U[t] = safe_outputs[0]
             # U[t] = u_nom
             
             # with open('./data/filter_recording.csv', 'a', newline='', encoding='utf-8') as file:
@@ -126,19 +126,21 @@ def main():
             y_pos.append(X[t+1, 1]) # Save the y position at this timestep
             last_u = U[t] # Save the control input 
 
-            # if(t % 100 == 0):
-            #     yield {
-            #         "x": x[0], 
-            #         "y": x[1],
-            #         "x_ob": x_ob.copy(),
-            #         "y_ob": y_ob.copy(),
-            #         "samples": sample_trajectories_one.copy(),
-            #         "weights": traj_weight_single.copy(),
-            #         "t": t
-            #     }
+            if(t % 100 == 0):
+                yield {
+                    "x": x[0], 
+                    "y": x[1],
+                    "theta": x[2],
+                    "x_ob": x_ob.copy(),
+                    "y_ob": y_ob.copy(),
+                    "samples": sample_trajectories_one.copy(),
+                    "weights": traj_weight_single.copy(),
+                    "t": t,
+                    "safe_outputs": safe_outputs.copy()
+                }
     
     output_frames = sim()
-    #animate(traj[:, 0], traj[:, 1], output_frames, params)
+    animate(traj[:, 0], traj[:, 1], output_frames, params)
 
 
 if __name__ == "__main__":

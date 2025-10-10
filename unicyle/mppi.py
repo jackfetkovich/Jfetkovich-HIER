@@ -103,7 +103,7 @@ filter_outputs = np.zeros((3,2))
 def safety_filter(u_nom, x, params, last_u):
     # Variables
     u = cp.Variable(2)        # [v, omega]
-    alpha = 5.0
+    alpha = 15.0
 
     constraints = []
 
@@ -186,4 +186,4 @@ def safety_filter(u_nom, x, params, last_u):
 
     params.first_filter = False
     # Solve
-    return u_out
+    return filter_outputs

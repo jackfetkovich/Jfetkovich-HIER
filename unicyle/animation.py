@@ -36,6 +36,11 @@ def animate(x_traj, y_traj, output_frames, params):
     if x_traj is not None and y_traj is not None:
         ax.plot(x_traj, y_traj, 'k--', linewidth=1.5, label="Trajectory")  # Dotted reference path
 
+    quiv_lambda = 0.2
+    quiv1 = ax.quiver(0,0,0,0, headwidth=1, color="purple", scale=1, scale_units="xy")
+    quiv2 = ax.quiver(0,0,0,0, headwidth=1, color="orange", scale=1, scale_units="xy")
+    quiv3 = ax.quiver(0,0,0,0, headwidth=1, color="blue", scale=1, scale_units="xy")
+
     samples = []
     for i in range(params.K):
         samples.append(ax.plot([], [], color=[0.5, 0.5, 0.5], linewidth=0.5)[0])
@@ -44,16 +49,17 @@ def animate(x_traj, y_traj, output_frames, params):
     line, = ax.plot([], [], 'r-', linewidth=2)  # History line
     point, = ax.plot([], [], 'bo', markersize=8)  # Current position
     ghost,  = ax.plot([], [], 'gx', markersize=6)  # Desired position
-
+    
     x_vals = []
     y_vals = []
     # Update function
     def update(frame):
-        x, y = frame["x"], frame["y"]
+        x, y, theta = frame["x"], frame["y"], frame["theta"]
         x_ob, y_ob = frame["x_ob"], frame["y_ob"]
         weights = frame["weights"]
         sample_trajs = frame["samples"]
         t = frame["t"]
+        safe_outputs = frame["safe_outputs"]
 
         x_vals.append(x)
         y_vals.append(y)
@@ -79,12 +85,25 @@ def animate(x_traj, y_traj, output_frames, params):
             s.set_color([0, w, 0, w])
             s.set_data(sample_trajs[i, 0, :params.T], sample_trajs[i, 1, :params.T])
 
+        safe_vs = safe_outputs[:, 0]
+        safe_ws = safe_outputs[:, 1]
+        norm = np.sqrt(safe_vs**2 + (quiv_lambda*safe_ws)**2)
+        u_quiv = (safe_vs*np.cos(theta)-quiv_lambda*safe_ws*np.sin(theta))/norm
+        v_quiv = (safe_vs*np.sin(theta)+quiv_lambda*safe_ws*np.cos(theta))/norm
+
+        quiv1.set_offsets(np.c_[x, y])
+        quiv1.set_UVC(u_quiv[0], v_quiv[0])
+        quiv2.set_offsets(np.c_[x, y])
+        quiv2.set_UVC(u_quiv[1], v_quiv[1])
+        quiv3.set_offsets(np.c_[x, y])
+        quiv3.set_UVC(u_quiv[2], v_quiv[2])
+        
         # Ghost point
         if x_traj is not None and y_traj is not None:
             idx = int(t / int(params.dt / params.safety_dt))
             ghost.set_data([x_traj[idx]], [y_traj[idx]])
 
-        return [line, point, ghost, *samples] + circles
+        return [line, point, ghost, quiv1, quiv2, quiv3, *samples] + circles
 
     # Create animation
     ani = animation.FuncAnimation(fig, update, frames=output_frames, interval=1, blit=True)
