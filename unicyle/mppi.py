@@ -2,6 +2,7 @@ from numba import njit
 from utils import *
 import numpy as np
 import cvxpy as cp
+import csv
 
 @njit
 def mppi(x, prev_U, targets, params):
@@ -98,10 +99,11 @@ def unicyle_dynamics(x, u, params, dt=-1.0):
 
     return x_star
 
+filter_outputs = np.zeros((3,2))
 def safety_filter(u_nom, x, params, last_u):
     # Variables
     u = cp.Variable(2)        # [v, omega]
-    alpha = 30.0
+    alpha = 5.0
 
     constraints = []
 
@@ -156,19 +158,32 @@ def safety_filter(u_nom, x, params, last_u):
         # print("Ob 2 pos:", params.obstacles[1, :])
 
 
-    # Define QP
-    Q = np.diag([20.0, 1.0])   # heavier cost on v
-    cost = cp.quad_form(u - u_nom, Q)
-    prob = cp.Problem(cp.Minimize(cost), constraints)
-    try:
-        prob.solve(solver=cp.OSQP, warm_start=True)
-        if prob.status not in ["optimal", "optimal_inaccurate"]:
-            raise cp.error.SolverError("Infeasible or failed solve")
-        u = u.value
-    except cp.error.SolverError:
-    # Fallback strategy
-        u = np.array([0, 0])
+    for j in range(len(filter_outputs)):
+            
+        # Define QP
+        Q = np.diag([20.0 * ((j+1)/3), 1.0])   # heavier cost on v
+        cost = cp.quad_form(u - u_nom, Q)
+        prob = cp.Problem(cp.Minimize(cost), constraints)
+        try:
+            prob.solve(solver=cp.OSQP, warm_start=True)
+            if prob.status not in ["optimal", "optimal_inaccurate"]:
+                raise cp.error.SolverError("Infeasible or failed solve")
+            u_out = u.value
+            filter_outputs[j] = u_out
+        except cp.error.SolverError:
+        # Fallback strategy
+            u_out = np.array([0, 0])
     
+    # with open('./data/filter_diff_cost.csv', 'a', newline='', encoding='utf-8') as file:
+    #     # 'Step',  'v_nom', 'v_q1', 'v_q2', 'v_q3', 'w_nom','w_q1', 'w_q2', 'w_q3' 'x', 'y', 'obs_x']
+    #     writer = csv.writer(file)
+    #     writer.writerow([
+    #                      u_nom[0], filter_outputs[0][0], filter_outputs[1,0], filter_outputs[2,0], 
+    #                      u_nom[1], filter_outputs[0][1], filter_outputs[1,1], filter_outputs[2,1],
+    #                      x[0], x[1], params.obstacles[0][0]
+    #                      ])
+
+
     params.first_filter = False
     # Solve
-    return u
+    return u_out

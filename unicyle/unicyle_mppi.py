@@ -22,7 +22,7 @@ params = Parameters(
     max_w = 20.0, # max angular velocity (radians/s)
     max_v_dot = 8.0, # max linear acceleration (m/s^2)
     max_w_dot = 30.0, # max angular acceleration (radians/s^2) (8.0)
-    obstacles = np.array([(4.0, 0.0, 0.2), (6.0, 0.0, 0.2)]),
+    obstacles = np.array([(6.0, 0.0, 0.2), (4.0, 0.0, 0.2)]),
     last_obstacle_pos = np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]),
     first_filter = True
 )
@@ -41,12 +41,12 @@ def main():
 
     obstacle_points = [ 
     [
-        (4, 0), 
-        (2, 0)
+        (6.0, 0.0), 
+        (4.0, 0.0)
     ],
     [
-        (6, 0), 
-        (4, 0)
+        (4.0, 0.0), 
+        (2.0, 0.0)
     ]
     ]
 
@@ -80,9 +80,13 @@ def main():
         print("Costs size", costs.size)
         
 
-        # with open('./data/safety_filter_collision.csv', 'w', newline='', encoding='utf-8') as file:
+        # with open('./data/filter_recording.csv', 'w', newline='', encoding='utf-8') as file:
         #     writer = csv.writer(file)
-        #     writer.writerow(['Step',  'u_nom_v', 'u_nom_w', 'u_safety_v', 'u_safety_w', 'x', 'y'])
+        #     writer.writerow(['Step',  'u_nom_v', 'u_nom_w', 'u_safety_v', 'u_safety_w', 'x', 'y', 'obs_x'])
+
+        with open('./data/filter_diff_cost.csv', 'w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            writer.writerow(['v_nom', 'v_q1', 'v_q2', 'v_q3', 'w_nom','w_q1', 'w_q2', 'w_q3', 'x', 'y', 'obs_x'])
         
         for t in range(Tx-1):
             # print(t)
@@ -111,9 +115,9 @@ def main():
             U[t] = safety_filter(u_nom, x, params, last_u)
             # U[t] = u_nom
             
-            # with open('./data/4_balls.csv', 'a', newline='', encoding='utf-8') as file:
+            # with open('./data/filter_recording.csv', 'a', newline='', encoding='utf-8') as file:
             #     writer = csv.writer(file)
-            #     writer.writerow([t, u_nom[0], u_nom[1], U[t][0], U[t][1], X[t][0], X[t][1]])
+            #     writer.writerow([t, u_nom[0], u_nom[1], U[t][0], U[t][1], X[t][0], X[t][1], params.obstacles[0][0]])
             
             x = unicyle_dynamics(x, U[t], params, dt=params.safety_dt) # Calculate what happens when you apply that input
             X[t + 1, :] = x # Store the new state
@@ -122,19 +126,19 @@ def main():
             y_pos.append(X[t+1, 1]) # Save the y position at this timestep
             last_u = U[t] # Save the control input 
 
-            if(t % 100 == 0):
-                yield {
-                    "x": x[0], 
-                    "y": x[1],
-                    "x_ob": x_ob.copy(),
-                    "y_ob": y_ob.copy(),
-                    "samples": sample_trajectories_one.copy(),
-                    "weights": traj_weight_single.copy(),
-                    "t": t
-                }
+            # if(t % 100 == 0):
+            #     yield {
+            #         "x": x[0], 
+            #         "y": x[1],
+            #         "x_ob": x_ob.copy(),
+            #         "y_ob": y_ob.copy(),
+            #         "samples": sample_trajectories_one.copy(),
+            #         "weights": traj_weight_single.copy(),
+            #         "t": t
+            #     }
     
     output_frames = sim()
-    animate(traj[:, 0], traj[:, 1], output_frames, params)
+    #animate(traj[:, 0], traj[:, 1], output_frames, params)
 
 
 if __name__ == "__main__":
