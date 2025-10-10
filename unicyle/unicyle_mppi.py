@@ -87,11 +87,11 @@ def main():
         # with open('./data/filter_diff_cost.csv', 'w', newline='', encoding='utf-8') as file:
         #     writer = csv.writer(file)
         #     writer.writerow(['v_nom', 'v_q1', 'v_q2', 'v_q3', 'w_nom','w_q1', 'w_q2', 'w_q3', 'x', 'y', 'obs_x'])
-        
+        safe_outputs = np.zeros((3, 2), dtype=np.float32)
         for t in range(Tx-1):
-            # print(t)
+            print(t)
             if t % main_safety_ratio == 0:
-                u_nom, X_calc, traj_weight_single = mppi(x, last_u, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params) # Calculate the optimal control input
+                u_nom, X_calc, traj_weight_single = mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params) # Calculate the optimal control input
                 for k in range(params.K):
                     for t_ in range (params.T): # Reshaping trajectory weight list for use in animation
                         sample_trajectories_one[k, 0, t_] = X_calc[k, t_, 0] #should be 0
