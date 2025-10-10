@@ -90,7 +90,7 @@ def animate(x_traj, y_traj, output_frames, params):
     ani = animation.FuncAnimation(fig, update, frames=output_frames, interval=1, blit=True)
     plt.title(f"K={params.K}, T={params.T} - Cost on Velocity")
     plt.legend()
-    filename=f"./animations/{params.K}-{params.T}-w_v_cost.gif"
-    ani.save(filename, writer='pillow', fps=10, )
-    print(f"Animation saved as {filename}")
+    # filename=f"./animations/{params.K}-{params.T}-w_v_cost.gif"
+    # ani.save(filename, writer='pillow', fps=10, )
+    # print(f"Animation saved as {filename}")
     plt.show()
