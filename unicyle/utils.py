@@ -5,8 +5,8 @@ import numpy as np
 def gen_normal_control_seq(mu_v, sigma_v, mu_w, sigma_w, K, T):
     return np.dstack((
         np.random.normal(loc=mu_v, scale=sigma_v, size=(K, T)), #v
-        # np.random.normal(loc=mu_w, scale=sigma_w, size=(K, T)), #omega
-        np.random.uniform(low=-20, high=20, size=(K, T)),
+        np.random.normal(loc=mu_w, scale=sigma_w, size=(K, T)), #omega
+        # np.random.uniform(low=-20, high=20, size=(K, T)),
     )) 
 
 def distance_of_path(p):
