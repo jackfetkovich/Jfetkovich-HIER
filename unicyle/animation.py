@@ -19,8 +19,8 @@ def animate(x_traj, y_traj, output_frames, params):
     # Set up the figure
     fig, ax = plt.subplots(figsize=(19.2, 10.8), dpi=100)
     # fig, ax = plt.subplots()
-    ax.set_xlim(-1, 6)
-    ax.set_ylim(-1, 6)
+    ax.set_xlim(-1, 9)
+    ax.set_ylim(-1, 5)
 
 
     ax.set_xlabel("X Position")
@@ -37,9 +37,9 @@ def animate(x_traj, y_traj, output_frames, params):
         ax.plot(x_traj, y_traj, 'k--', linewidth=1.5, label="Trajectory")  # Dotted reference path
 
     quiv_lambda = 0.2
-    quiv1 = ax.quiver(0,0,0,0, headwidth=1, color="purple", scale=1, scale_units="xy")
-    quiv2 = ax.quiver(0,0,0,0, headwidth=1, color="orange", scale=1, scale_units="xy")
-    quiv3 = ax.quiver(0,0,0,0, headwidth=1, color="blue", scale=1, scale_units="xy")
+    quiv1 = ax.quiver(0,0,0,0, headwidth=1, color="purple", scale=1, scale_units="xy", width=0.001)
+    quiv2 = ax.quiver(0,0,0,0, headwidth=1, color="orange", scale=1, scale_units="xy", width=0.001)
+    quiv3 = ax.quiver(0,0,0,0, headwidth=1, color="blue", scale=1, scale_units="xy", width=0.001)
 
     samples = []
     for i in range(params.K):
@@ -49,7 +49,7 @@ def animate(x_traj, y_traj, output_frames, params):
     line, = ax.plot([], [], 'r-', linewidth=2)  # History line
     point, = ax.plot([], [], 'bo', markersize=8)  # Current position
     ghost,  = ax.plot([], [], 'gx', markersize=6)  # Desired position
-    
+
     x_vals = []
     y_vals = []
     # Update function
@@ -107,9 +107,9 @@ def animate(x_traj, y_traj, output_frames, params):
 
     # Create animation
     ani = animation.FuncAnimation(fig, update, frames=output_frames, interval=1, blit=True)
-    plt.title(f"K={params.K}, T={params.T} - Cost on Velocity")
+    plt.title(f"K={params.K}, T={params.T} - Warm Start on Safe Outputs")
     plt.legend()
-    # filename=f"./animations/{params.K}-{params.T}-w_v_cost.gif"
+    # filename=f"./animations/{params.K}-{params.T}-multiple_sample.gif"
     # ani.save(filename, writer='pillow', fps=10, )
     # print(f"Animation saved as {filename}")
     plt.show()
