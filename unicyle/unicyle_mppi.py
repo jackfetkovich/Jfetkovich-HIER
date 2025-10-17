@@ -27,26 +27,30 @@ params = Parameters(
     first_filter = True
 )
 
+
+
 # Main function
 def main():
     time = []
     x_pos = []
     y_pos = []
+
+    
    
     # Original (x, y) points
     points = [
         (0.0, 0.0),
-        (9.0, 0.0),
+        (6, 0.0),
     ]
 
     obstacle_points = [ 
     [
-        (6.0, 0.0), 
-        (2.0, 0.0)
+        (2, 0.0), 
+        (1, 0.0)
     ],
     [
-        (4.0, 0.0), 
-        (2.0, 0.0)
+        (4, 0.0), 
+        (2, 0.0)
     ]
     ]
 
@@ -57,6 +61,7 @@ def main():
     traj = generate_trajectory_from_waypoints(points, int(Tx / main_safety_ratio)+1) # trajectory of waypoints
     
     def sim():
+        total_discarded_paths = 0
         obstacle_traj = np.zeros((len(params.obstacles), Tx+1, 2)) # Generate trajectory for each obstacle
         for i in range(len(params.obstacles)):
             obstacle_traj[i] = generate_trajectory_x_y(obstacle_points[i], Tx+1)
@@ -69,7 +74,7 @@ def main():
         sample_trajectories = np.zeros((Tx, params.K, 3, params.T), dtype=np.float32)
         sample_trajectories_one = np.zeros((params.K, 3, params.T), dtype=np.float32) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
         last_u = np.zeros(2) # the control input from the previous 
-        
+
         x_ob = np.zeros(len(params.obstacles), dtype=np.float32)
         y_ob = np.zeros(len(params.obstacles), dtype=np.float32)
         ## Zeroed arrays used for calculation
@@ -91,7 +96,8 @@ def main():
         for t in range(Tx-1):
             print(t)
             if t % main_safety_ratio == 0:
-                u_nom, X_calc, traj_weight_single = mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params) # Calculate the optimal control input
+                u_nom, X_calc, traj_weight_single, discarded_paths = mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params) # Calculate the optimal control input
+                total_discarded_paths += discarded_paths
                 for k in range(params.K):
                     for t_ in range (params.T): # Reshaping trajectory weight list for use in animation
                         sample_trajectories_one[k, 0, t_] = X_calc[k, t_, 0] #should be 0
@@ -131,6 +137,8 @@ def main():
                     "x": x[0], 
                     "y": x[1],
                     "theta": x[2],
+                    "v": x[3],
+                    "w": x[4],
                     "x_ob": x_ob.copy(),
                     "y_ob": y_ob.copy(),
                     "samples": sample_trajectories_one.copy(),
@@ -138,9 +146,10 @@ def main():
                     "t": t,
                     "safe_outputs": safe_outputs.copy()
                 }
-    
+        print(total_discarded_paths)
     output_frames = sim()
     animate(traj[:, 0], traj[:, 1], output_frames, params)
+    
 
 
 if __name__ == "__main__":
