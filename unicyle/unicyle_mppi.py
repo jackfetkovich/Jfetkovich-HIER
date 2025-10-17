@@ -36,17 +36,17 @@ def main():
     # Original (x, y) points
     points = [
         (0.0, 0.0),
-        (9.0, 0.0),
+        (5.0, 0.0),
     ]
 
     obstacle_points = [ 
     [
-        (6.0, 0.0), 
+        (4.0, 0.0), 
         (2.0, 0.0)
     ],
     [
-        (4.0, 0.0), 
-        (2.0, 0.0)
+        (2.0, 0.0), 
+        (1.0, 0.0)
     ]
     ]
 
@@ -131,6 +131,8 @@ def main():
                     "x": x[0], 
                     "y": x[1],
                     "theta": x[2],
+                    "v": x[3],
+                    "w": x[4],
                     "x_ob": x_ob.copy(),
                     "y_ob": y_ob.copy(),
                     "samples": sample_trajectories_one.copy(),

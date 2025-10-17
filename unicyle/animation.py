@@ -2,6 +2,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
+from mppi import unicyle_dynamics
 
 def animate(x_traj, y_traj, output_frames, params):
     """
@@ -36,14 +37,13 @@ def animate(x_traj, y_traj, output_frames, params):
     if x_traj is not None and y_traj is not None:
         ax.plot(x_traj, y_traj, 'k--', linewidth=1.5, label="Trajectory")  # Dotted reference path
 
-    quiv_lambda = 0.2
-    quiv1 = ax.quiver(0,0,0,0, headwidth=1, color="purple", scale=1, scale_units="xy", width=0.001)
-    quiv2 = ax.quiver(0,0,0,0, headwidth=1, color="orange", scale=1, scale_units="xy", width=0.001)
-    quiv3 = ax.quiver(0,0,0,0, headwidth=1, color="blue", scale=1, scale_units="xy", width=0.001)
-
     samples = []
     for i in range(params.K):
         samples.append(ax.plot([], [], color=[0.5, 0.5, 0.5], linewidth=0.5)[0])
+
+    l1 = ax.plot([], [], color=(0.698, 0.031, 0.988, 0.75), linewidth=3)[0]
+    l2 = ax.plot([], [], color=(0.988, 0.561, 0.031, 0.75), linewidth=3)[0]
+    l3 = ax.plot([], [], color=(0.031, 0.788, 0.988, 0.75), linewidth=3)[0]
 
     # Initialize plot elements
     line, = ax.plot([], [], 'r-', linewidth=2)  # History line
@@ -54,7 +54,7 @@ def animate(x_traj, y_traj, output_frames, params):
     y_vals = []
     # Update function
     def update(frame):
-        x, y, theta = frame["x"], frame["y"], frame["theta"]
+        x, y, theta, v, omega = frame["x"], frame["y"], frame["theta"], frame["v"], frame["w"]
         x_ob, y_ob = frame["x_ob"], frame["y_ob"]
         weights = frame["weights"]
         sample_trajs = frame["samples"]
@@ -65,7 +65,6 @@ def animate(x_traj, y_traj, output_frames, params):
         y_vals.append(y)
 
         # Obstacles
-        
         for i in range(len(circles)):
             circles[i].center = (x_ob[i], y_ob[i])
 
@@ -87,23 +86,30 @@ def animate(x_traj, y_traj, output_frames, params):
 
         safe_vs = safe_outputs[:, 0]
         safe_ws = safe_outputs[:, 1]
-        norm = np.sqrt(safe_vs**2 + (quiv_lambda*safe_ws)**2)
-        u_quiv = (safe_vs*np.cos(theta)-quiv_lambda*safe_ws*np.sin(theta))/norm
-        v_quiv = (safe_vs*np.sin(theta)+quiv_lambda*safe_ws*np.cos(theta))/norm
 
-        quiv1.set_offsets(np.c_[x, y])
-        quiv1.set_UVC(u_quiv[0], v_quiv[0])
-        quiv2.set_offsets(np.c_[x, y])
-        quiv2.set_UVC(u_quiv[1], v_quiv[1])
-        quiv3.set_offsets(np.c_[x, y])
-        quiv3.set_UVC(u_quiv[2], v_quiv[2])
-        
+        steps_forward = 10
+        current_state = np.array([x, y, theta, v, omega])
+        prop_paths = np.zeros((3, steps_forward, 5))
+        prop_paths[0, 0] = current_state
+        prop_paths[1, 0] = current_state
+        prop_paths[2, 0] = current_state
+
+        for i in range(steps_forward-1):
+            prop_paths[0, i+1]= unicyle_dynamics(prop_paths[0, i], np.array([safe_vs[0], safe_ws[0]]), params)
+            prop_paths[1, i+1]= unicyle_dynamics(prop_paths[1, i], np.array([safe_vs[1], safe_ws[1]]), params)
+            prop_paths[2, i+1]= unicyle_dynamics(prop_paths[2, i], np.array([safe_vs[2], safe_ws[2]]), params)
+
+        l1.set_data(prop_paths[0, :, 0], prop_paths[0, :, 1])
+        l2.set_data(prop_paths[1, :, 0], prop_paths[1, :, 1])
+        l3.set_data(prop_paths[2, :, 0], prop_paths[2, :, 1])
+
+
         # Ghost point
         if x_traj is not None and y_traj is not None:
             idx = int(t / int(params.dt / params.safety_dt))
             ghost.set_data([x_traj[idx]], [y_traj[idx]])
 
-        return [line, point, ghost, quiv1, quiv2, quiv3, *samples] + circles
+        return [line, point, ghost, l1, l2, l3, *samples] + circles
 
     # Create animation
     ani = animation.FuncAnimation(fig, update, frames=output_frames, interval=1, blit=True)
