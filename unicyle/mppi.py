@@ -6,13 +6,16 @@ import csv
 
 @njit
 def mppi(x, prev_safe, targets, params):
-    X_calc = np.zeros((params.K, params.T + 1, 5))
     
+    X_calc = np.zeros((params.K, params.T + 1, 5))
     U1 = gen_normal_control_seq(prev_safe[0, 0], 6, prev_safe[0, 1], params.max_w*2, 667, params.T) # Generate control sequences
     U2 = gen_normal_control_seq(prev_safe[1, 0], 6, prev_safe[1, 1], params.max_w*2, 667, params.T)
     U3 = gen_normal_control_seq(prev_safe[2, 0], 6, prev_safe[2, 1], params.max_w*2, 666, params.T)
-
     U = np.vstack((U1, U2, U3))
+
+    # U = gen_normal_control_seq(0.3, 6, 0, params.max_w*2, params.K, params.T) #
+
+    num_discarded_paths = 0
 
     for k in range(params.K):
         X_calc[k, 0, :] = x  # Initialize all trajectories with the current state
@@ -26,6 +29,7 @@ def mppi(x, prev_safe, targets, params):
             for o in params.obstacles: # check for obstacle collision
                 if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2])**2:
                     path_safe = False
+                    num_discarded_paths += 1
                     costs[k] = np.inf
                     break
             current_target = targets[t]
@@ -49,7 +53,7 @@ def mppi(x, prev_safe, targets, params):
 
     # Compute the weighted sum of control inputs
     u_star = np.sum(weights[:, None, None] * U, axis=0)
-    return u_star[0], X_calc, traj_weight_single
+    return u_star[0], X_calc, traj_weight_single, num_discarded_paths
 
 # Cost function
 @njit
@@ -127,7 +131,6 @@ def safety_filter(u_nom, x, params, last_u):
             vy_obs = (c[1] - params.last_obstacle_pos[i][1]) / params.safety_dt
         params.last_obstacle_pos[i] = np.array([c[0], c[1]])
 
-        print(vx_obs)
         v_obs = np.array([vx_obs, vy_obs])
 
         # Barrier function
@@ -143,7 +146,6 @@ def safety_filter(u_nom, x, params, last_u):
         # Add inequality constraint: Lg_h @ u + alpha * h >= 0
         constraints.append(Lg_h @ u + dh_dt + alpha * h >= 0)
 
-        print("h", h)
 
     constraints.append(u[0] <= params.max_v)
     constraints.append(u[0] >= -params.max_v)
@@ -165,7 +167,7 @@ def safety_filter(u_nom, x, params, last_u):
     for j in range(len(filter_outputs)):
             
         # Define QP
-        Q = np.diag([20.0 * ((j+1)/3), 1.0])   # heavier cost on v
+        Q = np.diag([40.0 * ((j+1)/3), 1.0])   # heavier cost on v
         cost = cp.quad_form(u - u_nom, Q)
         prob = cp.Problem(cp.Minimize(cost), constraints)
         try:
