@@ -41,6 +41,7 @@ def main():
     points = [
         (0.0, 0.0),
         (6, 0.0),
+
     ]
 
     obstacle_points = [ 
@@ -51,6 +52,7 @@ def main():
     [
         (4, 0.0), 
         (2, 0.0)
+
     ]
     ]
 
@@ -132,6 +134,7 @@ def main():
             y_pos.append(X[t+1, 1]) # Save the y position at this timestep
             last_u = U[t] # Save the control input 
 
+
             # if(t % 100 == 0):
             #     yield {
             #         "x": x[0], 
@@ -147,6 +150,7 @@ def main():
             #         "safe_outputs": safe_outputs.copy()
             #     }
         print(total_discarded_paths)
+
     output_frames = sim()
     # animate(traj[:, 0], traj[:, 1], output_frames, params)
     
