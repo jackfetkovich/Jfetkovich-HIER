@@ -108,15 +108,26 @@ def unicyle_dynamics(x, u, params, dt=-1.0):
     return x_star
 
 filter_outputs = np.zeros((3,2), dtype=np.float32)
-def safety_filter(u_nom, x, params, last_u):
+u_nom = cp.Parameter((2,))
+u_nom.value = np.zeros(2)
+Q_param = cp.Parameter((2, 2), PSD=True)
+Q_param.value = np.diag([0, 1.0])
+u = cp.Variable(2)
+cost = cp.quad_form(u - u_nom, Q_param)
+constraints = []
+prob = cp.Problem(cp.Minimize(cost), constraints)
+num_obstacles = 2
+
+def safety_filter(u_in, x, params, last_u):
     # Variables
-    u = cp.Variable(2)        # [v, omega]
+            # [v, omega]
     alpha = 15.0
+    u_nom.value = u_in
 
     constraints = []
 
     # Loop through all obstacles
-    for i in range(len(params.obstacles)):
+    for i in range(num_obstacles):
         c = params.obstacles[i][0:2]   # obstacle center (x, y)
         r = params.obstacles[i][2]     # obstacle radius
 
@@ -157,19 +168,19 @@ def safety_filter(u_nom, x, params, last_u):
     constraints.append(u[1] - last_u[1] >= -params.max_w_dot)
 
     
-    if np.isnan(u_nom[0]) or np.isnan(u_nom[1]):
+    if np.isnan(u_nom.value[0]) or np.isnan(u_nom.value[1]):
         print("NAN")
         print("x", x)
         print("Ob 1 pos:", params.obstacles[0, :])
         # print("Ob 2 pos:", params.obstacles[1, :])
 
+    
 
     for j in range(len(filter_outputs)):
             
         # Define QP
-        Q = np.diag([40.0 * ((j+1)/3), 1.0])   # heavier cost on v
-        cost = cp.quad_form(u - u_nom, Q)
-        prob = cp.Problem(cp.Minimize(cost), constraints)
+        Q_param.value = np.diag([40.0*((j+1)/3), 1.0])  # heavier cost on v
+        
         try:
             prob.solve(solver=cp.OSQP, warm_start=True)
             if prob.status not in ["optimal", "optimal_inaccurate"]:
