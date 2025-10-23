@@ -2,6 +2,7 @@ from numba import njit
 from utils import *
 import numpy as np
 import cvxpy as cp
+import time
 import csv
 
 @njit
@@ -26,12 +27,12 @@ def mppi(x, prev_safe, targets, params):
         for t in range(len(targets)-1):
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], U[k, t], params)
             next_x = X_calc[k, t+1, :]
-            for o in params.obstacles: # check for obstacle collision
-                if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2])**2:
-                    path_safe = False
-                    num_discarded_paths += 1
-                    costs[k] = np.inf
-                    break
+            # for o in params.obstacles: # check for obstacle collision
+                # if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2])**2:
+                #     path_safe = False
+                #     num_discarded_paths += 1
+                #     costs[k] = np.inf
+                #     break
             current_target = targets[t]
             cost = cost_function(X_calc[k, t+1, :], U[k, t], current_target)
             costs[k] += cost
@@ -107,6 +108,8 @@ def unicyle_dynamics(x, u, params, dt=-1.0):
 
     return x_star
 
+
+num_obstacles = 2
 filter_outputs = np.zeros((3,2), dtype=np.float32)
 u_nom = cp.Parameter((2,))
 u_nom.value = np.zeros(2)
@@ -116,13 +119,14 @@ u = cp.Variable(2)
 cost = cp.quad_form(u - u_nom, Q_param)
 constraints = []
 prob = cp.Problem(cp.Minimize(cost), constraints)
-num_obstacles = 2
 
 def safety_filter(u_in, x, params, last_u):
     # Variables
             # [v, omega]
     alpha = 15.0
+    print(u_in)
     u_nom.value = u_in
+
 
     constraints = []
 
@@ -162,10 +166,10 @@ def safety_filter(u_in, x, params, last_u):
     constraints.append(u[0] >= -params.max_v)
     constraints.append(u[1] <= params.max_w)
     constraints.append(u[1] >= -params.max_w)
-    constraints.append(u[0] - last_u[0] <= params.max_v_dot)
-    constraints.append(u[0] - last_u[0] >= -params.max_v_dot)
-    constraints.append(u[1] - last_u[1] <= params.max_w_dot)
-    constraints.append(u[1] - last_u[1] >= -params.max_w_dot)
+    constraints.append(u[0] - last_u[0] <= params.max_v_dot * params.safety_dt)
+    constraints.append(u[0] - last_u[0] >= -params.max_v_dot* params.safety_dt)
+    constraints.append(u[1] - last_u[1] <= params.max_w_dot * params.safety_dt)
+    constraints.append(u[1] - last_u[1] >= -params.max_w_dot * params.safety_dt)
 
     
     if np.isnan(u_nom.value[0]) or np.isnan(u_nom.value[1]):
@@ -174,7 +178,7 @@ def safety_filter(u_in, x, params, last_u):
         print("Ob 1 pos:", params.obstacles[0, :])
         # print("Ob 2 pos:", params.obstacles[1, :])
 
-    
+    prob = cp.Problem(cp.Minimize(cost), constraints)
 
     for j in range(len(filter_outputs)):
             
@@ -182,7 +186,10 @@ def safety_filter(u_in, x, params, last_u):
         Q_param.value = np.diag([40.0*((j+1)/3), 1.0])  # heavier cost on v
         
         try:
+            start_time = time.perf_counter()
             prob.solve(solver=cp.OSQP, warm_start=True)
+            end_time = time.perf_counter()
+            print(f"solve time: {end_time - start_time}")
             if prob.status not in ["optimal", "optimal_inaccurate"]:
                 raise cp.error.SolverError("Infeasible or failed solve")
             u_out = u.value
