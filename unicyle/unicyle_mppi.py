@@ -2,11 +2,11 @@ import numpy as np
 from scipy.interpolate import interp1d
 from numba import njit
 import csv
-from animation import animate
 from utils import *
 from trajectory import *
 from mppi import *
 from parameters import *
+from animation import animate
 import matplotlib.pyplot as plt
 
 params = Parameters(
@@ -135,24 +135,24 @@ def main():
             last_u = U[t] # Save the control input 
 
 
-            # if(t % 100 == 0):
-            #     yield {
-            #         "x": x[0], 
-            #         "y": x[1],
-            #         "theta": x[2],
-            #         "v": x[3],
-            #         "w": x[4],
-            #         "x_ob": x_ob.copy(),
-            #         "y_ob": y_ob.copy(),
-            #         "samples": sample_trajectories_one.copy(),
-            #         "weights": traj_weight_single.copy(),
-            #         "t": t,
-            #         "safe_outputs": safe_outputs.copy()
-            #     }
+            if(t % 100 == 0):
+                yield {
+                    "x": x[0], 
+                    "y": x[1],
+                    "theta": x[2],
+                    "v": x[3],
+                    "w": x[4],
+                    "x_ob": x_ob.copy(),
+                    "y_ob": y_ob.copy(),
+                    "samples": sample_trajectories_one.copy(),
+                    "weights": traj_weight_single.copy(),
+                    "t": t,
+                    "safe_outputs": safe_outputs.copy()
+                }
         print(total_discarded_paths)
 
     output_frames = sim()
-    # animate(traj[:, 0], traj[:, 1], output_frames, params)
+    animate(traj[:, 0], traj[:, 1], output_frames, params)
     
 
 
