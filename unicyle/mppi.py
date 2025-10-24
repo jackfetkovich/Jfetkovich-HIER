@@ -109,35 +109,61 @@ def unicyle_dynamics(x, u, params, dt=-1.0):
     return x_star
 
 
+# -----------------------------
+# Config / scratch (as before)
+# -----------------------------
 num_obstacles = 2
-filter_outputs = np.zeros((3,2), dtype=np.float32)
-u_nom = cp.Parameter((2,))
-u_nom.value = np.zeros(2)
-Q_param = cp.Parameter((2, 2), PSD=True)
-Q_param.value = np.diag([0, 1.0])
-u = cp.Variable(2)
-cost = cp.quad_form(u - u_nom, Q_param)
-constraints = []
-prob = cp.Problem(cp.Minimize(cost), constraints)
+filter_outputs = np.zeros((3, 2), dtype=np.float32)
 
-def safety_filter(u_in, x, params, last_u):
-    # Variables
-            # [v, omega]
-    alpha = 15.0
-    print(u_in)
-    u_nom.value = u_in
+# -----------------------------
+# Metric projection onto one half-space:
+#   minimize (u - u_nom)^T Q (u - u_nom)  s.t.  a^T u >= b
+# Closed-form:
+#   u* = u + max(0, (b - a^T u) / (a^T Q^{-1} a)) * (Q^{-1} a)
+# -----------------------------
+def project_halfspace(u, a, b, Q_inv):
+    # violation = b - a^T u
+    viol = b - float(a @ u)
+    denom = float(a @ (Q_inv @ a))
+    if viol > 0 and denom > 1e-12:
+        u = u + (viol / denom) * (Q_inv @ a)
+    return u
 
+# -----------------------------
+# One pass of sequential projections over many constraints
+# (optionally sorted by most violated first)
+# -----------------------------
+def project_many(u, A, b, Q_inv, passes=2):
+    for _ in range(passes):
+        # sort by violation magnitude (most violated first)
+        viol = b - (A @ u)
+        order = np.argsort(-viol)  # descending
+        for i in order:
+            if viol[i] > 0:
+                u = project_halfspace(u, A[i], b[i], Q_inv)
+    return u
 
-    constraints = []
+# -----------------------------
+# Build obstacle CBF constraints a_i^T u >= b_i
+# Using your Lg_h, dh_dt, and alpha * h terms (time-varying obstacles supported)
+# -----------------------------
+def build_obstacle_constraints(x, params, alpha):
+    A_list = []
+    b_list = []
 
-    # Loop through all obstacles
+    # Robot pose
+    px, py, th = x[0], x[1], x[2]
+    cth, sth = np.cos(th), np.sin(th)
+
     for i in range(num_obstacles):
-        c = params.obstacles[i][0:2]   # obstacle center (x, y)
-        r = params.obstacles[i][2]     # obstacle radius
+        c = params.obstacles[i][0:2]   # (x_i, y_i)
+        r = params.obstacles[i][2]     # radius
 
-        dx = x[0] - c[0] + params.l * np.cos(x[2])
-        dy = x[1] - c[1] + params.l * np.sin(x[2])
+        # Look-ahead point on the body
+        dx = px - c[0] + params.l * cth
+        dy = py - c[1] + params.l * sth
 
+        # Obstacle velocity estimate
         if params.first_filter:
             vx_obs = 0.0
             vy_obs = 0.0
@@ -146,68 +172,130 @@ def safety_filter(u_in, x, params, last_u):
             vy_obs = (c[1] - params.last_obstacle_pos[i][1]) / params.safety_dt
         params.last_obstacle_pos[i] = np.array([c[0], c[1]])
 
-        v_obs = np.array([vx_obs, vy_obs])
-
         # Barrier function
-        h = (dx)**2 + (dy)**2 - (r+0.1)**2
-        # Lie derivative term
+        h = dx*dx + dy*dy - (r + 0.1)**2
+
+        # Lg_h (matches your code; depends on v and omega)
         Lg_h = np.array([
-            2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2]),
-            -2*dx*params.l*np.sin(x[2]) + 2*dy*params.l*np.cos(x[2])
-        ])
+            2.0*dx*cth + 2.0*dy*sth,
+            -2.0*dx*params.l*sth + 2.0*dy*params.l*cth
+        ], dtype=float)
 
-        dh_dt = -2*(dx)*vx_obs - 2*(dy)*vy_obs # Obstacle time_varying
+        # Time-varying obstacle term ∂h/∂t
+        dh_dt = -2.0*dx*vx_obs - 2.0*dy*vy_obs
 
-        # Add inequality constraint: Lg_h @ u + alpha * h >= 0
-        constraints.append(Lg_h @ u + dh_dt + alpha * h >= 0)
+        # Inequality: Lg_h @ u + dh_dt + alpha*h >= 0  ⇒  a^T u ≥ b
+        a = Lg_h
+        b = -dh_dt - alpha*h
 
+        A_list.append(a)
+        b_list.append(b)
 
-    constraints.append(u[0] <= params.max_v)
-    constraints.append(u[0] >= -params.max_v)
-    constraints.append(u[1] <= params.max_w)
-    constraints.append(u[1] >= -params.max_w)
-    constraints.append(u[0] - last_u[0] <= params.max_v_dot * params.safety_dt)
-    constraints.append(u[0] - last_u[0] >= -params.max_v_dot* params.safety_dt)
-    constraints.append(u[1] - last_u[1] <= params.max_w_dot * params.safety_dt)
-    constraints.append(u[1] - last_u[1] >= -params.max_w_dot * params.safety_dt)
+    if len(A_list) == 0:
+        return np.zeros((0, 2), dtype=float), np.zeros((0,), dtype=float)
 
-    
-    if np.isnan(u_nom.value[0]) or np.isnan(u_nom.value[1]):
+    return np.vstack(A_list), np.array(b_list, dtype=float)
+
+# -----------------------------
+# Add box and slew-rate constraints as half-spaces a^T u >= b
+# v ≤ vmax      ⇒ (-1, 0)·u ≥ -vmax
+# v ≥ vmin      ⇒ ( 1, 0)·u ≥  vmin
+# ω ≤ ωmax      ⇒ ( 0,-1)·u ≥ -ωmax
+# ω ≥ ωmin      ⇒ ( 0, 1)·u ≥  ωmin
+# v ≤ last_v + Δv  ⇒ (-1,0)·u ≥ -(last_v + Δv)
+# v ≥ last_v - Δv  ⇒ ( 1,0)·u ≥  (last_v - Δv)
+# similarly for ω
+# -----------------------------
+def build_box_and_rate_constraints(params, last_u):
+    A = []
+    b = []
+
+    # Box limits
+    vmax = params.max_v
+    vmin = -params.max_v
+    wmax = params.max_w
+    wmin = -params.max_w
+
+    A += [np.array([-1.0,  0.0]), np.array([ 1.0, 0.0]),
+          np.array([ 0.0, -1.0]), np.array([ 0.0, 1.0])]
+    b += [-vmax, vmin, -wmax, wmin]
+
+    # Rate limits
+    dv = params.max_v_dot * params.safety_dt
+    dw = params.max_w_dot * params.safety_dt
+
+    # v ≤ last_v + dv  ⇒ (-1,0)·u ≥ -(last_v + dv)
+    A.append(np.array([-1.0, 0.0])); b.append(-(last_u[0] + dv))
+    # v ≥ last_v - dv  ⇒ ( 1,0)·u ≥  (last_u - dv)
+    A.append(np.array([ 1.0, 0.0])); b.append( (last_u[0] - dv))
+
+    # w ≤ last_w + dw  ⇒ (0,-1)·u ≥ -(last_w + dw)
+    A.append(np.array([0.0, -1.0])); b.append(-(last_u[1] + dw))
+    # w ≥ last_w - dw  ⇒ (0, 1)·u ≥  (last_w - dw)
+    A.append(np.array([0.0,  1.0])); b.append( (last_u[1] - dw))
+
+    return np.vstack(A), np.array(b, dtype=float)
+
+# -----------------------------
+# The safety filter (drop-in replacement)
+# Returns filter_outputs[3,2] like your original, with three Q metrics
+# -----------------------------
+def safety_filter(u_in, x, params, last_u):
+    alpha = 15.0
+    # For parity with your prints:
+    print(u_in)
+
+    # Build obstacle constraints
+    A_obs, b_obs = build_obstacle_constraints(x, params, alpha)
+
+    # Build box + rate constraints
+    A_lim, b_lim = build_box_and_rate_constraints(params, last_u)
+
+    # Stack all constraints
+    if A_obs.shape[0] > 0:
+        A_all = np.vstack([A_obs, A_lim])
+        b_all = np.concatenate([b_obs, b_lim])
+    else:
+        A_all = A_lim
+        b_all = b_lim
+
+    # Handle NaN nominal control (diagnostic parity with your code)
+    if np.isnan(u_in[0]) or np.isnan(u_in[1]):
         print("NAN")
         print("x", x)
         print("Ob 1 pos:", params.obstacles[0, :])
-        # print("Ob 2 pos:", params.obstacles[1, :])
 
-    prob = cp.Problem(cp.Minimize(cost), constraints)
+    # Three different Q metrics (matching your varying v-weight idea)
+    Q_list = [
+        np.diag([40.0*((1)/3), 1.0]),
+        np.diag([40.0*((2)/3), 1.0]),
+        np.diag([40.0*((3)/3), 1.0]),
+    ]
 
-    for j in range(len(filter_outputs)):
-            
-        # Define QP
-        Q_param.value = np.diag([40.0*((j+1)/3), 1.0])  # heavier cost on v
-        
+    out = np.zeros_like(filter_outputs)
+    for j, Q in enumerate(Q_list):
         try:
             start_time = time.perf_counter()
-            prob.solve(solver=cp.OSQP, warm_start=True)
-            end_time = time.perf_counter()
-            print(f"solve time: {end_time - start_time}")
-            if prob.status not in ["optimal", "optimal_inaccurate"]:
-                raise cp.error.SolverError("Infeasible or failed solve")
-            u_out = u.value
-            filter_outputs[j] = u_out
-        except cp.error.SolverError:
-        # Fallback strategy
-            u_out = np.array([0, 0])
-    
-    # with open('./data/filter_diff_cost.csv', 'a', newline='', encoding='utf-8') as file:
-    #     # 'Step',  'v_nom', 'v_q1', 'v_q2', 'v_q3', 'w_nom','w_q1', 'w_q2', 'w_q3' 'x', 'y', 'obs_x']
-    #     writer = csv.writer(file)
-    #     writer.writerow([
-    #                      u_nom[0], filter_outputs[0][0], filter_outputs[1,0], filter_outputs[2,0], 
-    #                      u_nom[1], filter_outputs[0][1], filter_outputs[1,1], filter_outputs[2,1],
-    #                      x[0], x[1], params.obstacles[0][0]
-    #                      ])
 
+            # Metric projection loop
+            Q_inv = np.linalg.inv(Q)
+            u = np.array(u_in, dtype=float)
+
+            # Sequential projections (2 passes is usually enough)
+            u = project_many(u, A_all, b_all, Q_inv, passes=2)
+
+            # (Optional) final clamp to hard bounds for extra robustness
+            u[0] = np.clip(u[0], -params.max_v, params.max_v)
+            u[1] = np.clip(u[1], -params.max_w, params.max_w)
+
+            end_time = time.perf_counter()
+            print(f"solve time (projection): {end_time - start_time:.6f}s")
+
+            out[j] = u
+        except Exception as e:
+            # Fallback
+            print("Projection error:", e)
+            out[j] = np.array([0.0, 0.0], dtype=float)
 
     params.first_filter = False
-    # Solve
-    return filter_outputs
+    return out
