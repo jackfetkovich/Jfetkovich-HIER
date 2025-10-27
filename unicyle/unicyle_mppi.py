@@ -7,7 +7,9 @@ from trajectory import *
 from mppi import *
 from parameters import *
 from animation import animate
+from safety_filter import SafetyFilter
 import matplotlib.pyplot as plt
+import cvxpy as cp
 
 params = Parameters(
     dt = 0.025, # time step for MPPI
@@ -23,7 +25,7 @@ params = Parameters(
     max_v_dot = 8.0, # max linear acceleration (m/s^2)
     max_w_dot = 30.0, # max angular acceleration (radians/s^2) (8.0)
     obstacles = np.array([(6.0, 0.0, 0.2), (4.0, 0.0, 0.2)]),
-    last_obstacle_pos = np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]),
+    last_obstacle_pos = np.array([[6.0, 0.0], [4.0, 0.0]]),
     first_filter = True
 )
 
@@ -61,7 +63,11 @@ def main():
     Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2*params.dt))*main_safety_ratio
     ## Generation of waypoints for obstacle and robot
     traj = generate_trajectory_from_waypoints(points, int(Tx / main_safety_ratio)+1) # trajectory of waypoints
-    
+    sf = SafetyFilter(params, 15.0)
+    print("Is DPP? ", sf.prob.is_dcp(dpp=True))
+
+
+
     def sim():
         total_discarded_paths = 0
         obstacle_traj = np.zeros((len(params.obstacles), Tx+1, 2)) # Generate trajectory for each obstacle
@@ -91,9 +97,9 @@ def main():
         #     writer = csv.writer(file)
         #     writer.writerow(['Step',  'u_nom_v', 'u_nom_w', 'u_safety_v', 'u_safety_w', 'x', 'y', 'obs_x'])
 
-        # with open('./data/filter_diff_cost.csv', 'w', newline='', encoding='utf-8') as file:
-        #     writer = csv.writer(file)
-        #     writer.writerow(['v_nom', 'v_q1', 'v_q2', 'v_q3', 'w_nom','w_q1', 'w_q2', 'w_q3', 'x', 'y', 'obs_x'])
+        with open('./data/compute_time.csv', 'w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            writer.writerow(['time'])
         safe_outputs = np.zeros((3, 2), dtype=np.float32)
         for t in range(Tx-1):
             print(t)
@@ -119,7 +125,8 @@ def main():
             for i in range(len(params.obstacles)): # Populate obstacle positions with time
                 x_ob[i] = params.obstacles[i][0]
                 y_ob[i] = params.obstacles[i][1]
-            safe_outputs = safety_filter(u_nom, x, params, last_u)
+            
+            safe_outputs = sf.filter(u_nom, x, params, last_u)
             U[t] = safe_outputs[0]
             # U[t] = u_nom
             

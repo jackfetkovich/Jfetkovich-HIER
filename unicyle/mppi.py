@@ -27,12 +27,12 @@ def mppi(x, prev_safe, targets, params):
         for t in range(len(targets)-1):
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], U[k, t], params)
             next_x = X_calc[k, t+1, :]
-            # for o in params.obstacles: # check for obstacle collision
-                # if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2])**2:
-                #     path_safe = False
-                #     num_discarded_paths += 1
-                #     costs[k] = np.inf
-                #     break
+            for o in params.obstacles: # check for obstacle collision
+                if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2])**2:
+                    path_safe = False
+                    num_discarded_paths += 1
+                    costs[k] = np.inf
+                    break
             current_target = targets[t]
             cost = cost_function(X_calc[k, t+1, :], U[k, t], current_target)
             costs[k] += cost
@@ -108,30 +108,15 @@ def unicyle_dynamics(x, u, params, dt=-1.0):
 
     return x_star
 
-
-num_obstacles = 2
-filter_outputs = np.zeros((3,2), dtype=np.float32)
-u_nom = cp.Parameter((2,))
-u_nom.value = np.zeros(2)
-Q_param = cp.Parameter((2, 2), PSD=True)
-Q_param.value = np.diag([0, 1.0])
-u = cp.Variable(2)
-cost = cp.quad_form(u - u_nom, Q_param)
-constraints = []
-prob = cp.Problem(cp.Minimize(cost), constraints)
-
-def safety_filter(u_in, x, params, last_u):
+def safety_filter(u_nom, x, params, last_u):
     # Variables
-            # [v, omega]
+    u = cp.Variable(2)        # [v, omega]
     alpha = 15.0
-    print(u_in)
-    u_nom.value = u_in
-
 
     constraints = []
 
     # Loop through all obstacles
-    for i in range(num_obstacles):
+    for i in range(len(params.obstacles)):
         c = params.obstacles[i][0:2]   # obstacle center (x, y)
         r = params.obstacles[i][2]     # obstacle radius
 
@@ -160,36 +145,32 @@ def safety_filter(u_in, x, params, last_u):
 
         # Add inequality constraint: Lg_h @ u + alpha * h >= 0
         constraints.append(Lg_h @ u + dh_dt + alpha * h >= 0)
+   
+    constraints.append(u[0] - last_u[0] <= params.max_v_dot)
+    constraints.append(u[0] - last_u[0] >= -params.max_v_dot)
+    constraints.append(u[1] - last_u[1] <= params.max_w_dot)
+    constraints.append(u[1] - last_u[1] >= -params.max_w_dot)
 
-
-    constraints.append(u[0] <= params.max_v)
-    constraints.append(u[0] >= -params.max_v)
-    constraints.append(u[1] <= params.max_w)
-    constraints.append(u[1] >= -params.max_w)
-    constraints.append(u[0] - last_u[0] <= params.max_v_dot * params.safety_dt)
-    constraints.append(u[0] - last_u[0] >= -params.max_v_dot* params.safety_dt)
-    constraints.append(u[1] - last_u[1] <= params.max_w_dot * params.safety_dt)
-    constraints.append(u[1] - last_u[1] >= -params.max_w_dot * params.safety_dt)
-
-    
-    if np.isnan(u_nom.value[0]) or np.isnan(u_nom.value[1]):
+    if np.isnan(u_nom[0]) or np.isnan(u_nom[1]):
         print("NAN")
         print("x", x)
         print("Ob 1 pos:", params.obstacles[0, :])
         # print("Ob 2 pos:", params.obstacles[1, :])
 
-    prob = cp.Problem(cp.Minimize(cost), constraints)
-
+    compute_times = np.zeros(3)
     for j in range(len(filter_outputs)):
             
         # Define QP
-        Q_param.value = np.diag([40.0*((j+1)/3), 1.0])  # heavier cost on v
+        Q = np.diag([40.0 * ((j+1)/3), 1.0])   # heavier cost on v
+        cost = cp.quad_form(u - u_nom, Q)
+        prob = cp.Problem(cp.Minimize(cost), constraints)
         
         try:
             start_time = time.perf_counter()
             prob.solve(solver=cp.OSQP, warm_start=True)
             end_time = time.perf_counter()
             print(f"solve time: {end_time - start_time}")
+            compute_times[j] = end_time-start_time
             if prob.status not in ["optimal", "optimal_inaccurate"]:
                 raise cp.error.SolverError("Infeasible or failed solve")
             u_out = u.value
@@ -198,15 +179,12 @@ def safety_filter(u_in, x, params, last_u):
         # Fallback strategy
             u_out = np.array([0, 0])
     
-    # with open('./data/filter_diff_cost.csv', 'a', newline='', encoding='utf-8') as file:
+    # with open('./data/compute_time.csv', 'a', newline='', encoding='utf-8') as file:
     #     # 'Step',  'v_nom', 'v_q1', 'v_q2', 'v_q3', 'w_nom','w_q1', 'w_q2', 'w_q3' 'x', 'y', 'obs_x']
     #     writer = csv.writer(file)
-    #     writer.writerow([
-    #                      u_nom[0], filter_outputs[0][0], filter_outputs[1,0], filter_outputs[2,0], 
-    #                      u_nom[1], filter_outputs[0][1], filter_outputs[1,1], filter_outputs[2,1],
-    #                      x[0], x[1], params.obstacles[0][0]
-    #                      ])
-
+    #     writer.writerow([compute_times[0]])
+    #     writer.writerow([compute_times[1]])
+    #     writer.writerow([compute_times[2]])
 
     params.first_filter = False
     # Solve
