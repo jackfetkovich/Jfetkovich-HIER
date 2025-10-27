@@ -63,10 +63,10 @@ def main():
     Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2*params.dt))*main_safety_ratio
     ## Generation of waypoints for obstacle and robot
     traj = generate_trajectory_from_waypoints(points, int(Tx / main_safety_ratio)+1) # trajectory of waypoints
-    sf = SafetyFilter(params, 15.0)
-    print("Is DPP? ", sf.prob.is_dcp(dpp=True))
-
-
+    sf1 = SafetyFilter(params, 15.0, np.diag([40, 1]), params.safety_dt)
+    sf2 = SafetyFilter(params, 15.0, np.diag([20, 1]), params.safety_dt)
+    sf3 = SafetyFilter(params, 15.0, np.diag([10, 1]), params.safety_dt)
+    print("Is DPP? ", sf1.prob.is_dcp(dpp=True))
 
     def sim():
         total_discarded_paths = 0
@@ -126,7 +126,9 @@ def main():
                 x_ob[i] = params.obstacles[i][0]
                 y_ob[i] = params.obstacles[i][1]
             
-            safe_outputs = sf.filter(u_nom, x, params, last_u)
+            safe_outputs[0] = sf1.filter(u_nom, x, params, last_u)
+            safe_outputs[1] = sf1.filter(u_nom, x, params, last_u)
+            safe_outputs[2] = sf1.filter(u_nom, x, params, last_u)
             U[t] = safe_outputs[0]
             # U[t] = u_nom
             
