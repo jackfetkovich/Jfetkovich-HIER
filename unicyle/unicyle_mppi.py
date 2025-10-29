@@ -19,10 +19,10 @@ params = Parameters(
     T = 20, # time steps (HORIZON)
     sigma = 2,
     lambda_ = 2,
-    l = 0.6,
+    l = 0.3,
     r = 0.1, 
     max_v = 6.0, # max x velocity (m/s)
-    max_w = 20.0, # max angular velocity (radians/s)
+    max_w = 45.0, # max angular velocity (radians/s)
     max_v_dot = 8.0, # max linear acceleration (m/s^2)
     max_w_dot = 30.0, # max angular acceleration (radians/s^2) (8.0)
     obstacles = np.array([(6.0, 0.0, 0.2), (4.0, 0.0, 0.4)]),
@@ -47,12 +47,12 @@ def main():
 
     obstacle_points = [ 
     [
-        (3.0, 3.0), 
-        (1, 1.0)
+        (1.0, 1.0), 
+        (0, 0.0)
     ],
     [
-        (4, 4.0), 
-        (2, 2.0)
+        (1.7, 1.7), 
+        (0.7, 0.7)
 
     ]
     ]
@@ -62,9 +62,9 @@ def main():
     Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2*params.dt))*main_safety_ratio
     ## Generation of waypoints for obstacle and robot
     traj = generate_trajectory_from_waypoints(points, int(Tx / main_safety_ratio)+1) # trajectory of waypoints
-    sf1 = SafetyFilter(params, 15.0, np.diag([100, 0.01]), params.safety_dt)
-    sf2 = SafetyFilter(params, 5.0, np.diag([20, 1]), params.safety_dt)
-    sf3 = SafetyFilter(params, 5.0, np.diag([10, 1]), params.safety_dt)
+    sf1 = SafetyFilter(params, 3.5, np.diag([30, 1]), params.safety_dt)
+    sf2 = SafetyFilter(params, 2.0, np.diag([10, 1]), params.safety_dt)
+    sf3 = SafetyFilter(params, 2.0, np.diag([5, 1]), params.safety_dt)
     sf_rollout = SafetyFilter(params, 15.0, np.diag([40, 1]), params.dt)
     print("Is DPP? ", sf1.prob.is_dcp(dpp=True))
 
