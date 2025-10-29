@@ -14,7 +14,7 @@ class SafetyFilter():
         self.x = cp.Parameter(5)
         self.lgh1 = [cp.Parameter() for _ in range(self.num_obstacles)]
         self.lgh2 = [cp.Parameter() for _ in range(self.num_obstacles)]
-        self.lfh = [cp.Parameter() for _ in range(self.num_obstacles)]
+        # self.lfh = [cp.Parameter() for _ in range(self.num_obstacles)]
         self.h = [cp.Parameter() for _ in range(self.num_obstacles)]
         self.dh_dt = [cp.Parameter() for _ in range(self.num_obstacles)]
         self.u = cp.Variable(2) # Control output (decision variable)
@@ -81,7 +81,7 @@ class SafetyFilter():
             self.h[i].value = (dx)**2 + (dy)**2 - (r+0.1)**2
             print(f"h[{i}]: {self.h[i].value}")
             # Lie derivative term
-            self.lfh[i].value = 2*x[3]*(dx*np.cos(x[2])+dy*np.sin(x[2]))
+            # self.lfh[i].value = 2*x[3]*(dx*np.cos(x[2])+dy*np.sin(x[2]))
             # print(f"lfh[{i}]: {self.lfh[i].value}")
             self.lgh1[i].value = 2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2])
             print(f"lgh1[{i}]: {self.lgh1[i].value}")
@@ -98,7 +98,7 @@ class SafetyFilter():
             # print("Ob 2 pos:", params.obstacles[1, :])
 
         try:
-            self.prob.solve(solver=cp.OSQP, warm_start=True, verbose=False)
+            self.prob.solve(solver=cp.OSQP,verbose=False)
             if self.prob.status not in ["optimal", "optimal_inaccurate"]:
                 raise cp.error.SolverError("Infeasible or failed solve")
             u_out = self.u.value
