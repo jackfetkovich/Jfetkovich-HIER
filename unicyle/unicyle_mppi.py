@@ -19,7 +19,7 @@ params = Parameters(
     T = 20, # time steps (HORIZON)
     sigma = 2,
     lambda_ = 2,
-    l = 0.3,
+    l = 0.6,
     r = 0.1, 
     max_v = 6.0, # max x velocity (m/s)
     max_w = 20.0, # max angular velocity (radians/s)
@@ -41,18 +41,18 @@ def main():
     # Original (x, y) points
     points = [
         (0.0, 0.0),
-        (6, 0.0),
+        (6, 6.0),
 
     ]
 
     obstacle_points = [ 
     [
-        (2, 0.0), 
-        (1, 0.0)
+        (3.0, 3.0), 
+        (1, 1.0)
     ],
     [
-        (4, 0.0), 
-        (2, 0.0)
+        (4, 4.0), 
+        (2, 2.0)
 
     ]
     ]
@@ -62,7 +62,7 @@ def main():
     Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2*params.dt))*main_safety_ratio
     ## Generation of waypoints for obstacle and robot
     traj = generate_trajectory_from_waypoints(points, int(Tx / main_safety_ratio)+1) # trajectory of waypoints
-    sf1 = SafetyFilter(params, 10.0, np.diag([100, 1]), params.safety_dt)
+    sf1 = SafetyFilter(params, 15.0, np.diag([100, 0.01]), params.safety_dt)
     sf2 = SafetyFilter(params, 5.0, np.diag([20, 1]), params.safety_dt)
     sf3 = SafetyFilter(params, 5.0, np.diag([10, 1]), params.safety_dt)
     sf_rollout = SafetyFilter(params, 15.0, np.diag([40, 1]), params.dt)
