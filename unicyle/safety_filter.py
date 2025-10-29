@@ -1,8 +1,12 @@
 import cvxpy as cp
 import numpy as np
+from numba import int32, float32
+from numba.experimental import jitclass
 import time
+from parameters import Parameters
 
-class SafetyFilter:
+
+class SafetyFilter():
     def __init__(self, params, alpha, q, dt):
         self.num_obstacles = len(params.obstacles)
         self.u_nom = cp.Parameter(2) # MPPI Output (what's changing)
@@ -19,16 +23,17 @@ class SafetyFilter:
         self.alpha = alpha
         self.last_u_var = np.zeros(2)
         self.dt = dt
+        self.last_obstacle_pos = np.copy(params.last_obstacle_pos)
 
         self.constraints = [
             self.u[0] <= params.max_v, # Box constraints
             self.u[0] >= -params.max_v,
             self.u[1] <= params.max_w,
             self.u[1] >= -params.max_w,
-            self.u[0] - self.last_u[0] <= params.max_v_dot, # Slew-rate limiting
-            self.u[0] - self.last_u[0] >= -params.max_v_dot,
-            self.u[1] - self.last_u[1] <= params.max_w_dot,
-            self.u[1] - self.last_u[1] >= -params.max_w_dot,
+            self.u[0] - self.last_u[0] <= params.max_v_dot * dt, # Slew-rate limiting
+            self.u[0] - self.last_u[0] >= -params.max_v_dot * dt,
+            self.u[1] - self.last_u[1] <= params.max_w_dot * dt,
+            self.u[1] - self.last_u[1] >= -params.max_w_dot * dt,
         ]
 
         for i in range(self.num_obstacles):
@@ -43,8 +48,13 @@ class SafetyFilter:
 
     def filter(self, u_in, x, params, last_u):
         self.u_nom.value = u_in
+        # print(u_in)
         self.x.value = x
         self.last_u.value = last_u
+
+        print(f"u_nom: {self.u_nom.value}")
+        print(f"x: {self.x.value}")
+        print(f"last_U: {self.last_u.value}")
 
         # Loop through all obstacles
         for i in range(self.num_obstacles):
@@ -53,17 +63,29 @@ class SafetyFilter:
 
             dx = x[0] - c[0] + params.l * np.cos(x[2])
             dy = x[1] - c[1] + params.l * np.sin(x[2])
+            # print(f"i={i}")
+            # print(f"c[{i} = {c}]")
+            # print(f"r[{i}]= {r}")
+            # print(f"dx[{i}]= {dx}")
+            # print(f"dy[{i}]= {dy}")
+            # print(f"last_obs[{i}]={self.last_obstacle_pos[i]}")
 
-            vx_obs = (c[0] - params.last_obstacle_pos[i][0]) / self.dt
-            vy_obs = (c[1] - params.last_obstacle_pos[i][1]) / self.dt
-            params.last_obstacle_pos[i] = np.array([c[0], c[1]])
+            vx_obs = (c[0] - self.last_obstacle_pos[i][0]) / self.dt
+            # print(f"vx_obs:{vx_obs}")
+            vy_obs = (c[1] - self.last_obstacle_pos[i][1]) / self.dt
+            # print(f"vy_obs:{vy_obs}")
+            self.last_obstacle_pos[i] = np.array([c[0], c[1]])
 
             # Barrier function
-            self.h[i].value = (dx)**2 + (dy)**2 - (r+0.1)**2
+            self.h[i].value = (dx)**2 + (dy)**2 - (r+0.3)**2
+            # print(f"h[{i}]: {self.h[i].value}")
             # Lie derivative term
             self.lgh1[i].value = 2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2])
+            # print(f"lgh1[{i}]: {self.lgh1[i].value}")
             self.lgh2[i].value = -2*dx*params.l*np.sin(x[2]) + 2*dy*params.l*np.cos(x[2])
+            # print(f"lgh2[{i}]: {self.lgh2[i].value}")
             self.dh_dt[i].value = -2*(dx)*vx_obs - 2*(dy)*vy_obs # Obstacle time_varying
+            # print(f"dhdt[{i}]: {self.dh_dt[i].value}")
 
 
         if np.isnan(u_in[0]) or np.isnan(u_in[1]):
@@ -73,10 +95,7 @@ class SafetyFilter:
             # print("Ob 2 pos:", params.obstacles[1, :])
 
         try:
-            start_time = time.perf_counter()
-            self.prob.solve(solver=cp.OSQP, warm_start=True)
-            end_time = time.perf_counter()
-            print(f"solve time: {end_time - start_time}")
+            self.prob.solve(solver=cp.OSQP, warm_start=True, verbose=True)
             if self.prob.status not in ["optimal", "optimal_inaccurate"]:
                 raise cp.error.SolverError("Infeasible or failed solve")
             u_out = self.u.value
@@ -84,4 +103,6 @@ class SafetyFilter:
         # Fallback strategy
             u_out = np.array([0, 0])
         # Solve
+        print(f"status:{self.prob.status}")
+        print("**************************")
         return u_out

@@ -5,9 +5,8 @@ import cvxpy as cp
 import time
 import csv
 
-@njit
+# @njit
 def mppi(x, prev_safe, targets, params):
-    
     X_calc = np.zeros((params.K, params.T + 1, 5))
     U1 = gen_normal_control_seq(prev_safe[0, 0], 6, prev_safe[0, 1], params.max_w*2, 667, params.T) # Generate control sequences
     U2 = gen_normal_control_seq(prev_safe[1, 0], 6, prev_safe[1, 1], params.max_w*2, 667, params.T)
@@ -22,10 +21,15 @@ def mppi(x, prev_safe, targets, params):
         X_calc[k, 0, :] = x  # Initialize all trajectories with the current state
             
     costs = np.zeros(params.K) # initialize all costs
+    last_u = np.zeros(2)
     for k in range(params.K):
         path_safe = True
         for t in range(len(targets)-1):
-            X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], U[k, t], params)
+            u_nom = U[k,t]
+            # u_safe = sf.filter(u_nom, x, params, last_u)
+            u_safe = u_nom
+            last_u = u_safe
+            X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], u_safe, params)
             next_x = X_calc[k, t+1, :]
             for o in params.obstacles: # check for obstacle collision
                 if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2])**2:
@@ -34,15 +38,17 @@ def mppi(x, prev_safe, targets, params):
                     costs[k] = np.inf
                     break
             current_target = targets[t]
-            cost = cost_function(X_calc[k, t+1, :], U[k, t], current_target)
+            cost = cost_function(X_calc[k, t+1, :], u_safe, current_target)
             costs[k] += cost
         if path_safe:
             final_target = targets[-1]    
             terminal_cost_val = terminal_cost(X_calc[k, params.T, :], final_target) #Terminal cost of final state
             costs[k] += terminal_cost_val
+        last_u = np.zeros(2)
         
     # Calculate weights for each trajectory
     weights = np.exp(-(costs - np.min(costs)) / params.lambda_)
+    print(f"weights: {weights}")
     sum_weights = np.sum(weights)
     if sum_weights < 1e-10:
         weights = np.ones_like(weights) / len(weights)  # fallback to uniform
@@ -57,7 +63,7 @@ def mppi(x, prev_safe, targets, params):
     return u_star[0], X_calc, traj_weight_single, num_discarded_paths
 
 # Cost function
-@njit
+# @njit
 def cost_function(x, u, target):
     Q = np.diag(np.array([16, 16, 0.0, 0.00, 0.00]))  # State costs
     R = np.diag(np.array([0.0005,0.001]))  # Input costs
@@ -71,7 +77,7 @@ def cost_function(x, u, target):
     return cost
 
 # Terminal Cost Function
-@njit
+# @njit
 def terminal_cost(x, target):
     Q = np.diag(np.array([20, 20, 0.0, 0.00, 0.00]))
     x_des= np.array([target[0], target[1], target[2], 0, 0])
@@ -81,7 +87,7 @@ def terminal_cost(x, target):
     return terminal_cost 
 
 # Unicyle dynamics
-@njit
+# @njit
 def unicyle_dynamics(x, u, params, dt=-1.0):    
     if(dt == -1.0):
         dt = params.dt
@@ -107,85 +113,3 @@ def unicyle_dynamics(x, u, params, dt=-1.0):
     x_star[4] = w
 
     return x_star
-
-def safety_filter(u_nom, x, params, last_u):
-    # Variables
-    u = cp.Variable(2)        # [v, omega]
-    alpha = 15.0
-
-    constraints = []
-
-    # Loop through all obstacles
-    for i in range(len(params.obstacles)):
-        c = params.obstacles[i][0:2]   # obstacle center (x, y)
-        r = params.obstacles[i][2]     # obstacle radius
-
-        dx = x[0] - c[0] + params.l * np.cos(x[2])
-        dy = x[1] - c[1] + params.l * np.sin(x[2])
-
-        if params.first_filter:
-            vx_obs = 0.0
-            vy_obs = 0.0
-        else:
-            vx_obs = (c[0] - params.last_obstacle_pos[i][0]) / params.safety_dt
-            vy_obs = (c[1] - params.last_obstacle_pos[i][1]) / params.safety_dt
-        params.last_obstacle_pos[i] = np.array([c[0], c[1]])
-
-        v_obs = np.array([vx_obs, vy_obs])
-
-        # Barrier function
-        h = (dx)**2 + (dy)**2 - (r+0.1)**2
-        # Lie derivative term
-        Lg_h = np.array([
-            2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2]),
-            -2*dx*params.l*np.sin(x[2]) + 2*dy*params.l*np.cos(x[2])
-        ])
-
-        dh_dt = -2*(dx)*vx_obs - 2*(dy)*vy_obs # Obstacle time_varying
-
-        # Add inequality constraint: Lg_h @ u + alpha * h >= 0
-        constraints.append(Lg_h @ u + dh_dt + alpha * h >= 0)
-   
-    constraints.append(u[0] - last_u[0] <= params.max_v_dot)
-    constraints.append(u[0] - last_u[0] >= -params.max_v_dot)
-    constraints.append(u[1] - last_u[1] <= params.max_w_dot)
-    constraints.append(u[1] - last_u[1] >= -params.max_w_dot)
-
-    if np.isnan(u_nom[0]) or np.isnan(u_nom[1]):
-        print("NAN")
-        print("x", x)
-        print("Ob 1 pos:", params.obstacles[0, :])
-        # print("Ob 2 pos:", params.obstacles[1, :])
-
-    compute_times = np.zeros(3)
-    for j in range(len(filter_outputs)):
-            
-        # Define QP
-        Q = np.diag([40.0 * ((j+1)/3), 1.0])   # heavier cost on v
-        cost = cp.quad_form(u - u_nom, Q)
-        prob = cp.Problem(cp.Minimize(cost), constraints)
-        
-        try:
-            start_time = time.perf_counter()
-            prob.solve(solver=cp.OSQP, warm_start=True)
-            end_time = time.perf_counter()
-            print(f"solve time: {end_time - start_time}")
-            compute_times[j] = end_time-start_time
-            if prob.status not in ["optimal", "optimal_inaccurate"]:
-                raise cp.error.SolverError("Infeasible or failed solve")
-            u_out = u.value
-            filter_outputs[j] = u_out
-        except cp.error.SolverError:
-        # Fallback strategy
-            u_out = np.array([0, 0])
-    
-    # with open('./data/compute_time.csv', 'a', newline='', encoding='utf-8') as file:
-    #     # 'Step',  'v_nom', 'v_q1', 'v_q2', 'v_q3', 'w_nom','w_q1', 'w_q2', 'w_q3' 'x', 'y', 'obs_x']
-    #     writer = csv.writer(file)
-    #     writer.writerow([compute_times[0]])
-    #     writer.writerow([compute_times[1]])
-    #     writer.writerow([compute_times[2]])
-
-    params.first_filter = False
-    # Solve
-    return filter_outputs

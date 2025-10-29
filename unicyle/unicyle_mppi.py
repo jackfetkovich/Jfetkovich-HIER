@@ -10,6 +10,7 @@ from animation import animate
 from safety_filter import SafetyFilter
 import matplotlib.pyplot as plt
 import cvxpy as cp
+import time as clk
 
 params = Parameters(
     dt = 0.025, # time step for MPPI
@@ -24,12 +25,10 @@ params = Parameters(
     max_w = 20.0, # max angular velocity (radians/s)
     max_v_dot = 8.0, # max linear acceleration (m/s^2)
     max_w_dot = 30.0, # max angular acceleration (radians/s^2) (8.0)
-    obstacles = np.array([(6.0, 0.0, 0.2), (4.0, 0.0, 0.2)]),
+    obstacles = np.array([(6.0, 0.0, 0.2), (4.0, 0.0, 0.4)]),
     last_obstacle_pos = np.array([[6.0, 0.0], [4.0, 0.0]]),
     first_filter = True
 )
-
-
 
 # Main function
 def main():
@@ -63,9 +62,10 @@ def main():
     Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2*params.dt))*main_safety_ratio
     ## Generation of waypoints for obstacle and robot
     traj = generate_trajectory_from_waypoints(points, int(Tx / main_safety_ratio)+1) # trajectory of waypoints
-    sf1 = SafetyFilter(params, 15.0, np.diag([40, 1]), params.safety_dt)
-    sf2 = SafetyFilter(params, 15.0, np.diag([20, 1]), params.safety_dt)
-    sf3 = SafetyFilter(params, 15.0, np.diag([10, 1]), params.safety_dt)
+    sf1 = SafetyFilter(params, 10.0, np.diag([100, 1]), params.safety_dt)
+    sf2 = SafetyFilter(params, 5.0, np.diag([20, 1]), params.safety_dt)
+    sf3 = SafetyFilter(params, 5.0, np.diag([10, 1]), params.safety_dt)
+    sf_rollout = SafetyFilter(params, 15.0, np.diag([40, 1]), params.dt)
     print("Is DPP? ", sf1.prob.is_dcp(dpp=True))
 
     def sim():
@@ -92,19 +92,22 @@ def main():
         print("Obstacle traj size", obstacle_traj.size)
         print("Costs size", costs.size)
         
-
-        # with open('./data/filter_recording.csv', 'w', newline='', encoding='utf-8') as file:
-        #     writer = csv.writer(file)
-        #     writer.writerow(['Step',  'u_nom_v', 'u_nom_w', 'u_safety_v', 'u_safety_w', 'x', 'y', 'obs_x'])
-
-        with open('./data/compute_time.csv', 'w', newline='', encoding='utf-8') as file:
+        #t, x, y, obsx, obsy, unomv, unomw, s0v, s0w, s1v, s1w, s2v, s2w
+        with open('./data/biased_sampling_filter.csv', 'w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
-            writer.writerow(['time'])
+            writer.writerow(['Step', 'x', 'y', 'obs_x', 'obs_y', 'u_nom_v', 'u_nom_w', 'us0v', 'us0w', 'us1v', 'us1w','us2v', 'us2w'])
+
+        # with open('./data/compute_time.csv', 'w', newline='', encoding='utf-8') as file:
+        #     writer = csv.writer(file)
+        #     writer.writerow(['time'])
         safe_outputs = np.zeros((3, 2), dtype=np.float32)
         for t in range(Tx-1):
             print(t)
             if t % main_safety_ratio == 0:
+                start_time = clk.perf_counter()
                 u_nom, X_calc, traj_weight_single, discarded_paths = mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params) # Calculate the optimal control input
+                end_time = clk.perf_counter()
+                # print(f"MPPI: {end_time - start_time}")
                 total_discarded_paths += discarded_paths
                 for k in range(params.K):
                     for t_ in range (params.T): # Reshaping trajectory weight list for use in animation
@@ -127,14 +130,19 @@ def main():
                 y_ob[i] = params.obstacles[i][1]
             
             safe_outputs[0] = sf1.filter(u_nom, x, params, last_u)
-            safe_outputs[1] = sf1.filter(u_nom, x, params, last_u)
-            safe_outputs[2] = sf1.filter(u_nom, x, params, last_u)
+            safe_outputs[1] = sf2.filter(u_nom, x, params, last_u)
+            safe_outputs[2] = sf3.filter(u_nom, x, params, last_u)
             U[t] = safe_outputs[0]
             # U[t] = u_nom
             
-            # with open('./data/filter_recording.csv', 'a', newline='', encoding='utf-8') as file:
-            #     writer = csv.writer(file)
-            #     writer.writerow([t, u_nom[0], u_nom[1], U[t][0], U[t][1], X[t][0], X[t][1], params.obstacles[0][0]])
+            # t, x, y, obsx, obsy, unomv, unomw, s0v, s0w, s1v, s1w, s2v, s2w
+            with open('./data/biased_sampling_filter.csv', 'a', newline='', encoding='utf-8') as file:
+                writer = csv.writer(file)
+                writer.writerow([t, X[t][0], X[t][1], params.obstacles[1][0], params.obstacles[1][1], u_nom[0], u_nom[1], 
+                                safe_outputs[0][0], safe_outputs[0][1], 
+                                safe_outputs[1][0], safe_outputs[1][1],
+                                safe_outputs[2][0], safe_outputs[2][1]
+                                ])
             
             x = unicyle_dynamics(x, U[t], params, dt=params.safety_dt) # Calculate what happens when you apply that input
             X[t + 1, :] = x # Store the new state
