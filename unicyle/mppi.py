@@ -8,9 +8,9 @@ import csv
 # @njit
 def mppi(x, prev_safe, targets, params, sf):
     X_calc = np.zeros((params.K, params.T + 1, 5))
-    U1 = gen_normal_control_seq(prev_safe[0, 0], 6, prev_safe[0, 1], params.max_w/4, 400, params.T) # Generate control sequences
-    U2 = gen_normal_control_seq(prev_safe[1, 0], 6, prev_safe[1, 1], params.max_w/4, 400, params.T)
-    U3 = gen_normal_control_seq(prev_safe[2, 0], 6, prev_safe[2, 1], params.max_w/4, 400, params.T)
+    U1 = gen_normal_control_seq(prev_safe[0, 0], 6, prev_safe[0, 1], params.max_w/4, 667, params.T) # Generate control sequences
+    U2 = gen_normal_control_seq(prev_safe[1, 0], 6, prev_safe[1, 1], params.max_w/4, 667, params.T)
+    U3 = gen_normal_control_seq(prev_safe[2, 0], 6, prev_safe[2, 1], params.max_w/4, 666, params.T)
     U = np.vstack((U1, U2, U3))
     # U = np.tile([6, 0], (params.K, params.T, 1))
 
@@ -27,7 +27,6 @@ def mppi(x, prev_safe, targets, params, sf):
         path_safe = True
         for t in range(len(targets)-1):
             u_nom = U[k,t]
-            # u_safe = sf.filter(u_nom, x, params, last_u)
             u_safe = u_nom
             last_u = u_safe
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], u_safe, params)
@@ -51,7 +50,6 @@ def mppi(x, prev_safe, targets, params, sf):
         
     # Calculate weights for each trajectory
     weights = np.exp(-(costs - np.min(costs)) / params.lambda_)
-    print(f"weights: {weights}")
     sum_weights = np.sum(weights)
     if sum_weights < 1e-10:
         weights = np.ones_like(weights) / len(weights)  # fallback to uniform
