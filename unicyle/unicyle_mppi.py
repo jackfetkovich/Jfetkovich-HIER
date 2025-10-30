@@ -15,8 +15,8 @@ import time as clk
 params = Parameters(
     dt = 0.025, # time step for MPPI
     safety_dt = 0.001, # time step for safety
-    K = 2000,   # number of samples
-    T = 20, # time steps (HORIZON)
+    K = 1200,   # number of samples
+    T = 15, # time steps (HORIZON)
     sigma = 2,
     lambda_ = 2,
     l = 0.3,
@@ -24,9 +24,9 @@ params = Parameters(
     max_v = 6.0, # max x velocity (m/s)
     max_w = 45.0, # max angular velocity (radians/s)
     max_v_dot = 8.0, # max linear acceleration (m/s^2)
-    max_w_dot = 30.0, # max angular acceleration (radians/s^2) (8.0)
-    obstacles = np.array([(6.0, 0.0, 0.2), (4.0, 0.0, 0.4)]),
-    last_obstacle_pos = np.array([[6.0, 0.0], [4.0, 0.0]]),
+    max_w_dot = 45.0, # max angular acceleration (radians/s^2) (8.0)
+    obstacles = np.array([(6.0, 0.0, 0.2), (4.0, 0.0, 0.4), (4, 1, 1.0), (0, 2.5, 0.9)]),
+    last_obstacle_pos = np.array([[6.0, 0.0], [4.0, 0.0], [4, 1], [0,2.5]]),
     first_filter = True
 )
 
@@ -41,7 +41,7 @@ def main():
     # Original (x, y) points
     points = [
         (0.0, 0.0),
-        (6, 6.0),
+        (3, 3.0),
 
     ]
 
@@ -54,7 +54,12 @@ def main():
         (1.7, 1.7), 
         (0.7, 0.7)
 
-    ]
+    ],
+    [ (4, 1),
+        (4,1)
+    ],
+    [(0, 2.5),
+     (0, 2.5)]
     ]
 
     main_safety_ratio = int(params.dt / params.safety_dt)
@@ -63,9 +68,9 @@ def main():
     ## Generation of waypoints for obstacle and robot
     traj = generate_trajectory_from_waypoints(points, int(Tx / main_safety_ratio)+1) # trajectory of waypoints
     sf1 = SafetyFilter(params, 3.5, np.diag([30, 1]), params.safety_dt)
-    sf2 = SafetyFilter(params, 2.0, np.diag([10, 1]), params.safety_dt)
-    sf3 = SafetyFilter(params, 2.0, np.diag([5, 1]), params.safety_dt)
-    sf_rollout = SafetyFilter(params, 15.0, np.diag([40, 1]), params.dt)
+    sf2 = SafetyFilter(params, 3.0, np.diag([25, 1]), params.safety_dt)
+    sf3 = SafetyFilter(params, 3.0, np.diag([25, 1]), params.safety_dt)
+    sf_rollout = SafetyFilter(params, 3.5, np.diag([30, 1]), params.dt)
     print("Is DPP? ", sf1.prob.is_dcp(dpp=True))
 
     def sim():
@@ -105,7 +110,7 @@ def main():
             print(t)
             if t % main_safety_ratio == 0:
                 start_time = clk.perf_counter()
-                u_nom, X_calc, traj_weight_single, discarded_paths = mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params) # Calculate the optimal control input
+                u_nom, X_calc, traj_weight_single, discarded_paths = mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params, sf_rollout) # Calculate the optimal control input
                 end_time = clk.perf_counter()
                 # print(f"MPPI: {end_time - start_time}")
                 total_discarded_paths += discarded_paths
