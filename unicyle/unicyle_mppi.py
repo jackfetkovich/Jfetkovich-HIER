@@ -62,9 +62,9 @@ def main():
     Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2*params.dt))*main_safety_ratio
     ## Generation of waypoints for obstacle and robot
     traj = generate_trajectory_from_waypoints(points, int(Tx / main_safety_ratio)+1) # trajectory of waypoints
-    sf1 = SafetyFilter(params, 3.5, np.diag([30, 1]), params.safety_dt)
-    sf2 = SafetyFilter(params, 2.0, np.diag([25, 1]), params.safety_dt)
-    sf3 = SafetyFilter(params, 2.0, np.diag([25, 1]), params.safety_dt)
+    sf1 = SafetyFilter(params, 3.0, np.diag([200, 1]), params.safety_dt)
+    sf2 = SafetyFilter(params,8.0, np.diag([50, 1]), params.safety_dt)
+    sf3 = SafetyFilter(params, 8.0, np.diag([45, 1]), params.safety_dt)
     sf_rollout = SafetyFilter(params, 3.5, np.diag([30, 1]), params.dt)
     print("Is DPP? ", sf1.prob.is_dcp(dpp=True))
 
@@ -92,7 +92,7 @@ def main():
         print("Obstacle traj size", obstacle_traj.size)
         print("Costs size", costs.size)
 
-        filename = './data/experiment/no_rollout_filter_1000.csv'
+        filename = f'./data/experiment/rollout_filter_{params.K}.csv'
         
         #t, x, y, obsx, obsy, unomv, unomw, s0v, s0w, s1v, s1w, s2v, s2w
         with open(filename, 'w', newline='', encoding='utf-8') as file:
@@ -104,7 +104,7 @@ def main():
             print(t)
             if t % main_safety_ratio == 0:
                 start_time = clk.perf_counter()
-                u_nom, X_calc, traj_weight_single, discarded_paths = mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params, sf_rollout) # Calculate the optimal control input
+                u_nom, X_calc, traj_weight_single, discarded_paths = mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params) # Calculate the optimal control input
                 end_time = clk.perf_counter()
                 comp_time = end_time - start_time
                 total_discarded_paths += discarded_paths

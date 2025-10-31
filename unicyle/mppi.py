@@ -4,13 +4,14 @@ import numpy as np
 import cvxpy as cp
 import time
 import csv
+from math import ceil
 
-# @njit
-def mppi(x, prev_safe, targets, params, sf):
+@njit
+def mppi(x, prev_safe, targets, params):
     X_calc = np.zeros((params.K, params.T + 1, 5))
-    U1 = gen_normal_control_seq(prev_safe[0, 0], 6, prev_safe[0, 1], params.max_w/4, 667, params.T) # Generate control sequences
-    U2 = gen_normal_control_seq(prev_safe[1, 0], 6, prev_safe[1, 1], params.max_w/4, 667, params.T)
-    U3 = gen_normal_control_seq(prev_safe[2, 0], 6, prev_safe[2, 1], params.max_w/4, 666, params.T)
+    U1 = gen_normal_control_seq(prev_safe[0, 0], 6, prev_safe[0, 1], params.max_w/4, int(ceil(params.K/3)), params.T) # Generate control sequences
+    U2 = gen_normal_control_seq(prev_safe[1, 0], 6, prev_safe[1, 1], params.max_w/4, int(ceil(params.K/3)), params.T)
+    U3 = gen_normal_control_seq(prev_safe[2, 0], 6, prev_safe[2, 1], params.max_w/4, int(params.K - 2 * ceil(params.K/3)), params.T)
     U = np.vstack((U1, U2, U3))
     # U = np.tile([6, 0], (params.K, params.T, 1))
 
@@ -31,13 +32,13 @@ def mppi(x, prev_safe, targets, params, sf):
             last_u = u_safe
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], u_safe, params)
             next_x = X_calc[k, t+1, :]
-            for o in params.obstacles: # check for obstacle collision
-                if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2])**2:
-                    path_safe = False
-                    num_discarded_paths += 1
-                    costs[k]+=np.inf
-                    # u_safe = sf.filter(u_safe, x, params, last_u)
-                    break
+            # for o in params.obstacles: # check for obstacle collision
+                # if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2])**2:
+                #     path_safe = False
+                #     num_discarded_paths += 1
+                #     costs[k]+=np.inf
+                #     # u_safe = sf.filter(u_safe, x, params, last_u)
+                #     break
                    
             current_target = targets[t]
             cost = cost_function(X_calc[k, t+1, :], u_safe, current_target)
@@ -64,7 +65,7 @@ def mppi(x, prev_safe, targets, params, sf):
     return u_star[0], X_calc, traj_weight_single, num_discarded_paths
 
 # Cost function
-# @njit
+@njit
 def cost_function(x, u, target):
     Q = np.diag(np.array([16, 16, 0.0, 0.00, 0.00]))  # State costs
     R = np.diag(np.array([0.0005,0.001]))  # Input costs
@@ -78,7 +79,7 @@ def cost_function(x, u, target):
     return cost
 
 # Terminal Cost Function
-# @njit
+@njit
 def terminal_cost(x, target):
     Q = np.diag(np.array([20, 20, 0.0, 0.00, 0.00]))
     x_des= np.array([target[0], target[1], target[2], 0, 0])
@@ -88,7 +89,7 @@ def terminal_cost(x, target):
     return terminal_cost 
 
 # Unicyle dynamics
-# @njit
+@njit
 def unicyle_dynamics(x, u, params, dt=-1.0):    
     if(dt == -1.0):
         dt = params.dt

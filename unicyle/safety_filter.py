@@ -31,8 +31,8 @@ class SafetyFilter():
             self.u[0] >= -params.max_v,
             self.u[1] <= params.max_w,
             self.u[1] >= -params.max_w,
-            # self.u[0] - self.last_u[0] <= params.max_v_dot * dt, # Slew-rate limiting
-            # self.u[0] - self.last_u[0] >= -params.max_v_dot * dt,
+            self.u[0] - self.last_u[0] <= params.max_v_dot * dt, # Slew-rate limiting
+            self.u[0] - self.last_u[0] >= -params.max_v_dot * dt,
             self.u[1] - self.last_u[1] <= params.max_w_dot * dt,
             self.u[1] - self.last_u[1] >= -params.max_w_dot * dt,
         ]
