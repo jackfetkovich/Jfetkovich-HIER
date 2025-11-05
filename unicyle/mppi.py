@@ -17,7 +17,7 @@ def mppi(x, prev_safe, targets, params, sf):
 
     # U = gen_normal_control_seq(0.3, 6, 0, params.max_w*2, params.K, params.T) #
 
-    num_discarded_paths = 0
+    num_optimizations = 0
 
     for k in range(params.K):
         X_calc[k, 0, :] = x  # Initialize all trajectories with the current state
@@ -29,20 +29,20 @@ def mppi(x, prev_safe, targets, params, sf):
         for t in range(len(targets)-1):
             u_nom = U[k,t]
             u_safe = u_nom
-            last_u = u_safe
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], u_safe, params)
             next_x = X_calc[k, t+1, :]
             for o in params.obstacles: # check for obstacle collision
                 if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2])**2:
-                    path_safe = False
-                    num_discarded_paths += 1
-                    costs[k]+=np.inf
-                    # u_safe = sf.filter(u_safe, x, params, last_u)
+                    # path_safe = False
+                    num_optimizations += 1
+                    # costs[k]+=np.inf
+                    u_safe = sf.filter(u_safe, x, params, last_u)
                     break
                    
             current_target = targets[t]
             cost = cost_function(X_calc[k, t+1, :], u_safe, current_target)
             costs[k] += cost
+            last_u = u_safe
         if path_safe:
             final_target = targets[-1]    
             terminal_cost_val = terminal_cost(X_calc[k, params.T, :], final_target) #Terminal cost of final state
@@ -62,7 +62,7 @@ def mppi(x, prev_safe, targets, params, sf):
 
     # Compute the weighted sum of control inputs
     u_star = np.sum(weights[:, None, None] * U, axis=0)
-    return u_star[0], X_calc, traj_weight_single, num_discarded_paths
+    return u_star[0], X_calc, traj_weight_single, num_optimizations
 
 # Cost function
 # @njit
@@ -89,7 +89,7 @@ def terminal_cost(x, target):
     return terminal_cost 
 
 # Unicyle dynamics
-@njit
+# @njit
 def unicyle_dynamics(x, u, params, dt=-1.0):    
     if(dt == -1.0):
         dt = params.dt

@@ -69,7 +69,7 @@ def main():
     print("Is DPP? ", sf1.prob.is_dcp(dpp=True))
 
     def sim():
-        total_discarded_paths = 0
+        total_optimizations = 0
         obstacle_traj = np.zeros((len(params.obstacles), Tx+1, 2)) # Generate trajectory for each obstacle
         for i in range(len(params.obstacles)):
             obstacle_traj[i] = generate_trajectory_x_y(obstacle_points[i], Tx+1)
@@ -92,22 +92,22 @@ def main():
         print("Obstacle traj size", obstacle_traj.size)
         print("Costs size", costs.size)
 
-        filename = f'./data/experiment/no_rollout_filter_{params.K}.csv'
+        filename = f'./data/experiment/rollout_filter_{params.K}_count_opt.csv'
         
         #t, x, y, obsx, obsy, unomv, unomw, s0v, s0w, s1v, s1w, s2v, s2w
         with open(filename, 'w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
-            writer.writerow(['Step', 'dist', 'comp_time', 'discarded_paths'])
+            writer.writerow(['Step', 'dist', 'comp_time', 'num_opts'])
 
         safe_outputs = np.zeros((3, 2), dtype=np.float32)
         for t in range(Tx-1):
             print(t)
             if t % main_safety_ratio == 0:
                 start_time = clk.perf_counter()
-                u_nom, X_calc, traj_weight_single, discarded_paths = mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params, sf_rollout) # Calculate the optimal control input
+                u_nom, X_calc, traj_weight_single, optimizations = mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params, sf_rollout) # Calculate the optimal control input
                 end_time = clk.perf_counter()
                 comp_time = end_time - start_time
-                total_discarded_paths += discarded_paths
+                total_optimizations += optimizations
                 for k in range(params.K):
                     for t_ in range (params.T): # Reshaping trajectory weight list for use in animation
                         sample_trajectories_one[k, 0, t_] = X_calc[k, t_, 0] #should be 0
@@ -133,15 +133,6 @@ def main():
             safe_outputs[2] = sf3.filter(u_nom, x, params, last_u)
             U[t] = safe_outputs[0]
             
-            # t, x, y, obsx, obsy, unomv, unomw, s0v, s0w, s1v, s1w, s2v, s2w
-            # with open(filename, 'a', newline='', encoding='utf-8') as file:
-            #     writer = csv.writer(file)
-            #     writer.writerow([t, X[t][0], X[t][1], params.obstacles[1][0], params.obstacles[1][1], u_nom[0], u_nom[1], 
-            #                     safe_outputs[0][0], safe_outputs[0][1], 
-            #                     safe_outputs[1][0], safe_outputs[1][1],
-            #                     safe_outputs[2][0], safe_outputs[2][1]
-            #                     ])
-            
             x = unicyle_dynamics(x, U[t], params, dt=params.safety_dt) # Calculate what happens when you apply that input
             X[t + 1, :] = x # Store the new state
             time.append(t)
@@ -153,7 +144,8 @@ def main():
                 y_goal = traj[min(int(t/main_safety_ratio)+1+params.T, len(traj)-1), 1]
                 with open(filename, 'a', newline='', encoding='utf-8') as file:
                     writer = csv.writer(file)
-                    writer.writerow([t, np.sqrt((x[0]-x_goal)**2 + (x[1]-y_goal)**2), comp_time, discarded_paths])
+                    writer.writerow([t, np.sqrt((x[0]-x_goal)**2 + (x[1]-y_goal)**2), comp_time, optimizations])
+            
 
             if(t % 100 == 0):
                 yield {
@@ -169,7 +161,6 @@ def main():
                     "t": t,
                     "safe_outputs": safe_outputs.copy()
                 }
-        print(total_discarded_paths)
 
     output_frames = sim()
     animate(traj[:, 0], traj[:, 1], output_frames, params)

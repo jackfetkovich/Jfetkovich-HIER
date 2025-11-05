@@ -115,7 +115,7 @@ def animate(x_traj, y_traj, output_frames, params):
     ani = animation.FuncAnimation(fig, update, frames=output_frames, interval=1, blit=True)
     plt.title(f"K={params.K}, T={params.T} - Warm Start on Safe Outputs")
     plt.legend()
-    # filename=f"./animations/{params.K}-{params.T}-multiple_sample.gif"
+    # filename=f"./animations/{params.K}-{params.T}-generation.gif"
     # ani.save(filename, writer='pillow', fps=10, )
     # print(f"Animation saved as {filename}")
     plt.show()
