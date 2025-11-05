@@ -15,7 +15,7 @@ import time as clk
 params = Parameters(
     dt = 0.025, # time step for MPPI
     safety_dt = 0.001, # time step for safety
-    K = 1600,   # number of samples
+    K = 1200,   # number of samples
     T = 18, # time steps (HORIZON)
     sigma = 2,
     lambda_ = 2,
@@ -92,7 +92,7 @@ def main():
         print("Obstacle traj size", obstacle_traj.size)
         print("Costs size", costs.size)
 
-        filename = f'./data/experiment/rollout_filter_{params.K}_count_opt.csv'
+        filename = f'./data/experiment/rollout_filter_{params.K}_count_opt_desktop.csv'
         
         #t, x, y, obsx, obsy, unomv, unomw, s0v, s0w, s1v, s1w, s2v, s2w
         with open(filename, 'w', newline='', encoding='utf-8') as file:
