@@ -4,6 +4,7 @@ from numba import int32, float32
 from numba.experimental import jitclass
 import time
 from parameters import Parameters
+import gurobipy
 
 
 class SafetyFilter():
@@ -98,7 +99,7 @@ class SafetyFilter():
             # print("Ob 2 pos:", params.obstacles[1, :])
 
         try:
-            self.prob.solve(solver=cp.OSQP,verbose=False)
+            self.prob.solve(solver=cp.GUROBI,verbose=False)
             if self.prob.status not in ["optimal", "optimal_inaccurate"]:
                 raise cp.error.SolverError("Infeasible or failed solve")
             u_out = self.u.value
