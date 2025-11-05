@@ -15,7 +15,7 @@ import time as clk
 params = Parameters(
     dt = 0.025, # time step for MPPI
     safety_dt = 0.001, # time step for safety
-    K = 2000,   # number of samples
+    K = 1600,   # number of samples
     T = 18, # time steps (HORIZON)
     sigma = 2,
     lambda_ = 2,
