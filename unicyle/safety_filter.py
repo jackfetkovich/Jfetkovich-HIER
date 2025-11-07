@@ -4,20 +4,20 @@ from numba import int32, float32
 from numba.experimental import jitclass
 import time
 from parameters import Parameters
-import gurobipy
-
 
 class SafetyFilter():
     def __init__(self, params, alpha, q, dt, output=False):
         self.num_obstacles = len(params.obstacles)
-        self.num_offsets = 2
+        self.offsets = [ (params.l, 0.0),          # center front
+                        (params.l,  0.3),         # right side
+                        (params.l, -0.3)  ]
         self.u_nom = cp.Parameter(2) # MPPI Output (what's changing)
         self.last_u = cp.Parameter(2)
         self.x = cp.Parameter(5)
-        self.lgh1 = [cp.Parameter() for _ in range(self.num_obstacles)]
-        self.lgh2 = [cp.Parameter() for _ in range(self.num_obstacles)]
-        self.h = [cp.Parameter() for _ in range(self.num_obstacles)]
-        self.dh_dt = [cp.Parameter() for _ in range(self.num_obstacles)]
+        self.lgh1 = [[cp.Parameter() for _ in range(len(self.offsets))] for _ in range(self.num_obstacles)]
+        self.lgh2 = [[cp.Parameter() for _ in range(len(self.offsets))] for _ in range(self.num_obstacles)]
+        self.h = [[cp.Parameter() for _ in range(len(self.offsets))] for _ in range(self.num_obstacles)]
+        self.dh_dt = [[cp.Parameter() for _ in range(len(self.offsets))] for _ in range(self.num_obstacles)]
         self.u = cp.Variable(2) # Control output (decision variable)
         self.q = q
         self.cost = cp.quad_form(self.u - self.u_nom, q)
@@ -40,11 +40,12 @@ class SafetyFilter():
         ]
 
         for i in range(self.num_obstacles):
-            Lg_h = cp.hstack([
-                self.lgh1[i], 
-                self.lgh2[i]
-            ])
-            self.constraints.append(Lg_h @ self.u + self.dh_dt[i] + alpha * self.h[i] >= 0)
+            for j in range(len(self.offsets)):
+                Lg_h = cp.hstack([
+                    self.lgh1[i][j], 
+                    self.lgh2[i][j]
+                ])
+                self.constraints.append(Lg_h @ self.u + self.dh_dt[i][j] + alpha * self.h[i][j] >= 0)
 
         self.objective = cp.Minimize(self.cost)
         self.prob = cp.Problem(self.objective, self.constraints)
@@ -58,22 +59,11 @@ class SafetyFilter():
         # print(f"u_nom: {self.u_nom.value}")
         # print(f"x: {self.x.value}")
         # print(f"last_U: {self.last_u.value}")
-        offsets = [[params.l * np.cos(x[2]), params.l * np.sin(x[2])], [params.l * np.cos(x[2]+np.pi/4), params.l * np.sin(x[2]+np.pi/4)]]
 
         # Loop through all obstacles
         for i in range(self.num_obstacles):
             c = params.obstacles[i][0:2]   # obstacle center (x, y)
             r = params.obstacles[i][2]     # obstacle radius
-
-            dx = x[0] - c[0] + params.l * np.cos(x[2])
-            dy = x[1] - c[1] + params.l * np.sin(x[2])
-            
-            # print(f"i={i}")
-            # print(f"c[{i}] = {c}]")
-            # print(f"r[{i}] = {r}")
-            # print(f"dx[{i}] = {dx}")
-            # print(f"dy[{i}] = {dy}")
-            # print(f"last_obs[{i}]={self.last_obstacle_pos[i]}")
 
             vx_obs = (c[0] - self.last_obstacle_pos[i][0]) / self.dt
             # print(f"vx_obs:{vx_obs}")
@@ -81,19 +71,21 @@ class SafetyFilter():
             # print(f"vy_obs:{vy_obs}")
             self.last_obstacle_pos[i] = np.array([c[0], c[1]])
 
-            # Barrier function
-            self.h[i].value = (dx)**2 + (dy)**2 - (r+0.1)**2
-            
-            
-            # Lie derivative term
-            # self.lfh[i].value = 2*x[3]*(dx*np.cos(x[2])+dy*np.sin(x[2]))
-            # print(f"lfh[{i}]: {self.lfh[i].value}")
-            self.lgh1[i].value = 2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2])
-            # print(f"lgh1[{i}]: {self.lgh1[i].value}")
-            self.lgh2[i].value = -2*dx*params.l*np.sin(x[2]) + 2*dy*params.l*np.cos(x[2])
-            # print(f"lgh2[{i}]: {self.lgh2[i].value}")
-            self.dh_dt[i].value = -2*(dx)*vx_obs - 2*(dy)*vy_obs # Obstacle time_varying
-            # print(f"dhdt[{i}]: {self.dh_dt[i].value}")
+            ct = np.cos(x[2])
+            st = np.sin(x[2])
+            for j, (l, b) in enumerate(self.offsets):
+                px = x[0] + l*ct - b*st
+                py = x[1] + l*st + b*ct
+                dx = px - c[0]
+                dy = py - c[1]
+
+                self.h[i][j].value = dx**2 + dy**2 - (r + 0.1)**2
+
+                # Control influence
+                self.lgh1[i][j].value = 2*dx*ct + 2*dy*st
+                self.lgh2[i][j].value = 2*dx*(-l*st - b*ct) + 2*dy*(l*ct - b*st)
+
+                self.dh_dt[i][j].value = -2*dx*vx_obs - 2*dy*vy_obs
 
         if np.isnan(u_in[0]) or np.isnan(u_in[1]):
             print("NAN")
@@ -112,15 +104,15 @@ class SafetyFilter():
             u_out = np.array([0, 0])
         # Solve
         # print(f"u_out: {u_out}")
-        if self.output:
-            for i in range(self.num_obstacles):
-                print(f"Obstacle: {i}")
-                #Lg_h @ self.u + self.dh_dt[i] + alpha * self.h[i]
-                print(f"h[{i}]: {self.h[i].value}")
-                print(f"[{self.lgh1[i].value}, {self.lgh2[i].value}] * {u_out} + {self.dh_dt[i].value} + {self.alpha} * {self.h[i].value}")
-                term = np.array([self.lgh1[i].value, self.lgh2[i].value]) @ u_out
-                print(f"{term} + {self.dh_dt[i].value} + {self.alpha* self.h[i].value}")
-                print(f"{term + self.dh_dt[i].value + self.alpha * self.h[i].value}")
+        # if self.output:
+        #     for i in range(self.num_obstacles):
+        #         print(f"Obstacle: {i}")
+        #         #Lg_h @ self.u + self.dh_dt[i] + alpha * self.h[i]
+        #         print(f"h[{i}]: {self.h[i].value}")
+        #         print(f"[{self.lgh1[i].value}, {self.lgh2[i].value}] * {u_out} + {self.dh_dt[i].value} + {self.alpha} * {self.h[i].value}")
+        #         term = np.array([self.lgh1[i].value, self.lgh2[i].value]) @ u_out
+        #         print(f"{term} + {self.dh_dt[i].value} + {self.alpha* self.h[i].value}")
+        #         print(f"{term + self.dh_dt[i].value + self.alpha * self.h[i].value}")
         if self.output:
             print(f"status:{self.prob.status}")
             print("**************************")
