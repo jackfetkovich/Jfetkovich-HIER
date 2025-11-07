@@ -15,7 +15,7 @@ import time as clk
 params = Parameters(
     dt = 0.025, # time step for MPPI
     safety_dt = 0.001, # time step for safety
-    K = 1200,   # number of samples
+    K = 2000,   # number of samples
     T = 18, # time steps (HORIZON)
     sigma = 2,
     lambda_ = 2,
@@ -62,10 +62,10 @@ def main():
     Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2*params.dt))*main_safety_ratio
     ## Generation of waypoints for obstacle and robot
     traj = generate_trajectory_from_waypoints(points, int(Tx / main_safety_ratio)+1) # trajectory of waypoints
-    sf1 = SafetyFilter(params, 8.0, np.diag([200, 1]), params.safety_dt)
-    sf2 = SafetyFilter(params,1.5, np.diag([200, 1]), params.safety_dt, output=True)
-    sf3 = SafetyFilter(params, 3.0, np.diag([200, 1]), params.safety_dt)
-    sf_rollout = SafetyFilter(params, 8.0, np.diag([200, 1]), params.dt)
+    sf1 = SafetyFilter(params, 3.0, np.diag([200, 1]), params.safety_dt)
+    sf2 = SafetyFilter(params,8.0, np.diag([50, 1]), params.safety_dt)
+    sf3 = SafetyFilter(params, 8.0, np.diag([45, 1]), params.safety_dt, output=True)
+    sf_rollout = SafetyFilter(params, 3.5, np.diag([30, 1]), params.dt)
     print("Is DPP? ", sf1.prob.is_dcp(dpp=True))
 
     def sim():
@@ -90,8 +90,8 @@ def main():
         print("Traj size", traj.size)
         print("Obstacle traj size", obstacle_traj.size)
 
-        filename = f'./data/experiment/filter_priority/rollout_filter_{params.K}_final_layer_least_strict.csv'
-        
+        # filename = f'./data/experiment/filter_priority/rollout_filter_{params.K}_final_layer_least_strict.csv'
+        filename = f'./data/experiment/rollout_filter_{params.K}.csv'
         #t, x, y, obsx, obsy, unomv, unomw, s0v, s0w, s1v, s1w, s2v, s2w
         with open(filename, 'w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)

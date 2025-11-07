@@ -4,8 +4,6 @@ from numba import int32, float32
 from numba.experimental import jitclass
 import time
 from parameters import Parameters
-import gurobipy
-
 
 class SafetyFilter():
     def __init__(self, params, alpha, q, dt, output=False):
