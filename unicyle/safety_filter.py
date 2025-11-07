@@ -8,14 +8,13 @@ import gurobipy
 
 
 class SafetyFilter():
-    def __init__(self, params, alpha, q, dt):
+    def __init__(self, params, alpha, q, dt, output=False):
         self.num_obstacles = len(params.obstacles)
         self.u_nom = cp.Parameter(2) # MPPI Output (what's changing)
         self.last_u = cp.Parameter(2)
         self.x = cp.Parameter(5)
         self.lgh1 = [cp.Parameter() for _ in range(self.num_obstacles)]
         self.lgh2 = [cp.Parameter() for _ in range(self.num_obstacles)]
-        # self.lfh = [cp.Parameter() for _ in range(self.num_obstacles)]
         self.h = [cp.Parameter() for _ in range(self.num_obstacles)]
         self.dh_dt = [cp.Parameter() for _ in range(self.num_obstacles)]
         self.u = cp.Variable(2) # Control output (decision variable)
@@ -26,6 +25,7 @@ class SafetyFilter():
         self.last_u_var = np.zeros(2)
         self.dt = dt
         self.last_obstacle_pos = np.copy(params.last_obstacle_pos)
+        self.output = output
 
         self.constraints = [
             self.u[0] <= params.max_v, # Box constraints
@@ -54,9 +54,9 @@ class SafetyFilter():
         self.x.value = x
         self.last_u.value = last_u
 
-        print(f"u_nom: {self.u_nom.value}")
-        print(f"x: {self.x.value}")
-        print(f"last_U: {self.last_u.value}")
+        # print(f"u_nom: {self.u_nom.value}")
+        # print(f"x: {self.x.value}")
+        # print(f"last_U: {self.last_u.value}")
 
         # Loop through all obstacles
         for i in range(self.num_obstacles):
@@ -65,32 +65,32 @@ class SafetyFilter():
 
             dx = x[0] - c[0] + params.l * np.cos(x[2])
             dy = x[1] - c[1] + params.l * np.sin(x[2])
-            print(f"i={i}")
-            print(f"c[{i}] = {c}]")
-            print(f"r[{i}] = {r}")
-            print(f"dx[{i}] = {dx}")
-            print(f"dy[{i}] = {dy}")
-            print(f"last_obs[{i}]={self.last_obstacle_pos[i]}")
+            # print(f"i={i}")
+            # print(f"c[{i}] = {c}]")
+            # print(f"r[{i}] = {r}")
+            # print(f"dx[{i}] = {dx}")
+            # print(f"dy[{i}] = {dy}")
+            # print(f"last_obs[{i}]={self.last_obstacle_pos[i]}")
 
             vx_obs = (c[0] - self.last_obstacle_pos[i][0]) / self.dt
-            print(f"vx_obs:{vx_obs}")
+            # print(f"vx_obs:{vx_obs}")
             vy_obs = (c[1] - self.last_obstacle_pos[i][1]) / self.dt
-            print(f"vy_obs:{vy_obs}")
+            # print(f"vy_obs:{vy_obs}")
             self.last_obstacle_pos[i] = np.array([c[0], c[1]])
 
             # Barrier function
             self.h[i].value = (dx)**2 + (dy)**2 - (r+0.1)**2
-            print(f"h[{i}]: {self.h[i].value}")
+            
+            
             # Lie derivative term
             # self.lfh[i].value = 2*x[3]*(dx*np.cos(x[2])+dy*np.sin(x[2]))
             # print(f"lfh[{i}]: {self.lfh[i].value}")
             self.lgh1[i].value = 2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2])
-            print(f"lgh1[{i}]: {self.lgh1[i].value}")
+            # print(f"lgh1[{i}]: {self.lgh1[i].value}")
             self.lgh2[i].value = -2*dx*params.l*np.sin(x[2]) + 2*dy*params.l*np.cos(x[2])
-            print(f"lgh2[{i}]: {self.lgh2[i].value}")
+            # print(f"lgh2[{i}]: {self.lgh2[i].value}")
             self.dh_dt[i].value = -2*(dx)*vx_obs - 2*(dy)*vy_obs # Obstacle time_varying
-            print(f"dhdt[{i}]: {self.dh_dt[i].value}")
-
+            # print(f"dhdt[{i}]: {self.dh_dt[i].value}")
 
         if np.isnan(u_in[0]) or np.isnan(u_in[1]):
             print("NAN")
@@ -99,15 +99,26 @@ class SafetyFilter():
             # print("Ob 2 pos:", params.obstacles[1, :])
 
         try:
-            self.prob.solve(solver=cp.GUROBI,verbose=False)
+            self.prob.solve(solver=cp.OSQP,verbose=False)
             if self.prob.status not in ["optimal", "optimal_inaccurate"]:
                 raise cp.error.SolverError("Infeasible or failed solve")
             u_out = self.u.value
+
         except cp.error.SolverError:
         # Fallback strategy
             u_out = np.array([0, 0])
         # Solve
-        print(f"u_out: {u_out}")
-        print(f"status:{self.prob.status}")
-        print("**************************")
+        # print(f"u_out: {u_out}")
+        if self.output:
+            for i in range(self.num_obstacles):
+                print(f"Obstacle: {i}")
+                #Lg_h @ self.u + self.dh_dt[i] + alpha * self.h[i]
+                print(f"h[{i}]: {self.h[i].value}")
+                print(f"[{self.lgh1[i].value}, {self.lgh2[i].value}] * {u_out} + {self.dh_dt[i].value} + {self.alpha} * {self.h[i].value}")
+                term = np.array([self.lgh1[i].value, self.lgh2[i].value]) @ u_out
+                print(f"{term} + {self.dh_dt[i].value} + {self.alpha* self.h[i].value}")
+                print(f"{term + self.dh_dt[i].value + self.alpha * self.h[i].value}")
+        if self.output:
+            print(f"status:{self.prob.status}")
+            print("**************************")
         return u_out

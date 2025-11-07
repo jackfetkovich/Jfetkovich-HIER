@@ -62,10 +62,10 @@ def main():
     Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2*params.dt))*main_safety_ratio
     ## Generation of waypoints for obstacle and robot
     traj = generate_trajectory_from_waypoints(points, int(Tx / main_safety_ratio)+1) # trajectory of waypoints
-    sf1 = SafetyFilter(params, 3.0, np.diag([200, 1]), params.safety_dt)
-    sf2 = SafetyFilter(params,8.0, np.diag([50, 1]), params.safety_dt)
-    sf3 = SafetyFilter(params, 8.0, np.diag([45, 1]), params.safety_dt)
-    sf_rollout = SafetyFilter(params, 3.5, np.diag([30, 1]), params.dt)
+    sf1 = SafetyFilter(params, 8.0, np.diag([200, 1]), params.safety_dt)
+    sf2 = SafetyFilter(params,1.5, np.diag([200, 1]), params.safety_dt, output=True)
+    sf3 = SafetyFilter(params, 3.0, np.diag([200, 1]), params.safety_dt)
+    sf_rollout = SafetyFilter(params, 8.0, np.diag([200, 1]), params.dt)
     print("Is DPP? ", sf1.prob.is_dcp(dpp=True))
 
     def sim():
@@ -78,7 +78,6 @@ def main():
         X = np.zeros((Tx, 5)) # list of historical states
         U = np.zeros((Tx, 2)) # list of historical control inputs
         all_weights = np.zeros((Tx, params.K), dtype=np.float32) # Weights of every generated trajectory, organized by time step
-        costs = np.zeros(Tx, dtype=np.float32)
         sample_trajectories = np.zeros((Tx, params.K, 3, params.T), dtype=np.float32)
         sample_trajectories_one = np.zeros((params.K, 3, params.T), dtype=np.float32) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
         last_u = np.zeros(2) # the control input from the previous 
@@ -90,9 +89,8 @@ def main():
         print("Main safety ratio", main_safety_ratio)
         print("Traj size", traj.size)
         print("Obstacle traj size", obstacle_traj.size)
-        print("Costs size", costs.size)
 
-        filename = f'./data/experiment/rollout_filter_{params.K}_count_opt_desktop.csv'
+        filename = f'./data/experiment/filter_priority/rollout_filter_{params.K}_final_layer_least_strict.csv'
         
         #t, x, y, obsx, obsy, unomv, unomw, s0v, s0w, s1v, s1w, s2v, s2w
         with open(filename, 'w', newline='', encoding='utf-8') as file:
@@ -114,13 +112,11 @@ def main():
                         sample_trajectories_one[k, 1, t_] = X_calc[k, t_, 1] #should be 1
                 sample_trajectories[t] = sample_trajectories_one # Save the sampled trajectories
                 all_weights[t] = traj_weight_single # List of the weights, populated in mppi function
-                costs[t] = cost_function(x, U[t], traj[int(t/main_safety_ratio)+1])
-                
+
             else:
                 base = np.array([np.ones(params.T) * X[t, 0], np.ones(params.T) * X[t, 1], np.zeros(params.T)])
                 sample_trajectories[t] = np.repeat(base[np.newaxis, :, :], params.K, axis=0)
                 all_weights[t] = np.ones(params.K)
-                costs[t] = cost_function(x, U[t], traj[int(t/main_safety_ratio)+1])
 
             for i in range(len(params.obstacles)):
                 params.obstacles[i] = np.array([obstacle_traj[i, t, 0], obstacle_traj[i,t,1], params.obstacles[i,2]])

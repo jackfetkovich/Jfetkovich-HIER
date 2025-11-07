@@ -11,9 +11,8 @@ def mppi(x, prev_safe, targets, params, sf):
     X_calc = np.zeros((params.K, params.T + 1, 5))
     U1 = gen_normal_control_seq(prev_safe[0, 0], 6, prev_safe[0, 1], params.max_w/4, int(ceil(params.K/3)), params.T) # Generate control sequences
     U2 = gen_normal_control_seq(prev_safe[1, 0], 6, prev_safe[1, 1], params.max_w/4, int(ceil(params.K/3)), params.T)
-    U3 = gen_normal_control_seq(prev_safe[2, 0], 6, prev_safe[2, 1], params.max_w/4, int(params.K - 2 * ceil(params.K/3)), params.T)
+    U3 = gen_normal_control_seq(prev_safe[2, 0], 6, prev_safe[2, 1], params.max_w/4, params.K - 2*int(ceil(params.K/3)), params.T)
     U = np.vstack((U1, U2, U3))
-    # U = np.tile([6, 0], (params.K, params.T, 1))
 
     # U = gen_normal_control_seq(0.3, 6, 0, params.max_w*2, params.K, params.T) #
 
