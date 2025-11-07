@@ -10,6 +10,7 @@ import gurobipy
 class SafetyFilter():
     def __init__(self, params, alpha, q, dt, output=False):
         self.num_obstacles = len(params.obstacles)
+        self.num_offsets = 2
         self.u_nom = cp.Parameter(2) # MPPI Output (what's changing)
         self.last_u = cp.Parameter(2)
         self.x = cp.Parameter(5)
@@ -57,6 +58,7 @@ class SafetyFilter():
         # print(f"u_nom: {self.u_nom.value}")
         # print(f"x: {self.x.value}")
         # print(f"last_U: {self.last_u.value}")
+        offsets = [[params.l * np.cos(x[2]), params.l * np.sin(x[2])], [params.l * np.cos(x[2]+np.pi/4), params.l * np.sin(x[2]+np.pi/4)]]
 
         # Loop through all obstacles
         for i in range(self.num_obstacles):
@@ -65,6 +67,7 @@ class SafetyFilter():
 
             dx = x[0] - c[0] + params.l * np.cos(x[2])
             dy = x[1] - c[1] + params.l * np.sin(x[2])
+            
             # print(f"i={i}")
             # print(f"c[{i}] = {c}]")
             # print(f"r[{i}] = {r}")
