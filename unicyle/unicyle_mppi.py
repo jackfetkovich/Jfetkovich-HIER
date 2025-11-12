@@ -22,8 +22,8 @@ params = Parameters(
     lambda_ = 2,
     l = 0.3,
     r = 0.1, 
-    max_v = 0.3, # max x velocity (m/s)
-    max_w = 0.6, # max angular velocity (radians/s)
+    max_v = 0.2, # max x velocity (m/s)
+    max_w = 0.3, # max angular velocity (radians/s)
     max_v_dot = 8.0, # max linear acceleration (m/s^2)
     max_w_dot = 45.0, # max angular acceleration (radians/s^2) (8.0)
     obstacles = np.array([(6.0, 0.0, 0.2), (4.0, 0.0, 0.4)]),
@@ -68,9 +68,9 @@ def main():
     sf3 = SafetyFilter(params, 8.0, np.diag([45, 1]), params.safety_dt, output=True)
     sf_rollout = SafetyFilter(params, 3.5, np.diag([30, 1]), params.dt)
     print("Is DPP? ", sf1.prob.is_dcp(dpp=True))
+    print(f"TX:{Tx}")
 
     def sim():
-        total_optimizations = 0
         obstacle_traj = np.zeros((len(params.obstacles), Tx+1, 2)) # Generate trajectory for each obstacle
         for i in range(len(params.obstacles)):
             obstacle_traj[i] = generate_trajectory_x_y(obstacle_points[i], Tx+1)
@@ -79,8 +79,8 @@ def main():
         X = np.zeros((Tx, 5)) # list of historical states
         U = np.zeros((Tx, 2)) # list of historical control inputs
         all_weights = np.zeros((Tx, params.K), dtype=np.float32) # Weights of every generated trajectory, organized by time step
-        sample_trajectories = np.zeros((Tx, params.K, 3, params.T), dtype=np.float32)
-        sample_trajectories_one = np.zeros((params.K, 3, params.T), dtype=np.float32) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
+        # sample_trajectories = np.zeros((Tx, params.K, 3, params.T), dtype=np.float32)
+        # sample_trajectories_one = np.zeros((params.K, 3, params.T), dtype=np.float32) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
         last_u = np.zeros(2) # the control input from the previous 
 
         x_ob = np.zeros(len(params.obstacles), dtype=np.float32)
@@ -93,19 +93,22 @@ def main():
 
         safe_outputs = np.zeros((3, 2), dtype=np.float32)
         for t in range(Tx-1):
-            print(t)
+            start_time = clk.perf_counter()
+            tel = get_tlm_data()
+            print(f"Pos: ({tel["q"][0]},{tel["q"][1]})")
+            print(f"Goal: ({traj[int(t/main_safety_ratio)+1, 0]},{traj[int(t/main_safety_ratio)+1, 1]})")
             if t % main_safety_ratio == 0:
                 u_nom, X_calc, traj_weight_single, optimizations = mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params) # Calculate the optimal control input
-                for k in range(params.K):
-                    for t_ in range (params.T): # Reshaping trajectory weight list for use in animation
-                        sample_trajectories_one[k, 0, t_] = X_calc[k, t_, 0] #should be 0
-                        sample_trajectories_one[k, 1, t_] = X_calc[k, t_, 1] #should be 1
-                sample_trajectories[t] = sample_trajectories_one # Save the sampled trajectories
+                # for k in range(params.K):
+                #     for t_ in range (params.T): # Reshaping trajectory weight list for use in animation
+                #         sample_trajectories_one[k, 0, t_] = X_calc[k, t_, 0] #should be 0
+                #         sample_trajectories_one[k, 1, t_] = X_calc[k, t_, 1] #should be 1
+                # sample_trajectories[t] = sample_trajectories_one # Save the sampled trajectories
                 all_weights[t] = traj_weight_single # List of the weights, populated in mppi function
 
             else:
                 base = np.array([np.ones(params.T) * X[t, 0], np.ones(params.T) * X[t, 1], np.zeros(params.T)])
-                sample_trajectories[t] = np.repeat(base[np.newaxis, :, :], params.K, axis=0)
+                # sample_trajectories[t] = np.repeat(base[np.newaxis, :, :], params.K, axis=0)
                 all_weights[t] = np.ones(params.K)
 
             for i in range(len(params.obstacles)):
@@ -114,15 +117,17 @@ def main():
                 x_ob[i] = params.obstacles[i][0]
                 y_ob[i] = params.obstacles[i][1]
             
-            safe_outputs[0] = sf1.filter(u_nom, x, params, last_u)
-            safe_outputs[1] = sf2.filter(u_nom, x, params, last_u)
-            safe_outputs[2] = sf3.filter(u_nom, x, params, last_u)
+            # safe_outputs[0] = sf1.filter(u_nom, x, params, last_u)
+            # safe_outputs[1] = sf2.filter(u_nom, x, params, last_u)
+            # safe_outputs[2] = sf3.filter(u_nom, x, params, last_u)
             # U[t] = safe_outputs[0]
             U[t] = u_nom
             walk_idqp(vx=u_nom[0],vy=0,vrz=u_nom[1])
             
             x = unicyle_dynamics(x, U[t], params, dt=params.safety_dt) # Calculate what happens when you apply that input
             X[t + 1, :] = x # Store the new state
+            end_time = clk.perf_counter()
+            print(f"loop time: {end_time-start_time}")
 
             
     output_frames = sim()
