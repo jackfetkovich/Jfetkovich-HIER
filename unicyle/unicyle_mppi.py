@@ -24,8 +24,8 @@ params = Parameters(
     r = 0.1, 
     max_v = 0.2, # max x velocity (m/s)
     max_w = 0.3, # max angular velocity (radians/s)
-    max_v_dot = 8.0, # max linear acceleration (m/s^2)
-    max_w_dot = 45.0, # max angular acceleration (radians/s^2) (8.0)
+    max_v_dot = 0.1, # max linear acceleration (m/s^2)
+    max_w_dot = 0.2, # max angular acceleration (radians/s^2) (8.0)
     obstacles = np.array([(6.0, 0.0, 0.2), (4.0, 0.0, 0.4)]),
     last_obstacle_pos = np.array([[6.0, 0.0], [4.0, 0.0]]),
     first_filter = True
@@ -42,7 +42,7 @@ def main():
     # Original (x, y) points
     points = [
         (0.0, 0.0),
-        (3, 3.0),
+        (0.0, 3.0),
 
     ]
 
@@ -70,6 +70,11 @@ def main():
     print("Is DPP? ", sf1.prob.is_dcp(dpp=True))
     print(f"TX:{Tx}")
 
+    filename = './../../unicycle/Jfetkovich-HIER/unicyle/data/command_vs_mpac_output4.csv'
+    with open(filename, 'w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(['x_goal', 'x', 'y_goal', 'y', 'u_v', 'v', 'u_w', 'w'])
+
     def sim():
         obstacle_traj = np.zeros((len(params.obstacles), Tx+1, 2)) # Generate trajectory for each obstacle
         for i in range(len(params.obstacles)):
@@ -95,8 +100,7 @@ def main():
         for t in range(Tx-1):
             start_time = clk.perf_counter()
             tel = get_tlm_data()
-            print(f"Pos: ({tel["q"][0]},{tel["q"][1]})")
-            print(f"Goal: ({traj[int(t/main_safety_ratio)+1, 0]},{traj[int(t/main_safety_ratio)+1, 1]})")
+
             if t % main_safety_ratio == 0:
                 u_nom, X_calc, traj_weight_single, optimizations = mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params) # Calculate the optimal control input
                 # for k in range(params.K):
@@ -123,6 +127,18 @@ def main():
             # U[t] = safe_outputs[0]
             U[t] = u_nom
             walk_idqp(vx=u_nom[0],vy=0,vrz=u_nom[1])
+            print(f"Goal: ({traj[int(t/main_safety_ratio)+1, 0]},{traj[int(t/main_safety_ratio)+1, 1]})")
+            print(f"Pos: ({tel["q"][0]},{tel["q"][1]})")
+            print(f"Command: ({u_nom[0]},{u_nom[1]})")
+            print(f"Output: ({tel["qd"][0]},{tel["qd"][2]})")
+
+            with open(filename, 'a', newline='', encoding='utf-8') as file:
+                writer = csv.writer(file)
+                writer.writerow([traj[int(t/main_safety_ratio)+1, 0], tel["q"][0],
+                                traj[int(t/main_safety_ratio)+1, 1], tel["q"][1],
+                                u_nom[0], tel["qd"][0],
+                                u_nom[1], tel["qd"][2]
+                ])
             
             x = unicyle_dynamics(x, U[t], params, dt=params.safety_dt) # Calculate what happens when you apply that input
             X[t + 1, :] = x # Store the new state
@@ -138,3 +154,4 @@ def main():
 if __name__ == "__main__":
     main()
 
+sss
