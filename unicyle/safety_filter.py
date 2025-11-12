@@ -107,15 +107,15 @@ class SafetyFilter():
             u_out = np.array([0, 0])
         # Solve
         # print(f"u_out: {u_out}")
-        if self.output:
-            for i in range(self.num_obstacles):
-                print(f"Obstacle: {i}")
-                #Lg_h @ self.u + self.dh_dt[i] + alpha * self.h[i]
-                print(f"h[{i}]: {self.h[i].value}")
-                print(f"[{self.lgh1[i].value}, {self.lgh2[i].value}] * {u_out} + {self.dh_dt[i].value} + {self.alpha} * {self.h[i].value}")
-                term = np.array([self.lgh1[i].value, self.lgh2[i].value]) @ u_out
-                print(f"{term} + {self.dh_dt[i].value} + {self.alpha* self.h[i].value}")
-                print(f"{term + self.dh_dt[i].value + self.alpha * self.h[i].value}")
+        # if self.output:
+        #     for i in range(self.num_obstacles):
+        #         print(f"Obstacle: {i}")
+        #         #Lg_h @ self.u + self.dh_dt[i] + alpha * self.h[i]
+        #         print(f"h[{i}]: {self.h[i].value}")
+        #         print(f"[{self.lgh1[i].value}, {self.lgh2[i].value}] * {u_out} + {self.dh_dt[i].value} + {self.alpha} * {self.h[i].value}")
+        #         term = np.array([self.lgh1[i].value, self.lgh2[i].value]) @ u_out
+        #         print(f"{term} + {self.dh_dt[i].value} + {self.alpha* self.h[i].value}")
+        #         print(f"{term + self.dh_dt[i].value + self.alpha * self.h[i].value}")
         if self.output:
             print(f"status:{self.prob.status}")
             print("**************************")
