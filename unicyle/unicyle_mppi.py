@@ -23,9 +23,9 @@ params = Parameters(
     l = 0.3,
     r = 0.1, 
     max_v = 0.2, # max x velocity (m/s)
-    max_w = 0.3, # max angular velocity (radians/s)
+    max_w = 1, # max angular velocity (radians/s)
     max_v_dot = 0.1, # max linear acceleration (m/s^2)
-    max_w_dot = 0.2, # max angular acceleration (radians/s^2) (8.0)
+    max_w_dot = 3, # max angular acceleration (radians/s^2) (8.0)
     obstacles = np.array([(6.0, 0.0, 0.2), (4.0, 0.0, 0.4)]),
     last_obstacle_pos = np.array([[6.0, 0.0], [4.0, 0.0]]),
     first_filter = True
@@ -42,8 +42,8 @@ def main():
     # Original (x, y) points
     points = [
         (0.0, 0.0),
-        (0.0, 3.0),
-
+        (1.0, 0.0),
+        (0.0, 3.0)
     ]
 
     obstacle_points = [ 
@@ -97,6 +97,9 @@ def main():
         print("Obstacle traj size", obstacle_traj.size)
 
         safe_outputs = np.zeros((3, 2), dtype=np.float32)
+        stand_idqp()
+        clk.sleep(4)
+        
         for t in range(Tx-1):
             start_time = clk.perf_counter()
             tel = get_tlm_data()
@@ -140,7 +143,7 @@ def main():
                                 u_nom[1], tel["qd"][2]
                 ])
             
-            x = unicyle_dynamics(x, U[t], params, dt=params.safety_dt) # Calculate what happens when you apply that input
+            x = np.array([tel["q"][0], tel["q"][1], tel["q"][2], tel["qd"][0], tel["qd"][2]])
             X[t + 1, :] = x # Store the new state
             end_time = clk.perf_counter()
             print(f"loop time: {end_time-start_time}")
@@ -154,4 +157,3 @@ def main():
 if __name__ == "__main__":
     main()
 
-sss
