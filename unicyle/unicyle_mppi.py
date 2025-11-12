@@ -11,6 +11,7 @@ from safety_filter import SafetyFilter
 import matplotlib.pyplot as plt
 import cvxpy as cp
 import time as clk
+from mpac_cmd import *
 
 params = Parameters(
     dt = 0.025, # time step for MPPI
@@ -21,8 +22,8 @@ params = Parameters(
     lambda_ = 2,
     l = 0.3,
     r = 0.1, 
-    max_v = 6.0, # max x velocity (m/s)
-    max_w = 45.0, # max angular velocity (radians/s)
+    max_v = 0.3, # max x velocity (m/s)
+    max_w = 0.6, # max angular velocity (radians/s)
     max_v_dot = 8.0, # max linear acceleration (m/s^2)
     max_w_dot = 45.0, # max angular acceleration (radians/s^2) (8.0)
     obstacles = np.array([(6.0, 0.0, 0.2), (4.0, 0.0, 0.4)]),
@@ -90,22 +91,11 @@ def main():
         print("Traj size", traj.size)
         print("Obstacle traj size", obstacle_traj.size)
 
-        # filename = f'./data/experiment/filter_priority/rollout_filter_{params.K}_final_layer_least_strict.csv'
-        filename = f'./data/experiment/rollout_filter_{params.K}.csv'
-        #t, x, y, obsx, obsy, unomv, unomw, s0v, s0w, s1v, s1w, s2v, s2w
-        with open(filename, 'w', newline='', encoding='utf-8') as file:
-            writer = csv.writer(file)
-            writer.writerow(['Step', 'dist', 'comp_time', 'num_opts'])
-
         safe_outputs = np.zeros((3, 2), dtype=np.float32)
         for t in range(Tx-1):
             print(t)
             if t % main_safety_ratio == 0:
-                start_time = clk.perf_counter()
-                u_nom, X_calc, traj_weight_single, optimizations = mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params, sf_rollout) # Calculate the optimal control input
-                end_time = clk.perf_counter()
-                comp_time = end_time - start_time
-                total_optimizations += optimizations
+                u_nom, X_calc, traj_weight_single, optimizations = mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params) # Calculate the optimal control input
                 for k in range(params.K):
                     for t_ in range (params.T): # Reshaping trajectory weight list for use in animation
                         sample_trajectories_one[k, 0, t_] = X_calc[k, t_, 0] #should be 0
@@ -127,39 +117,16 @@ def main():
             safe_outputs[0] = sf1.filter(u_nom, x, params, last_u)
             safe_outputs[1] = sf2.filter(u_nom, x, params, last_u)
             safe_outputs[2] = sf3.filter(u_nom, x, params, last_u)
-            U[t] = safe_outputs[0]
+            # U[t] = safe_outputs[0]
+            U[t] = u_nom
+            walk_idqp(vx=u_nom[0],vy=0,vrz=u_nom[1])
             
             x = unicyle_dynamics(x, U[t], params, dt=params.safety_dt) # Calculate what happens when you apply that input
             X[t + 1, :] = x # Store the new state
-            time.append(t)
-            x_pos.append(X[t+1, 0]) # Save the x position at this timestep
-            y_pos.append(X[t+1, 1]) # Save the y position at this timestep
-            last_u = U[t] # Save the control input 
-            if t % main_safety_ratio == 0:
-                x_goal = traj[min(int(t/main_safety_ratio)+1+params.T, len(traj)-1), 0]
-                y_goal = traj[min(int(t/main_safety_ratio)+1+params.T, len(traj)-1), 1]
-                with open(filename, 'a', newline='', encoding='utf-8') as file:
-                    writer = csv.writer(file)
-                    writer.writerow([t, np.sqrt((x[0]-x_goal)**2 + (x[1]-y_goal)**2), comp_time, optimizations])
+
             
-
-            if(t % 100 == 0):
-                yield {
-                    "x": x[0], 
-                    "y": x[1],
-                    "theta": x[2],
-                    "v": x[3],
-                    "w": x[4],
-                    "x_ob": x_ob.copy(),
-                    "y_ob": y_ob.copy(),
-                    "samples": sample_trajectories_one.copy(),
-                    "weights": traj_weight_single.copy(),
-                    "t": t,
-                    "safe_outputs": safe_outputs.copy()
-                }
-
     output_frames = sim()
-    animate(traj[:, 0], traj[:, 1], output_frames, params)
+
     
 
 

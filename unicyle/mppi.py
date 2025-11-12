@@ -6,8 +6,8 @@ import time
 import csv
 from math import ceil
 
-# @njit
-def mppi(x, prev_safe, targets, params, sf):
+@njit
+def mppi(x, prev_safe, targets, params):
     X_calc = np.zeros((params.K, params.T + 1, 5))
     U1 = gen_normal_control_seq(prev_safe[0, 0], 6, prev_safe[0, 1], params.max_w/4, int(ceil(params.K/3)), params.T) # Generate control sequences
     U2 = gen_normal_control_seq(prev_safe[1, 0], 6, prev_safe[1, 1], params.max_w/4, int(ceil(params.K/3)), params.T)
@@ -35,7 +35,6 @@ def mppi(x, prev_safe, targets, params, sf):
                     # path_safe = False
                     num_optimizations += 1
                     # costs[k]+=np.inf
-                    u_safe = sf.filter(u_safe, x, params, last_u)
                     break
                    
             current_target = targets[t]
@@ -64,7 +63,7 @@ def mppi(x, prev_safe, targets, params, sf):
     return u_star[0], X_calc, traj_weight_single, num_optimizations
 
 # Cost function
-# @njit
+@njit
 def cost_function(x, u, target):
     Q = np.diag(np.array([16, 16, 0.0, 0.00, 0.00]))  # State costs
     R = np.diag(np.array([0.0005,0.001]))  # Input costs
@@ -78,7 +77,7 @@ def cost_function(x, u, target):
     return cost
 
 # Terminal Cost Function
-# @njit
+@njit
 def terminal_cost(x, target):
     Q = np.diag(np.array([20, 20, 0.0, 0.00, 0.00]))
     x_des= np.array([target[0], target[1], target[2], 0, 0])
@@ -88,7 +87,7 @@ def terminal_cost(x, target):
     return terminal_cost 
 
 # Unicyle dynamics
-# @njit
+@njit
 def unicyle_dynamics(x, u, params, dt=-1.0):    
     if(dt == -1.0):
         dt = params.dt
