@@ -60,7 +60,7 @@ def main():
 
     main_safety_ratio = int(params.dt / params.safety_dt)
     ### Zeroed arrays used for calcuation
-    Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2*params.dt))*main_safety_ratio
+    Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2*params.safety_dt))
     ## Generation of waypoints for obstacle and robot
     traj = generate_trajectory_from_waypoints(points, int(Tx / main_safety_ratio)+1) # trajectory of waypoints
     sf1 = SafetyFilter(params, 3.0, np.diag([200, 1]), params.safety_dt)
