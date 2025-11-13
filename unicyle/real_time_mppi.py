@@ -22,10 +22,10 @@ params = Parameters(
     lambda_ = 2,
     l = 0.3,
     r = 0.1, 
-    max_v = 0.2, # max x velocity (m/s)
-    max_w = 1, # max angular velocity (radians/s)
+    max_v = 0.35, # max x velocity (m/s)
+    max_w = 0.5, # max angular velocity (radians/s)
     max_v_dot = 0.1, # max linear acceleration (m/s^2)
-    max_w_dot = 3, # max angular acceleration (radians/s^2) (8.0)
+    max_w_dot = 0.6, # max angular acceleration (radians/s^2) (8.0)
     obstacles = np.array([(6.0, 0.0, 0.2), (4.0, 0.0, 0.4)]),
     last_obstacle_pos = np.array([[6.0, 0.0], [4.0, 0.0]]),
     first_filter = True
@@ -43,7 +43,9 @@ def main():
     points = [
         (0.0, 0.0),
         (1.0, 0.0),
-        (0.0, 3.0)
+        (1.0, 1.0),
+        (0.0, 1.0),
+        (0.0, 0.0),
     ]
 
     obstacle_points = [ 
@@ -70,12 +72,12 @@ def main():
     print("Is DPP? ", sf1.prob.is_dcp(dpp=True))
     print(f"TX:{Tx}")
 
-    filename = './../../unicycle/Jfetkovich-HIER/unicyle/data/command_vs_mpac_output4.csv'
+    filename = './../../unicycle/Jfetkovich-HIER/unicyle/data/command_vs_mpac_outputreel.csv'
     with open(filename, 'w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerow(['x_goal', 'x', 'y_goal', 'y', 'u_v', 'v', 'u_w', 'w'])
 
-    def sim():
+    def controller():
         obstacle_traj = np.zeros((len(params.obstacles), Tx+1, 2)) # Generate trajectory for each obstacle
         for i in range(len(params.obstacles)):
             obstacle_traj[i] = generate_trajectory_x_y(obstacle_points[i], Tx+1)
@@ -83,9 +85,6 @@ def main():
         x = np.array([traj[0,0],traj[0,1],traj[0,2],0,0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
         X = np.zeros((Tx, 5)) # list of historical states
         U = np.zeros((Tx, 2)) # list of historical control inputs
-        all_weights = np.zeros((Tx, params.K), dtype=np.float32) # Weights of every generated trajectory, organized by time step
-        # sample_trajectories = np.zeros((Tx, params.K, 3, params.T), dtype=np.float32)
-        # sample_trajectories_one = np.zeros((params.K, 3, params.T), dtype=np.float32) # k sets of (x1, x2, ..., xn), (y1, y2, ..., yn), (w1, w2, ..., wn)
         last_u = np.zeros(2) # the control input from the previous 
 
         x_ob = np.zeros(len(params.obstacles), dtype=np.float32)
@@ -100,23 +99,16 @@ def main():
         stand_idqp()
         clk.sleep(4)
         
-        for t in range(Tx-1):
+        # Main Loop
+        for t in range(Tx -1):
             start_time = clk.perf_counter()
             tel = get_tlm_data()
 
             if t % main_safety_ratio == 0:
                 u_nom, X_calc, traj_weight_single, optimizations = mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params) # Calculate the optimal control input
-                # for k in range(params.K):
-                #     for t_ in range (params.T): # Reshaping trajectory weight list for use in animation
-                #         sample_trajectories_one[k, 0, t_] = X_calc[k, t_, 0] #should be 0
-                #         sample_trajectories_one[k, 1, t_] = X_calc[k, t_, 1] #should be 1
-                # sample_trajectories[t] = sample_trajectories_one # Save the sampled trajectories
-                all_weights[t] = traj_weight_single # List of the weights, populated in mppi function
 
             else:
                 base = np.array([np.ones(params.T) * X[t, 0], np.ones(params.T) * X[t, 1], np.zeros(params.T)])
-                # sample_trajectories[t] = np.repeat(base[np.newaxis, :, :], params.K, axis=0)
-                all_weights[t] = np.ones(params.K)
 
             for i in range(len(params.obstacles)):
                 params.obstacles[i] = np.array([obstacle_traj[i, t, 0], obstacle_traj[i,t,1], params.obstacles[i,2]])
@@ -133,25 +125,22 @@ def main():
             print(f"Goal: ({traj[int(t/main_safety_ratio)+1, 0]},{traj[int(t/main_safety_ratio)+1, 1]})")
             print(f"Pos: ({tel["q"][0]},{tel["q"][1]})")
             print(f"Command: ({u_nom[0]},{u_nom[1]})")
-            print(f"Output: ({tel["qd"][0]},{tel["qd"][2]})")
+            print(f"Output: ({tel["qd"][0]},{tel["qd"][5]})")
 
             with open(filename, 'a', newline='', encoding='utf-8') as file:
                 writer = csv.writer(file)
                 writer.writerow([traj[int(t/main_safety_ratio)+1, 0], tel["q"][0],
                                 traj[int(t/main_safety_ratio)+1, 1], tel["q"][1],
                                 u_nom[0], tel["qd"][0],
-                                u_nom[1], tel["qd"][2]
+                                u_nom[1], tel["qd"][5]
                 ])
             
-            x = np.array([tel["q"][0], tel["q"][1], tel["q"][2], tel["qd"][0], tel["qd"][2]])
+            x = np.array([tel["q"][0], tel["q"][1], tel["q"][5], tel["qd"][0], tel["qd"][5]])
             X[t + 1, :] = x # Store the new state
             end_time = clk.perf_counter()
             print(f"loop time: {end_time-start_time}")
-
             
-    output_frames = sim()
-
-    
+    controller()
 
 
 if __name__ == "__main__":

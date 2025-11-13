@@ -14,7 +14,7 @@ def mppi(x, prev_safe, targets, params):
     # U3 = gen_normal_control_seq(prev_safe[2, 0], 6, prev_safe[2, 1], params.max_w/4, params.K - 2*int(ceil(params.K/3)), params.T)
     # U = np.vstack((U1, U2, U3))
 
-    U = gen_normal_control_seq(0.3, 1, 0, params.max_w*3, params.K, params.T) #
+    U = gen_normal_control_seq(0.3, 1, 0, params.max_w/2, params.K, params.T) #
 
     num_optimizations = 0
 
@@ -30,12 +30,12 @@ def mppi(x, prev_safe, targets, params):
             u_safe = u_nom
             X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], u_safe, params)
             next_x = X_calc[k, t+1, :]
-            for o in params.obstacles: # check for obstacle collision
-                if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2])**2:
-                    # path_safe = False
-                    num_optimizations += 1
-                    # costs[k]+=np.inf
-                    break
+            # for o in params.obstacles: # check for obstacle collision
+            #     if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2])**2:
+            #         # path_safe = False
+            #         num_optimizations += 1
+            #         # costs[k]+=np.inf
+            #         break
                    
             current_target = targets[t]
             cost = cost_function(X_calc[k, t+1, :], u_safe, current_target)
