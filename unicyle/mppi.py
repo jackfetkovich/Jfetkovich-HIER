@@ -14,7 +14,7 @@ def mppi(x, prev_safe, targets, params):
     # U3 = gen_normal_control_seq(prev_safe[2, 0], 6, prev_safe[2, 1], params.max_w/4, params.K - 2*int(ceil(params.K/3)), params.T)
     # U = np.vstack((U1, U2, U3))
 
-    U = gen_normal_control_seq(0.3, 1, 0, params.max_w/2, params.K, params.T) #
+    U = gen_normal_control_seq(0.3, 1, 0, params.max_w, params.K, params.T) #
 
     num_optimizations = 0
 
@@ -65,8 +65,8 @@ def mppi(x, prev_safe, targets, params):
 # Cost function
 @njit
 def cost_function(x, u, target):
-    Q = np.diag(np.array([16, 16, 0.0, 0.00, 0.00]))  # State costs
-    R = np.diag(np.array([0.0005,0.001]))  # Input costs
+    Q = np.diag(np.array([16, 16, 0.5, 0.00, 0.00]))  # State costs
+    R = np.diag(np.array([0.0005,0.0001]))  # Input costs
 
     x_des = np.array([target[0], target[1], target[2], 0, 0])
     state_diff = x_des - x
@@ -79,7 +79,7 @@ def cost_function(x, u, target):
 # Terminal Cost Function
 @njit
 def terminal_cost(x, target):
-    Q = np.diag(np.array([20, 20, 0.0, 0.00, 0.00]))
+    Q = np.diag(np.array([20, 20, 0.5, 0.00, 0.00]))
     x_des= np.array([target[0], target[1], target[2], 0, 0])
     state_diff = x_des - x
     state_diff[2] = (state_diff[2] + np.pi) % (2 * np.pi) - np.pi
@@ -98,12 +98,12 @@ def unicyle_dynamics(x, u, params, dt=-1.0):
     # w = u[1]
 
     # Aceleration Limiting
-    last_v = x[3]
-    if abs(v - last_v) > params.max_v_dot * dt: 
-        v = x[3] + params.max_v_dot * dt * np.sign(v - x[3])
+    # last_v = x[3]
+    # if abs(v - last_v) > params.max_v_dot * dt: 
+    #     v = x[3] + params.max_v_dot * dt * np.sign(v - x[3])
     
-    if abs(w - x[4]) > params.max_w_dot * dt:
-        w  = x[4] + params.max_w_dot * dt * np.sign(w - x[4])
+    # if abs(w - x[4]) > params.max_w_dot * dt:
+    #     w  = x[4] + params.max_w_dot * dt * np.sign(w - x[4])
 
     x_star = np.zeros(5)
     x_star[0] = x[0] + v * np.cos(x[2]) * dt
