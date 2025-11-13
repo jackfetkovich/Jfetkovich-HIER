@@ -14,10 +14,10 @@ import time as clk
 from mpac_cmd import *
 
 params = Parameters(
-    dt = 0.025, # time step for MPPI
-    safety_dt = 0.001, # time step for safety
+    dt = 0.02, # time step for MPPI
+    safety_dt = 0.005, # time step for safety
     K = 2000,   # number of samples
-    T = 18, # time steps (HORIZON)
+    T = 50, # time steps (HORIZON)
     sigma = 2,
     lambda_ = 2,
     l = 0.3,
@@ -37,16 +37,14 @@ def main():
     x_pos = []
     y_pos = []
 
-    
-   
-    # Original (x, y) points
     points = [
         (0.0, 0.0),
-        (1.0, 0.0),
-        (1.0, 1.0),
-        (0.0, 1.0),
+        (3.0, 0.0),
+        (3.0, 3.0),
+        (0.0, 3.0),
         (0.0, 0.0),
     ]
+
 
     obstacle_points = [ 
     [
@@ -59,6 +57,7 @@ def main():
 
     ]
     ]
+
 
     main_safety_ratio = int(params.dt / params.safety_dt)
     ### Zeroed arrays used for calcuation

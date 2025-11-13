@@ -20,8 +20,8 @@ def animate(x_traj, y_traj, output_frames, params):
     # Set up the figure
     fig, ax = plt.subplots(figsize=(19.2, 10.8), dpi=100)
     # fig, ax = plt.subplots()
-    ax.set_xlim(-1, 6)
-    ax.set_ylim(-1, 4)
+    ax.set_xlim(-1, 5)
+    ax.set_ylim(-1, 5)
 
 
     ax.set_xlabel("X Position")
@@ -41,9 +41,9 @@ def animate(x_traj, y_traj, output_frames, params):
     for i in range(params.K):
         samples.append(ax.plot([], [], color=[0.5, 0.5, 0.5], linewidth=0.5)[0])
 
-    l1 = ax.plot([], [], color=(0.698, 0.031, 0.988, 0.75), linewidth=3)[0]
-    l2 = ax.plot([], [], color=(0.988, 0.561, 0.031, 0.75), linewidth=3)[0]
-    l3 = ax.plot([], [], color=(0.031, 0.788, 0.988, 0.75), linewidth=3)[0]
+    # l1 = ax.plot([], [], color=(0.698, 0.031, 0.988, 0.75), linewidth=3)[0]
+    # l2 = ax.plot([], [], color=(0.988, 0.561, 0.031, 0.75), linewidth=3)[0]
+    # l3 = ax.plot([], [], color=(0.031, 0.788, 0.988, 0.75), linewidth=3)[0]
 
     # Initialize plot elements
     line, = ax.plot([], [], 'r-', linewidth=2)  # History line
@@ -64,9 +64,9 @@ def animate(x_traj, y_traj, output_frames, params):
         x_vals.append(x)
         y_vals.append(y)
 
-        # Obstacles
-        for i in range(len(circles)):
-            circles[i].center = (x_ob[i], y_ob[i])
+        # # Obstacles
+        # for i in range(len(circles)):
+        #     circles[i].center = (x_ob[i], y_ob[i])
 
         # History and current position
         line.set_data(x_vals, y_vals)
@@ -99,9 +99,9 @@ def animate(x_traj, y_traj, output_frames, params):
             prop_paths[1, i+1]= unicyle_dynamics(prop_paths[1, i], np.array([safe_vs[1], safe_ws[1]]), params)
             prop_paths[2, i+1]= unicyle_dynamics(prop_paths[2, i], np.array([safe_vs[2], safe_ws[2]]), params)
 
-        l1.set_data(prop_paths[0, :, 0], prop_paths[0, :, 1])
-        l2.set_data(prop_paths[1, :, 0], prop_paths[1, :, 1])
-        l3.set_data(prop_paths[2, :, 0], prop_paths[2, :, 1])
+        # l1.set_data(prop_paths[0, :, 0], prop_paths[0, :, 1])
+        # l2.set_data(prop_paths[1, :, 0], prop_paths[1, :, 1])
+        # l3.set_data(prop_paths[2, :, 0], prop_paths[2, :, 1])
 
 
         # Ghost point
@@ -109,7 +109,8 @@ def animate(x_traj, y_traj, output_frames, params):
             idx = int(t / int(params.dt / params.safety_dt))
             ghost.set_data([x_traj[idx]], [y_traj[idx]])
 
-        return [line, point, ghost, l1, l2, l3, *samples] + circles
+        # return [line, point, ghost, l1, l2, l3, *samples] + circles
+        return [line, point, ghost, *samples]
 
     # Create animation
     ani = animation.FuncAnimation(fig, update, frames=output_frames, interval=1, blit=True)
