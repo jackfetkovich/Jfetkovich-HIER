@@ -32,10 +32,12 @@ def mppi(x, prev_safe, targets, params, sf):
             next_x = X_calc[k, t+1, :]
             for o in params.obstacles: # check for obstacle collision
                 if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2])**2:
-                    # path_safe = False
-                    num_optimizations += 1
-                    # costs[k]+=np.inf
-                    u_safe = sf.filter(u_safe, x, params, last_u)
+                    if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2]-0.5)**2:
+                        path_safe = False
+                        costs[k]+=np.inf
+                    else:
+                        num_optimizations += 1
+                        u_safe = sf.filter(u_safe, x, params, last_u)
                     break
                    
             current_target = targets[t]

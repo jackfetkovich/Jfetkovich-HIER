@@ -91,7 +91,7 @@ def main():
         print("Obstacle traj size", obstacle_traj.size)
 
         # filename = f'./data/experiment/filter_priority/rollout_filter_{params.K}_final_layer_least_strict.csv'
-        filename = f'./data/experiment/rollout_filter_{params.K}.csv'
+        filename = f'./data/experiment/rollout_filter_{params.K}_selective.csv'
         #t, x, y, obsx, obsy, unomv, unomw, s0v, s0w, s1v, s1w, s2v, s2w
         with open(filename, 'w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)

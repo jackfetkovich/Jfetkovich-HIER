@@ -6,12 +6,12 @@ comp_time_list = []
 dist_list = []
 
 file_names = [
-    'no_rollout_filter_1200.csv', 'no_rollout_filter_1600.csv', 'no_rollout_filter_2000.csv',
+    'rollout_filter_1200_selective.csv', 'rollout_filter_1600_selective.csv', 'rollout_filter_2000_selective.csv',
     'rollout_filter_1200.csv', 'rollout_filter_1600.csv', 'rollout_filter_2000.csv'
 ]
 
 labels = [
-    "No Filter K=1200", "No Filter K=1600", "No Filter K=2000",
+    "Sel Filter K=1200", "Sel Filter K=1600", "Sel Filter K=2000",
     "Filter K=1200", "Filter K=1600", "Filter K=2000"
 ]
 
@@ -34,17 +34,17 @@ def annotate_medians(ax, data_list):
 
 # --- Computation time boxplot ---
 axs[0].boxplot(comp_time_list, labels=labels, patch_artist=True, sym='')
-axs[0].set_title("Computation Time for MPPI Without and With Safety-Filtered Rollouts")
+axs[0].set_title("Computation Time for MPPI with Selective and Full Filtering")
 axs[0].set_ylabel("Time (s)")
 axs[0].grid(True, axis='y', linestyle='--', alpha=0.6)
 annotate_medians(axs[0], comp_time_list)
 
 # --- Distance boxplot ---
 axs[1].boxplot(dist_list, labels=labels, patch_artist=True, sym='')
-axs[1].set_title("Distance from Goal for MPPI Without and With Safety-Filtered Rollouts")
+axs[1].set_title("Distance from Goal for MPPI with Selective and Full Filtering")
 axs[1].set_ylabel("Distance (m)")
 axs[1].grid(True, axis='y', linestyle='--', alpha=0.6)
 annotate_medians(axs[1], dist_list)
 
 plt.tight_layout()
-plt.savefig("./data/experiment/rollout_filter_comparison.png", dpi=300, bbox_inches='tight')
+plt.savefig("./data/experiment/rollout_filter_comparison_selective.png", dpi=300, bbox_inches='tight')
