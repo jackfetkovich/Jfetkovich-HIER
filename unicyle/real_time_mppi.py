@@ -71,10 +71,10 @@ def main():
     print("Is DPP? ", sf1.prob.is_dcp(dpp=True))
     print(f"TX:{Tx}")
 
-    filename = './../../unicycle/Jfetkovich-HIER/unicyle/data/command_vs_mpac_outputreel.csv'
-    with open(filename, 'w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        writer.writerow(['x_goal', 'x', 'y_goal', 'y', 'u_v', 'v', 'u_w', 'w'])
+    # filename = './../../unicycle/Jfetkovich-HIER/unicyle/data/command_vs_mpac_outputreel.csv'
+    # with open(filename, 'w', newline='', encoding='utf-8') as file:
+    #     writer = csv.writer(file)
+    #     writer.writerow(['x_goal', 'x', 'y_goal', 'y', 'u_v', 'v', 'u_w', 'w'])
 
     def controller():
         obstacle_traj = np.zeros((len(params.obstacles), Tx+1, 2)) # Generate trajectory for each obstacle
@@ -122,17 +122,17 @@ def main():
             U[t] = u_nom
             walk_idqp(vx=u_nom[0],vy=0,vrz=u_nom[1])
             print(f"Goal: ({traj[int(t/main_safety_ratio)+1, 0]},{traj[int(t/main_safety_ratio)+1, 1]})")
-            print(f"Pos: ({tel["q"][0]},{tel["q"][1]})")
+            print(f"Pos: ({tel['q'][0]},{tel['q'][1]})")
             print(f"Command: ({u_nom[0]},{u_nom[1]})")
-            print(f"Output: ({tel["qd"][0]},{tel["qd"][5]})")
+            print(f"Output: ({tel['qd'][0]},{tel['qd'][5]})")
 
-            with open(filename, 'a', newline='', encoding='utf-8') as file:
-                writer = csv.writer(file)
-                writer.writerow([traj[int(t/main_safety_ratio)+1, 0], tel["q"][0],
-                                traj[int(t/main_safety_ratio)+1, 1], tel["q"][1],
-                                u_nom[0], tel["qd"][0],
-                                u_nom[1], tel["qd"][5]
-                ])
+            # with open(filename, 'a', newline='', encoding='utf-8') as file:
+            #     writer = csv.writer(file)
+            #     writer.writerow([traj[int(t/main_safety_ratio)+1, 0], tel["q"][0],
+            #                     traj[int(t/main_safety_ratio)+1, 1], tel["q"][1],
+            #                     u_nom[0], tel["qd"][0],
+            #                     u_nom[1], tel["qd"][5]
+            #     ])
             
             x = np.array([tel["q"][0], tel["q"][1], tel["q"][5], tel["qd"][0], tel["qd"][5]])
             X[t + 1, :] = x # Store the new state
