@@ -62,6 +62,97 @@ def mppi(x, prev_safe, targets, params):
     u_star = np.sum(weights[:, None, None] * U, axis=0)
     return u_star[0], X_calc, traj_weight_single, num_optimizations
 
+@njit
+def safe_mppi(x, prev_safe, targets, params):
+    X_calc = np.zeros((params.K, params.T + 1, 5))
+    # U1 = gen_normal_control_seq(prev_safe[0, 0], 6, prev_safe[0, 1], params.max_w/4, int(ceil(params.K/3)), params.T) # Generate control sequences
+    # U2 = gen_normal_control_seq(prev_safe[1, 0], 6, prev_safe[1, 1], params.max_w/4, int(ceil(params.K/3)), params.T)
+    # U3 = gen_normal_control_seq(prev_safe[2, 0], 6, prev_safe[2, 1], params.max_w/4, params.K - 2*int(ceil(params.K/3)), params.T)
+    # U = np.vstack((U1, U2, U3))
+
+    U = gen_normal_control_seq(0.3, 1, 0, params.max_w, params.K, params.T) #
+
+    num_optimizations = 0
+
+    for k in range(params.K):
+        X_calc[k, 0, :] = x  # Initialize all trajectories with the current state
+            
+    costs = np.zeros(params.K) # initialize all costs
+    last_u = np.zeros(2)
+    for k in range(params.K):
+        path_safe = True
+        for t in range(len(targets)-1):
+            u_nom = U[k,t]
+            u_safe = u_nom
+            X_calc[k, t + 1, :] = unicyle_dynamics(X_calc[k, t, :], u_safe, params)
+            next_x = X_calc[k, t+1, :]
+            for o in params.obstacles: # check for obstacle collision
+                if (next_x[0]-o[0] + params.l*np.cos(next_x[2])) ** 2 + (next_x[1] - o[1] + params.l*np.sin(next_x[2])) ** 2 <= (o[2])**2:
+                    num_optimizations += 1
+                    u_safe = gen_safe_control(x, params, u_nom)
+                    break
+            current_target = targets[t]
+            cost = cost_function(X_calc[k, t+1, :], u_safe, current_target)
+            costs[k] += cost
+            last_u = u_safe
+        if path_safe:
+            final_target = targets[-1]    
+            terminal_cost_val = terminal_cost(X_calc[k, params.T, :], final_target) #Terminal cost of final state
+            costs[k] += terminal_cost_val
+        last_u = np.zeros(2)
+        
+    # Calculate weights for each trajectory
+    weights = np.exp(-(costs - np.min(costs)) / params.lambda_)
+    sum_weights = np.sum(weights)
+    if sum_weights < 1e-10:
+        weights = np.ones_like(weights) / len(weights)  # fallback to uniform
+    else:
+        weights /= sum_weights
+    
+    traj_weight_single = np.zeros(params.K)
+    traj_weight_single[:] = weights
+
+    # Compute the weighted sum of control inputs
+    u_star = np.sum(weights[:, None, None] * U, axis=0)
+    return u_star[0], X_calc, traj_weight_single, num_optimizations
+
+#Generate safe control input using null space projection
+@njit
+def gen_safe_control(x, params, u_nom):
+    # Identify the most pressing obstacle
+    worst_o = 0 # Most pressing obstacle
+    worst_h = np.inf # CBF value of most pressing obstacle
+    for i, o in enumerate(params.obstacles):
+        c = o[0:2]   # obstacle center (x, y)
+        r = o[2]     # obstacle radius
+
+        dx = x[0] - c[0] + params.l * np.cos(x[2])
+        dy = x[1] - c[1] + params.l * np.sin(x[2])
+        h = (dx)**2 + (dy)**2 - (r+0.1)**2
+
+        if h < worst_h:
+            worst_h = h
+            worst_o = i
+
+    ob = params.obstacles[worst_o]
+    c = ob[0:2]   # obstacle center (x, y)
+    r = ob[2]     # obstacle radius
+
+    dx = x[0] - c[0] + params.l * np.cos(x[2])
+    dy = x[1] - c[1] + params.l * np.sin(x[2])
+    
+    lgh = np.array([2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2]), -2*dx*params.l*np.sin(x[2]) + 2*dy*params.l*np.cos(x[2])], dtype=np.float64) # Jacobian
+    lgh_pi = lgh.reshape(2,1) @ np.linalg.inv(lgh.reshape(1,2) @ lgh.reshape(2,1))
+    alpha = 1
+    epsilon = 0.5
+
+    u_safe = -alpha * worst_h + epsilon
+    u_out = lgh_pi @ np.array([[u_safe]]) + (np.eye(2) - lgh_pi @ lgh.reshape(1,2)) @ u_nom.reshape(2,1)
+
+
+    return u_out
+
+
 # Cost function
 @njit
 def cost_function(x, u, target):

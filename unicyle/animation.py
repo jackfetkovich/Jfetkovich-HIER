@@ -65,8 +65,8 @@ def animate(x_traj, y_traj, output_frames, params):
         y_vals.append(y)
 
         # # Obstacles
-        # for i in range(len(circles)):
-        #     circles[i].center = (x_ob[i], y_ob[i])
+        for i in range(len(circles)):
+            circles[i].center = (x_ob[i], y_ob[i])
 
         # History and current position
         line.set_data(x_vals, y_vals)
@@ -110,7 +110,7 @@ def animate(x_traj, y_traj, output_frames, params):
             ghost.set_data([x_traj[idx]], [y_traj[idx]])
 
         # return [line, point, ghost, l1, l2, l3, *samples] + circles
-        return [line, point, ghost, *samples]
+        return [line, point, ghost, *samples] + circles
 
     # Create animation
     ani = animation.FuncAnimation(fig, update, frames=output_frames, interval=1, blit=True)
