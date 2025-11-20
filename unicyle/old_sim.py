@@ -102,7 +102,7 @@ def main():
             print(t)
             if t % main_safety_ratio == 0:
                 start_time = clk.perf_counter()
-                u_nom, X_calc, traj_weight_single, optimizations = safe_mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params) # Calculate the optimal control input
+                u_nom, X_calc, traj_weight_single, optimizations = mppi(x, safe_outputs, traj[int(t/main_safety_ratio)+1: min(int(t/main_safety_ratio)+1+params.T, len(traj))], params) # Calculate the optimal control input
                 end_time = clk.perf_counter()
                 comp_time = end_time - start_time
                 total_optimizations += optimizations

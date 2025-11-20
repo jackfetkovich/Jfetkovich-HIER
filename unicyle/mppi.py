@@ -143,11 +143,12 @@ def gen_safe_control(x, params, u_nom):
     
     lgh = np.array([2*dx*np.cos(x[2]) + 2*dy*np.sin(x[2]), -2*dx*params.l*np.sin(x[2]) + 2*dy*params.l*np.cos(x[2])], dtype=np.float64) # Jacobian
     lgh_pi = lgh.reshape(2,1) @ np.linalg.inv(lgh.reshape(1,2) @ lgh.reshape(2,1))
-    alpha = 1
-    epsilon = 0.5
+    alpha = 8
+    epsilon = 4
 
     u_safe = -alpha * worst_h + epsilon
-    u_out = lgh_pi @ np.array([[u_safe]]) + (np.eye(2) - lgh_pi @ lgh.reshape(1,2)) @ u_nom.reshape(2,1)
+    u_nullspace = lgh_pi @ np.array([[u_safe]]) + (np.eye(2) - lgh_pi @ lgh.reshape(1,2)) @ u_nom.reshape(2,1)
+    u_out = u_nullspace.reshape(2, )
 
 
     return u_out
@@ -189,12 +190,12 @@ def unicyle_dynamics(x, u, params, dt=-1.0):
     # w = u[1]
 
     # Aceleration Limiting
-    # last_v = x[3]
-    # if abs(v - last_v) > params.max_v_dot * dt: 
-    #     v = x[3] + params.max_v_dot * dt * np.sign(v - x[3])
+    last_v = x[3]
+    if abs(v - last_v) > params.max_v_dot * dt: 
+        v = x[3] + params.max_v_dot * dt * np.sign(v - x[3])
     
-    # if abs(w - x[4]) > params.max_w_dot * dt:
-    #     w  = x[4] + params.max_w_dot * dt * np.sign(w - x[4])
+    if abs(w - x[4]) > params.max_w_dot * dt:
+        w  = x[4] + params.max_w_dot * dt * np.sign(w - x[4])
 
     x_star = np.zeros(5)
     x_star[0] = x[0] + v * np.cos(x[2]) * dt
