@@ -16,6 +16,10 @@ def distance_of_path(p):
     return distance
 
 @njit
+def lin_interpolate(x1, x2, pct):
+    return x1 + pct*(x2-x1)
+
+@njit
 def closest_point_on_path(waypoints, point, last_index):
     """
     waypoints: (N,2) array
