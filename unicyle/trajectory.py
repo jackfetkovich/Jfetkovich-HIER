@@ -1,4 +1,5 @@
 import numpy as np
+from utils import *
 from scipy.interpolate import interp1d
 
 def generate_trajectory_from_waypoints(waypoints, num_points=100):
@@ -42,6 +43,43 @@ def generate_trajectory_from_waypoints(waypoints, num_points=100):
     # np.savetxt("output.txt", np.array(theta_vals), fmt="%.6f")  # 6 decimal places
 
     return np.dstack(np.array([x_vals, y_vals, np.unwrap(np.array(theta_vals))]))[0]
+
+
+# Put in list of waypoints with associated time of arrival
+# Assign heading to each waypoint to be tangent
+# Be able to poll a trajectory at a time to get a position value
+
+class Trajectory:
+    def __init__(self, waypoints):
+        headings = np.zeros(len(waypoints)) # Generate headings
+        for i in range(len(waypoints)):
+            if i < len(waypoints)-1:
+                dx = waypoints[i+1][0] - waypoints[i][0]
+                dy = waypoints[i+1][1] - waypoints[i][1]
+                headings[i] = np.arctan2(dy, dx)
+            else:
+                headings[i] = headings[-1]  # reuse last heading for final point
+        headings = headings.reshape(-1, 1)
+        waypoints = np.hstack((waypoints, headings))
+        waypoints.T[[2,3]] = waypoints.T[[3,2]] # Swap time and heading columns (x, y, theta, time)
+        self.waypoints = waypoints
+
+    def sample_trajectory(self, t):
+        mask = self.waypoints[:, 3] >= t
+        if np.any(mask):
+            smallest_idx = np.argmax(mask) # Find the first waypoint with larger time than requested
+            if smallest_idx == 0:
+                return self.waypoints[0, 0:3] # Return first waypoint
+
+            return lin_interpolate(self.waypoints[smallest_idx, 0:3], 
+                                   self.waypoints[smallest_idx-1, 0:3], 
+                                   (t - self.waypoints[smallest_idx -1, 3]) / (self.waypoints[smallest_idx, 3] - self.waypoints[smallest_idx -1, 3])
+                                   )
+
+        else:
+            return self.waypoints[-1, 0:3]
+
+
 
 def generate_trajectory_x_y(waypoints, num_points):
     waypoints = np.array(waypoints)

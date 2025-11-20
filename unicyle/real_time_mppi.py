@@ -60,16 +60,19 @@ def main():
 
 
     main_safety_ratio = int(params.dt / params.safety_dt)
-    ### Zeroed arrays used for calcuation
-    Tx = int(distance_of_path(np.array(points)) / (params.max_v*0.2*params.safety_dt))
-    ## Generation of waypoints for obstacle and robot
+    dist = distance_of_path(np.array(points)) # Total travelled distance of trajectory
+    traj_time = 5.0 # Total Trajectory time
+    traj = generate_trajectory_from_waypoints(points, traj_time, params)
     traj = generate_trajectory_from_waypoints(points, int(Tx / main_safety_ratio)+1) # trajectory of waypoints
+    
+    # Safety Filter Creation
     sf1 = SafetyFilter(params, 3.0, np.diag([200, 1]), params.safety_dt)
     sf2 = SafetyFilter(params,8.0, np.diag([50, 1]), params.safety_dt)
     sf3 = SafetyFilter(params, 8.0, np.diag([45, 1]), params.safety_dt, output=True)
     sf_rollout = SafetyFilter(params, 3.5, np.diag([30, 1]), params.dt)
+
+    # Optimization printout
     print("Is DPP? ", sf1.prob.is_dcp(dpp=True))
-    print(f"TX:{Tx}")
 
     # filename = './../../unicycle/Jfetkovich-HIER/unicyle/data/command_vs_mpac_outputreel.csv'
     # with open(filename, 'w', newline='', encoding='utf-8') as file:
@@ -98,8 +101,9 @@ def main():
         stand_idqp()
         clk.sleep(4)
         
+        traj_time_start = clk.perf_counter()
         # Main Loop
-        for t in range(Tx -1):
+        while clk.perf_counter() - traj_time_start < traj_time: # Continue while trajectory time is not complete
             start_time = clk.perf_counter()
             tel = get_tlm_data()
 

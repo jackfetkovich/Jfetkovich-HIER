@@ -1,15 +1,12 @@
 import numpy as np
+from trajectory import Trajectory
 
-
-new_thetas = np.hstack([
-        np.zeros(14),
-        np.pi/4 * np.ones(13),
-        np.pi/2 * np.ones(13),
-        3*np.pi /4 * np.ones(13),
-        np.pi * np.ones(13),
-        5*np.pi /4 * np.ones(13),
-        3 * np.pi / 2 *np.ones(13),
-        7*np.pi /4 * np.ones(14)
+waypoints = np.array([
+    [0, 0, 0.0],
+    [1, 0, 0.5],
+    [1, 1, 1.0],
+    [0, 1, 1.5]
 ])
 
-print(new_thetas)
+traj = Trajectory(waypoints)
+print(traj.sample_trajectory(0.25))
