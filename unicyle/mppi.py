@@ -161,7 +161,7 @@ def gen_safe_control(x, params, u_nom):
 # Cost function
 @njit
 def cost_function(x, u, target):
-    Q = np.diag(np.array([16, 16, 0.5, 0.00, 0.00]))  # State costs
+    Q = np.diag(np.array([16, 16, 3, 0.00, 0.00]))  # State costs
     R = np.diag(np.array([0.0005,0.0001]))  # Input costs
 
     x_des = np.array([target[0], target[1], target[2], 0, 0])
@@ -175,7 +175,7 @@ def cost_function(x, u, target):
 # Terminal Cost Function
 @njit
 def terminal_cost(x, target):
-    Q = np.diag(np.array([20, 20, 0.5, 0.00, 0.00]))
+    Q = np.diag(np.array([18, 18, 0.5, 0.00, 0.00]))
     x_des= np.array([target[0], target[1], target[2], 0, 0])
     state_diff = x_des - x
     state_diff[2] = (state_diff[2] + np.pi) % (2 * np.pi) - np.pi

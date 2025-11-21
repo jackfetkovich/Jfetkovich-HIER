@@ -65,11 +65,13 @@ class Trajectory:
             else:
                 headings[i] = headings[-1]  # reuse last heading for final point
         headings = headings.reshape(-1, 1)
-        points_angles = np.hstack((waypoints, headings))
+        xy_points = np.copy(waypoints[:, :2])
+        points_angles = np.hstack((xy_points, headings))
         reach_times = np.copy(waypoints[:, 2]).reshape(-1,1)
         print(reach_times)
         points_angles_headings = np.hstack((points_angles, reach_times))
         self.waypoints = points_angles_headings
+        print (self.waypoints)
 
     def sample_trajectory(self, t):
         mask = self.waypoints[:, 3] >= t
@@ -78,10 +80,12 @@ class Trajectory:
             if smallest_idx == 0:
                 return self.waypoints[0, 0:3] # Return first waypoint
 
-            return lin_interpolate(self.waypoints[smallest_idx, 0:3], 
-                                   self.waypoints[smallest_idx-1, 0:3], 
-                                   (t - self.waypoints[smallest_idx -1, 3]) / (self.waypoints[smallest_idx, 3] - self.waypoints[smallest_idx -1, 3])
-                                   )
+            return lin_interpolate(
+                self.waypoints[smallest_idx - 1, 0:3],  # previous
+                self.waypoints[smallest_idx, 0:3],      # next
+                (t - self.waypoints[smallest_idx - 1, 3]) /
+                (self.waypoints[smallest_idx,  3] - self.waypoints[smallest_idx - 1, 3])
+            )
         else:
             return self.waypoints[-1, 0:3]
 

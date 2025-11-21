@@ -28,7 +28,7 @@ params = Parameters(
     dt = 0.02, # time step for MPPI
     safety_dt = 0.005, # time step for safety
     K = 2000,   # number of samples
-    T = 50, # time steps (HORIZON)
+    T = 100, # time steps (HORIZON)
     sigma = 2,
     lambda_ = 2,
     l = 0.3,
@@ -47,10 +47,10 @@ def main():
 
     points = np.array([
         (0.0, 0.0, 0.0),
-        (3.0, 0.0, 3.0),
-        (3.0, 3.0, 7.0),
-        (0.0, 3.0, 11.0),
-        (0.0, 0.0, 14),
+        (3.0, 0.0, 5.0),
+        (3.0, 3.0, 13.0),
+        (3.0, 6.0, 22.0),
+        (3.0, 9.0, 30.0),
     ])
 
 
@@ -66,7 +66,7 @@ def main():
     vehicle_traj = Trajectory(points)
     # obstacle_trajs = np.array([Trajectory(obstacle_points[0, 0]), Trajectory([obstacle_points[1,0]])])
 
-    traj_time = 14
+    traj_time = 30
     
     # Safety Filter Creation
     sf1 = SafetyFilter(params, 3.0, np.diag([200, 1]), params.safety_dt)
@@ -77,10 +77,10 @@ def main():
     # Optimization printout
     print("Is DPP? ", sf1.prob.is_dcp(dpp=True))
 
-    # filename = './../../unicycle/Jfetkovich-HIER/unicyle/data/command_vs_mpac_outputreel.csv'
-    # with open(filename, 'w', newline='', encoding='utf-8') as file:
-    #     writer = csv.writer(file)
-    #     writer.writerow(['x_goal', 'x', 'y_goal', 'y', 'u_v', 'v', 'u_w', 'w'])
+    filename = './data/command_vs_mpac_outputreelnew.csv'
+    with open(filename, 'w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(['time','x_goal', 'x', 'y_goal', 'y', 'u_v', 'v', 'u_w', 'w'])
 
     def controller():
         x = np.array([vehicle_traj.sample_trajectory(0)[0],vehicle_traj.sample_trajectory(0)[1],vehicle_traj.sample_trajectory(0)[2],0,0])  # Initial state [x, theta, x_dot, theta_dot] -- tracks current state
@@ -95,15 +95,26 @@ def main():
         stand_idqp()
         clk.sleep(2)
         
+        tel = get_tlm_data()
+
+        first_loop = True
         traj_time_start = clk.perf_counter()
+        time = 0
         # Main Loop
         while (clk.perf_counter() - traj_time_start) < traj_time: # Continue while trajectory time is not complete
+            print("oogabooga")
             start_time = clk.perf_counter()
-            time = traj_time_start - start_time
+            if first_loop:
+                time = 0
+            else:
+                time = start_time - traj_time_start
             tel = get_tlm_data()
 
             u_nom, X_calc, traj_weight_single, optimizations = mppi(x, safe_outputs, vehicle_traj, time, params) # Calculate the optimal control input
 
+            if first_loop:
+                traj_time_start = clk.perf_counter()
+                first_loop = False
             # for i in range(len(params.obstacles)):
             #     params.obstacles[i] = np.array([obstacle_trajs[0].sample(time), obstacle_trajs[1].sample(time), params.obstacles[i,2]])
 
@@ -113,9 +124,17 @@ def main():
             # safe_outputs[2] = sf3.filter(u_nom, x, params, last_u)
             # U[t] = safe_outputs[0]
             walk_idqp(vx=u_nom[0],vy=0,vrz=u_nom[1])
+            xg = vehicle_traj.sample_trajectory(time)
+            print(time)
+            print(xg)
             print(f"Pos: ({tel['q'][0]},{tel['q'][1]})")
+            print(f"Des: ({xg[0]}, {xg[1]}, {xg[2]})")
             print(f"Command: ({u_nom[0]},{u_nom[1]})")
             print(f"Output: ({tel['qd'][0]},{tel['qd'][5]})")
+
+            with open(filename, 'a', newline='', encoding='utf-8') as file:
+                writer = csv.writer(file)
+                writer.writerow([time, xg[0], tel['q'][0], xg[1], tel['q'][1], u_nom[0], tel['qd'][0], u_nom[1], tel['qd'][5]])
 
             
             x = np.array([tel["q"][0], tel["q"][1], tel["q"][5], tel["qd"][0], tel["qd"][5]])
