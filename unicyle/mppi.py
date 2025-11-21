@@ -7,7 +7,8 @@ import csv
 from math import ceil
 
 @njit
-def mppi(x, prev_safe, targets, params):
+def mppi(x, prev_safe, traj, time, params):
+    print("HERE")
     X_calc = np.zeros((params.K, params.T + 1, 5))
     # U1 = gen_normal_control_seq(prev_safe[0, 0], 6, prev_safe[0, 1], params.max_w/4, int(ceil(params.K/3)), params.T) # Generate control sequences
     # U2 = gen_normal_control_seq(prev_safe[1, 0], 6, prev_safe[1, 1], params.max_w/4, int(ceil(params.K/3)), params.T)
@@ -15,8 +16,11 @@ def mppi(x, prev_safe, targets, params):
     # U = np.vstack((U1, U2, U3))
 
     U = gen_normal_control_seq(0.3, 1, 0, params.max_w, params.K, params.T) #
-
     num_optimizations = 0
+
+    targets = np.zeros((params.T, 3)) # Discretize path for computation
+    for i in range(params.T):
+        targets[i] = traj.sample_trajectory(time + i * params.safety_dt)
 
     for k in range(params.K):
         X_calc[k, 0, :] = x  # Initialize all trajectories with the current state

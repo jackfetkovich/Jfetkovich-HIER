@@ -1,6 +1,8 @@
 import numpy as np
 from utils import *
 from scipy.interpolate import interp1d
+from numba import int64, float64, boolean    # import the types
+from numba.experimental import jitclass
 
 def generate_trajectory_from_waypoints(waypoints, num_points=100):
     """
@@ -48,7 +50,10 @@ def generate_trajectory_from_waypoints(waypoints, num_points=100):
 # Put in list of waypoints with associated time of arrival
 # Assign heading to each waypoint to be tangent
 # Be able to poll a trajectory at a time to get a position value
-
+spec = [
+    ('waypoints', float64[:, :]),
+]
+@jitclass(spec)
 class Trajectory:
     def __init__(self, waypoints):
         headings = np.zeros(len(waypoints)) # Generate headings
@@ -60,9 +65,11 @@ class Trajectory:
             else:
                 headings[i] = headings[-1]  # reuse last heading for final point
         headings = headings.reshape(-1, 1)
-        waypoints = np.hstack((waypoints, headings))
-        waypoints.T[[2,3]] = waypoints.T[[3,2]] # Swap time and heading columns (x, y, theta, time)
-        self.waypoints = waypoints
+        points_angles = np.hstack((waypoints, headings))
+        reach_times = np.copy(waypoints[:, 2]).reshape(-1,1)
+        print(reach_times)
+        points_angles_headings = np.hstack((points_angles, reach_times))
+        self.waypoints = points_angles_headings
 
     def sample_trajectory(self, t):
         mask = self.waypoints[:, 3] >= t
@@ -75,7 +82,6 @@ class Trajectory:
                                    self.waypoints[smallest_idx-1, 0:3], 
                                    (t - self.waypoints[smallest_idx -1, 3]) / (self.waypoints[smallest_idx, 3] - self.waypoints[smallest_idx -1, 3])
                                    )
-
         else:
             return self.waypoints[-1, 0:3]
 
