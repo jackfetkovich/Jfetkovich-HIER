@@ -81,12 +81,12 @@ clean: CMakeFiles/mppi.dir/clean
 CMakeFiles/mppi.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles --progress-num=1,2,3 "Built target mppi"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles --progress-num=1,2,3,4,5 "Built target mppi"
 .PHONY : CMakeFiles/mppi.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/mppi.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/mppi.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles 0
 .PHONY : CMakeFiles/mppi.dir/rule

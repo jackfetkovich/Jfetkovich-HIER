@@ -1,31 +1,71 @@
-#include<iostream>
+#include <iostream>
 #include <random>
-#include "MPPI.hpp"
+#include <vector>
 #include <Eigen/Dense>
 #include <cmath>
-
+#include "MPPI.hpp"
+#include "Trajectory.hpp"
+#include "Dynamics.hpp"
 
 using Eigen::MatrixXd;
+using Eigen::VectorXd;
 
-MPPI::MPPI(int K, int T) : K(K), T(T){};
+MPPI::MPPI(int K, int T, double lambda) : K(K), T(T), lambda(lambda){};
 
-Control MPPI::get_control(State state, std::vector<Waypoint> waypoints, double dt){
-    MatrixXd ctrls = gen_rand_ctrl_seq(0.0, 10.0, 0.0, 2.0);
+Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
+    MatrixXd ctrls = gen_rand_ctrl_seq(0.0, 10.0, 0.0, 2.0); // Generate random control inputs
+    VectorXd costs = VectorXd(K); // Store cost of each sampled path
+
+    std::vector<Waypoint> discretized_waypoints = std::vector<Waypoint>();
     
+    double time = t;
+    std::cout << "Start time: " << t << std::endl;
+    std::cout << "End Time: " << t + T *dt << std::endl;
+    while(time < t + T*dt){
+        std::cout << time << std::endl;
+        discretized_waypoints.push_back(traj.sample(time));
+        time += dt;
+    }
+
+    State temp_state = state;
+    double temp_cost = 0;
+
+    for (int k = 0; k < K; k++){
+        for (int t = 0; t < T; t++){
+            double v = ctrls(0, k*T + t);
+            double w = ctrls(1, k*T + t);
+            Control ctrl = Control{v, w};
+            temp_state = unicyle_dynamics(temp_state, ctrl, dt);
+            if(t < T-1){
+                temp_cost += cost_func(temp_state, ctrl, discretized_waypoints.at(t));
+            } else {
+                temp_cost += terminal_cost_func(temp_state, discretized_waypoints.at(t));
+            }
+        }
+        costs(k) = temp_cost;
+        temp_state = state;
+    }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    return Control{1.0, 2.0};
+    // Calculate smallest cost
+    double min_cost = INFINITY;
+    for (int i = 0; i < K; i++){
+        if(costs(i) < min_cost) costs(i) = min_cost;
+    }
+
+    // Calculate weights
+    VectorXd weights = VectorXd(K);
+    for (int k = 0; k < K; k++){
+        weights(k) = exp(-(costs(k) - min_cost)/lambda);
+    }
+
+    weights = weights.normalized();
+
+    Vector2d ctrl_out = Vector2d(0.0, 0.0);
+    for (int k = 0; k < K; k++){
+        ctrl_out += weights(k) * ctrls.col(k);
+    }
+
+    return Control{ctrl_out};
 };
 
 MatrixXd MPPI::gen_rand_ctrl_seq(double mu_v, double sigma_v, double mu_omega, double sigma_omega){
