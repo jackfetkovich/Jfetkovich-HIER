@@ -1,6 +1,9 @@
 #pragma once
+#include <Eigen/Dense>
+
+using Eigen::Vector2d;
 
 struct Control {
-    double v;
-    double omega;
+    Vector2d val;
+    Control(double v, double w): val(Vector2d(v, w)){};
 };
