@@ -3,6 +3,8 @@ project(mppi)
 set(SOURCE_FILES
     Main.cpp
     MPPI.cpp
+    Trajectory.cpp
+    Dynamics.cpp
 )
 
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)

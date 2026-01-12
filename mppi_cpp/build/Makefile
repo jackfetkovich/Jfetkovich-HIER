@@ -129,6 +129,30 @@ mppi/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/build
 .PHONY : mppi/fast
 
+Dynamics.o: Dynamics.cpp.o
+.PHONY : Dynamics.o
+
+# target to build an object file
+Dynamics.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/Dynamics.cpp.o
+.PHONY : Dynamics.cpp.o
+
+Dynamics.i: Dynamics.cpp.i
+.PHONY : Dynamics.i
+
+# target to preprocess a source file
+Dynamics.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/Dynamics.cpp.i
+.PHONY : Dynamics.cpp.i
+
+Dynamics.s: Dynamics.cpp.s
+.PHONY : Dynamics.s
+
+# target to generate assembly for a file
+Dynamics.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/Dynamics.cpp.s
+.PHONY : Dynamics.cpp.s
+
 MPPI.o: MPPI.cpp.o
 .PHONY : MPPI.o
 
@@ -177,6 +201,30 @@ Main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/Main.cpp.s
 .PHONY : Main.cpp.s
 
+Trajectory.o: Trajectory.cpp.o
+.PHONY : Trajectory.o
+
+# target to build an object file
+Trajectory.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/Trajectory.cpp.o
+.PHONY : Trajectory.cpp.o
+
+Trajectory.i: Trajectory.cpp.i
+.PHONY : Trajectory.i
+
+# target to preprocess a source file
+Trajectory.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/Trajectory.cpp.i
+.PHONY : Trajectory.cpp.i
+
+Trajectory.s: Trajectory.cpp.s
+.PHONY : Trajectory.s
+
+# target to generate assembly for a file
+Trajectory.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/Trajectory.cpp.s
+.PHONY : Trajectory.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -186,12 +234,18 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... mppi"
+	@echo "... Dynamics.o"
+	@echo "... Dynamics.i"
+	@echo "... Dynamics.s"
 	@echo "... MPPI.o"
 	@echo "... MPPI.i"
 	@echo "... MPPI.s"
 	@echo "... Main.o"
 	@echo "... Main.i"
 	@echo "... Main.s"
+	@echo "... Trajectory.o"
+	@echo "... Trajectory.i"
+	@echo "... Trajectory.s"
 .PHONY : help
 
 

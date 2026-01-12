@@ -6,4 +6,5 @@ using Eigen::Vector2d;
 struct Control {
     Vector2d val;
     Control(double v, double w): val(Vector2d(v, w)){};
+    Control(Vector2d val): val(val){};
 };

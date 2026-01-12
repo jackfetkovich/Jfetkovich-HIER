@@ -4,19 +4,15 @@
 #include "Control.hpp"
 #include "Waypoint.hpp"
 #include "MPPI.hpp"
+#include "Trajectory.hpp"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
 
 int main(){
-    MPPI mppi = MPPI(3, 5);
+    MPPI mppi = MPPI(3, 5, 0.5);
     
-    std::vector<Waypoint> wp = {
-        Waypoint{0.0, 0.0, 0.0},
-        Waypoint{1.0, 0.0, 0.5}
-    };
-
     State init_state = State(
         0.0, 
         0.0,
@@ -25,7 +21,9 @@ int main(){
         0.0
     );
 
-    Control ctrl = mppi.get_control(init_state, wp, 0.5);
+    Trajectory traj = Trajectory();
+
+    Control ctrl = mppi.get_control(init_state, traj, 3.0, 0.05);
 
     return 0;
 }
