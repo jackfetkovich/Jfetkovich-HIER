@@ -17,15 +17,17 @@ Output:
     - Single control output
 */
 
+
+// dynamics, cost functions
 class MPPI {
     public:
         MPPI(int K, int T);
         Control get_control(State state, std::vector<Waypoint> waypoints, double dt);
-        
+
     private:
         int K;
         int T;
         Eigen::MatrixXd gen_rand_ctrl_seq(double mu_v, double sigma_v, double mu_omega, double sigma_omega);
-        
-        
+        double cost_func(State state, Control ctrl, Waypoint target);
+        double terminal_cost_func(State state, Waypoint target);
 };

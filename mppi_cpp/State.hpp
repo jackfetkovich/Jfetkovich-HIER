@@ -4,11 +4,11 @@
 using Eigen::VectorXd;
 
 struct State {
-    VectorXd value;
+    VectorXd val;
 
     State(double x, double y, double theta, double v, double w)
-        : value(5)
+        : val(5)
         {
-            value << x, y, theta, v, w;
+            val << x, y, theta, v, w;
         };
 };
