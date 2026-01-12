@@ -1,7 +1,7 @@
 #pragma once
+#include "State.hpp"
 
 struct Waypoint {
-    double x;
-    double y;
+    State state;
     double t;
 };
