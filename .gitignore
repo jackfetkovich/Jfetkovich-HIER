@@ -1,0 +1,6 @@
+# CMake build directories
+/build/
+/cmake-build-*/
+/out/
+/CMakeFiles
+CMakeCache.txt

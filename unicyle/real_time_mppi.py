@@ -22,6 +22,7 @@ from safety_filter import SafetyFilter
 import matplotlib.pyplot as plt
 import cvxpy as cp
 import time as clk
+import threading
 from mpac_cmd import *
 
 params = Parameters(
@@ -41,6 +42,9 @@ params = Parameters(
     last_obstacle_pos = np.array([[6.0, 0.0], [4.0, 0.0]]),
     first_filter = True
 )
+
+def mppi_loop():
+    pass
 
 # Main function
 def main():
