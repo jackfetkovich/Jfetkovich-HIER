@@ -4,6 +4,7 @@
 #include "Waypoint.hpp"
 #include <vector>
 #include "Control.hpp"
+#include <Eigen/Dense>
 
 /* 
 Inputs:
@@ -24,4 +25,7 @@ class MPPI {
     private:
         int K;
         int T;
+        Eigen::MatrixXd gen_rand_ctrl_seq(double mu_v, double sigma_v, double mu_omega, double sigma_omega);
+        
+        
 };
