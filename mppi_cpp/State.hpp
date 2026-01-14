@@ -11,4 +11,6 @@ struct State {
         {
             val << x, y, theta, v, w;
         };
+
+    State(VectorXd val):val(val){};
 };

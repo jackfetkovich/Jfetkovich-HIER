@@ -1,4 +1,5 @@
 #include <vector>
+#include <iostream>
 #include <Eigen/Dense>
 #include "State.hpp"
 #include "Control.hpp"
@@ -11,7 +12,7 @@ using Eigen::VectorXd;
 
 
 int main(){
-    MPPI mppi = MPPI(3, 5, 0.5);
+    MPPI mppi = MPPI(3, 5, 5);
     
     State init_state = State(
         0.0, 
@@ -21,9 +22,16 @@ int main(){
         0.0
     );
 
-    Trajectory traj = Trajectory();
+    std::vector<Waypoint> waypoints{
+        Waypoint{init_state, 0.0},
+        Waypoint{State(1.0, 1.0, M_PI/2, 0.0, 0.0), 0.5},
+        Waypoint{State(1.0, 1.5, 0.0, 0.0, 0.0), 1.0}
+    };
 
-    Control ctrl = mppi.get_control(init_state, traj, 3.0, 0.05);
+    Trajectory traj = Trajectory(waypoints);
+
+    Control ctrl = mppi.get_control(init_state, traj, 0.0, 0.05);
+    std::cout << ctrl.val << std::endl;
 
     return 0;
 }
