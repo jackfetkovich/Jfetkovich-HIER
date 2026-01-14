@@ -13,7 +13,7 @@ using Eigen::VectorXd;
 MPPI::MPPI(int K, int T, double lambda) : K(K), T(T), lambda(lambda){};
 
 Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
-    MatrixXd ctrls = gen_rand_ctrl_seq(0.0, 10.0, 0.0, 2.0); // Generate random control inputs
+    MatrixXd ctrls = gen_rand_ctrl_seq(0.3, 1.0, 0.0, 2.0); // Generate random control inputs
     VectorXd costs = VectorXd(K); // Store cost of each sampled path
 
     std::vector<Waypoint> discretized_waypoints = std::vector<Waypoint>();
