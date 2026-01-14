@@ -19,10 +19,7 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
     std::vector<Waypoint> discretized_waypoints = std::vector<Waypoint>();
     
     double time = t;
-    std::cout << "Start time: " << t << std::endl;
-    std::cout << "End Time: " << t + T *dt << std::endl;
     while(time < t + T*dt){
-        std::cout << time << std::endl;
         discretized_waypoints.push_back(traj.sample(time));
         time += dt;
     }
@@ -44,25 +41,38 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
         }
         costs(k) = temp_cost;
         temp_state = state;
+        temp_cost = 0.0;
     }
     
     // Calculate smallest cost
     double min_cost = INFINITY;
     for (int i = 0; i < K; i++){
-        if(costs(i) < min_cost) costs(i) = min_cost;
+        if(costs(i) < min_cost) min_cost = costs(i);
     }
+
 
     // Calculate weights
     VectorXd weights = VectorXd(K);
     for (int k = 0; k < K; k++){
-        weights(k) = exp(-(costs(k) - min_cost)/lambda);
+        weights(k) = exp(-(costs(k)-min_cost)/lambda);
     }
 
-    weights = weights.normalized();
+    double sum_w = weights.sum();
+    if (sum_w > 1e-12) {
+        weights /= sum_w;
+    } else {
+        weights.setConstant(1.0 / K);
+    }
+
+    /////////////
+    for(int i = 0; i < weights.size(); i++){
+        std::cout << weights(i) << std::endl;
+    }
+    /////////////
 
     Vector2d ctrl_out = Vector2d(0.0, 0.0);
     for (int k = 0; k < K; k++){
-        ctrl_out += weights(k) * ctrls.col(k);
+        ctrl_out += weights(k) * ctrls.col(k*T);
     }
 
     return Control{ctrl_out};

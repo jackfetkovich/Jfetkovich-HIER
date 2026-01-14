@@ -1,13 +1,6 @@
 CMakeFiles/mppi.dir/Trajectory.cpp.o: \
  /home/jfetko/Documents/HIER/mppi_cpp/Trajectory.cpp \
- /usr/include/stdc-predef.h \
- /home/jfetko/Documents/HIER/mppi_cpp/Trajectory.hpp \
- /home/jfetko/Documents/HIER/mppi_cpp/Waypoint.hpp \
- /home/jfetko/Documents/HIER/mppi_cpp/State.hpp \
- /usr/include/eigen3/Eigen/Dense /usr/include/eigen3/Eigen/Core \
- /usr/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
- /usr/include/eigen3/Eigen/src/Core/util/Macros.h \
- /usr/include/c++/11/cmath \
+ /usr/include/stdc-predef.h /usr/include/c++/11/cmath \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
  /usr/include/features.h /usr/include/features-time64.h \
@@ -90,7 +83,10 @@ CMakeFiles/mppi.dir/Trajectory.cpp.o: \
  /usr/include/c++/11/tr1/modified_bessel_func.tcc \
  /usr/include/c++/11/tr1/poly_hermite.tcc \
  /usr/include/c++/11/tr1/poly_laguerre.tcc \
- /usr/include/c++/11/tr1/riemann_zeta.tcc \
+ /usr/include/c++/11/tr1/riemann_zeta.tcc /usr/include/eigen3/Eigen/Dense \
+ /usr/include/eigen3/Eigen/Core \
+ /usr/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
+ /usr/include/eigen3/Eigen/src/Core/util/Macros.h \
  /usr/include/eigen3/Eigen/src/Core/util/ConfigureVectorization.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/mmintrin.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/emmintrin.h \
@@ -401,4 +397,7 @@ CMakeFiles/mppi.dir/Trajectory.cpp.o: \
  /usr/include/eigen3/Eigen/src/Eigenvalues/RealQZ.h \
  /usr/include/eigen3/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
  /usr/include/eigen3/Eigen/src/Eigenvalues/RealQZ.h \
- /usr/include/eigen3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
+ /home/jfetko/Documents/HIER/mppi_cpp/Trajectory.hpp \
+ /home/jfetko/Documents/HIER/mppi_cpp/Waypoint.hpp \
+ /home/jfetko/Documents/HIER/mppi_cpp/State.hpp
