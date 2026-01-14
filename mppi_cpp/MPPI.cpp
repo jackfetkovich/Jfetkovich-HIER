@@ -13,9 +13,15 @@ using Eigen::MatrixXd;
 using Eigen::VectorXd;
 using namespace rerun::demo;
 
+struct Rollout {
+    std::vector<State> logging_states;
+};
+
 MPPI::MPPI(int K, int T, double lambda, const rerun::RecordingStream& rec) : K(K), T(T), lambda(lambda), rec(rec){};
 
 Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
+    rec.set_time_duration_secs("sim_time", t); // New time on timeline
+    
     MatrixXd ctrls = gen_rand_ctrl_seq(0.3, 1.0, 0.0, 2.0); // Generate random control inputs
     VectorXd costs = VectorXd(K); // Store cost of each sampled path
 
@@ -30,17 +36,16 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
     State temp_state = state;
     double temp_cost = 0;
 
+    std::vector<Rollout> rollouts = std::vector<Rollout>();
+    std::vector<State> logging_states = std::vector<State>();
+
     for (int k = 0; k < K; k++){
         for (int t = 0; t < T; t++){
             double v = ctrls(0, k*T + t);
             double w = ctrls(1, k*T + t);
             Control ctrl = Control{v, w};
             temp_state = unicyle_dynamics(temp_state, ctrl, dt);
-            
-            rec.log(
-                "mppi/sample/points",
-                rerun::Points2D(rerun::Position2D(temp_state.val(0), temp_state.val(1))).with_radii({0.01f}).with_colors(rerun::Color(128, 0, 0))
-            );
+            logging_states.push_back(temp_state);
 
             if(t < T-1){
                 temp_cost += cost_func(temp_state, ctrl, discretized_waypoints.at(t));
@@ -49,8 +54,12 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
             }
         }
         costs(k) = temp_cost;
+        rollouts.push_back(Rollout{logging_states});
+
+        // Reset per-rollout variables
         temp_state = state;
         temp_cost = 0.0;
+        logging_states.clear();
     }
     
     // Calculate smallest cost
@@ -58,7 +67,6 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
     for (int i = 0; i < K; i++){
         if(costs(i) < min_cost) min_cost = costs(i);
     }
-
 
     // Calculate weights
     VectorXd weights = VectorXd(K);
@@ -71,6 +79,48 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
         weights /= sum_w;
     } else {
         weights.setConstant(1.0 / K);
+    }
+
+    // for (int i = 0; i < rollouts.size(); i++){
+    //     double green = weights(i) * 128;
+    //     double red = 128-green;
+    //     for (int j = 0; j < rollouts.at(i).logging_states.size(); j++){
+    //         rec.log(
+    //             "mppi/sample/" + std::to_string(i),
+    //             rerun::Points2D(
+    //                 rerun::Position2D(
+    //                     rollouts.at(i).logging_states.at(j).val(0), rollouts.at(i).logging_states.at(j).val(1)
+    //                 )
+    //                 )
+    //                 .with_radii({0.01f})
+    //                 .with_colors(
+    //                     rerun::Color(red, green, 0)
+    //                 )
+    //         );
+    //     }
+    // }
+
+    for (int i = 0; i < rollouts.size(); i++) {
+        double alpha = weights(i) * 255.0;
+
+        std::vector<rerun::Position2D> pts;
+        pts.reserve(rollouts[i].logging_states.size());
+
+        for (const auto& s : rollouts[i].logging_states) {
+            pts.emplace_back(
+                static_cast<float>(s.val(0)),
+                static_cast<float>(s.val(1))
+            );
+        }
+
+        std::vector<std::vector<rerun::Position2D>> strips;
+        strips.push_back(pts);
+
+        rec.log(
+            "mppi/sample/" + std::to_string(i),
+            rerun::LineStrips2D(strips)
+                .with_colors(rerun::Color(0, alpha, 0, alpha))
+        );
     }
 
     Vector2d ctrl_out = Vector2d(0.0, 0.0);

@@ -628,4 +628,6 @@ CMakeFiles/mppi.dir/Main.cpp.o: \
  /home/jfetko/Documents/HIER/mppi_cpp/Control.hpp \
  /home/jfetko/Documents/HIER/mppi_cpp/Waypoint.hpp \
  /home/jfetko/Documents/HIER/mppi_cpp/MPPI.hpp \
- /home/jfetko/Documents/HIER/mppi_cpp/Trajectory.hpp
+ /home/jfetko/Documents/HIER/mppi_cpp/Trajectory.hpp \
+ /home/jfetko/Documents/HIER/mppi_cpp/Timer.hpp \
+ /home/jfetko/Documents/HIER/mppi_cpp/Dynamics.hpp

@@ -273,6 +273,30 @@ Main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/Main.cpp.s
 .PHONY : Main.cpp.s
 
+Timer.o: Timer.cpp.o
+.PHONY : Timer.o
+
+# target to build an object file
+Timer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/Timer.cpp.o
+.PHONY : Timer.cpp.o
+
+Timer.i: Timer.cpp.i
+.PHONY : Timer.i
+
+# target to preprocess a source file
+Timer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/Timer.cpp.i
+.PHONY : Timer.cpp.i
+
+Timer.s: Timer.cpp.s
+.PHONY : Timer.s
+
+# target to generate assembly for a file
+Timer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/Timer.cpp.s
+.PHONY : Timer.cpp.s
+
 Trajectory.o: Trajectory.cpp.o
 .PHONY : Trajectory.o
 
@@ -321,6 +345,9 @@ help:
 	@echo "... Main.o"
 	@echo "... Main.i"
 	@echo "... Main.s"
+	@echo "... Timer.o"
+	@echo "... Timer.i"
+	@echo "... Timer.s"
 	@echo "... Trajectory.o"
 	@echo "... Trajectory.i"
 	@echo "... Trajectory.s"
