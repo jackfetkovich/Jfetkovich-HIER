@@ -3,14 +3,17 @@
 #include <vector>
 #include <Eigen/Dense>
 #include <cmath>
+#include <rerun.hpp>
+#include <rerun/demo_utils.hpp>
 #include "MPPI.hpp"
 #include "Trajectory.hpp"
 #include "Dynamics.hpp"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
+using namespace rerun::demo;
 
-MPPI::MPPI(int K, int T, double lambda) : K(K), T(T), lambda(lambda){};
+MPPI::MPPI(int K, int T, double lambda, const rerun::RecordingStream& rec) : K(K), T(T), lambda(lambda), rec(rec){};
 
 Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
     MatrixXd ctrls = gen_rand_ctrl_seq(0.3, 1.0, 0.0, 2.0); // Generate random control inputs
@@ -33,6 +36,12 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
             double w = ctrls(1, k*T + t);
             Control ctrl = Control{v, w};
             temp_state = unicyle_dynamics(temp_state, ctrl, dt);
+            
+            rec.log(
+                "mppi/sample/points",
+                rerun::Points2D(rerun::Position2D(temp_state.val(0), temp_state.val(1))).with_radii({0.01f}).with_colors(rerun::Color(128, 0, 0))
+            );
+
             if(t < T-1){
                 temp_cost += cost_func(temp_state, ctrl, discretized_waypoints.at(t));
             } else {
@@ -63,12 +72,6 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
     } else {
         weights.setConstant(1.0 / K);
     }
-
-    /////////////
-    for(int i = 0; i < weights.size(); i++){
-        std::cout << weights(i) << std::endl;
-    }
-    /////////////
 
     Vector2d ctrl_out = Vector2d(0.0, 0.0);
     for (int k = 0; k < K; k++){

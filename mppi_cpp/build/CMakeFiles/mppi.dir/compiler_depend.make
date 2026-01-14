@@ -917,6 +917,243 @@ CMakeFiles/mppi.dir/MPPI.cpp.o: /home/jfetko/Documents/HIER/mppi_cpp/MPPI.cpp \
   /usr/include/eigen3/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
   /usr/include/eigen3/Eigen/src/Eigenvalues/RealQZ.h \
   /usr/include/eigen3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
+  _deps/rerun_sdk-src/src/rerun.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/annotation_context.hpp \
+  _deps/rerun_sdk-src/src/rerun/collection.hpp \
+  _deps/rerun_sdk-src/src/rerun/collection_adapter.hpp \
+  _deps/rerun_sdk-src/src/rerun/compiler_utils.hpp \
+  _deps/rerun_sdk-src/src/rerun/collection_adapter_builtins.hpp \
+  _deps/rerun_sdk-src/src/rerun/type_traits.hpp \
+  /usr/include/c++/11/iterator \
+  /usr/include/c++/11/bits/stream_iterator.h \
+  _deps/rerun_sdk-src/src/rerun/component_batch.hpp \
+  /usr/include/c++/11/memory \
+  /usr/include/c++/11/bits/stl_raw_storage_iter.h \
+  /usr/include/c++/11/bits/align.h \
+  /usr/include/c++/11/bits/unique_ptr.h \
+  /usr/include/c++/11/bits/shared_ptr.h \
+  /usr/include/c++/11/bits/shared_ptr_base.h \
+  /usr/include/c++/11/bits/allocated_ptr.h \
+  /usr/include/c++/11/ext/concurrence.h \
+  /usr/include/c++/11/bits/shared_ptr_atomic.h \
+  /usr/include/c++/11/backward/auto_ptr.h \
+  /usr/include/c++/11/pstl/glue_memory_defs.h \
+  /usr/include/c++/11/optional \
+  _deps/rerun_sdk-src/src/rerun/component_descriptor.hpp \
+  _deps/rerun_sdk-src/src/rerun/component_type.hpp \
+  _deps/rerun_sdk-src/src/rerun/result.hpp \
+  _deps/rerun_sdk-src/src/rerun/error.hpp \
+  _deps/rerun_sdk-src/src/rerun/loggable.hpp \
+  _deps/rerun_sdk-src/src/rerun/component_column.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/annotation_context.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/class_description_map_elem.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/class_description.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/annotation_info.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/rgba32.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/utf8.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/keypoint_pair.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/keypoint_id.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/class_id.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/arrows2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/class_id.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/color.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/draw_order.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/float32.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/position2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/vec2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/radius.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/show_labels.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/bool.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/text.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/vector2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/arrows3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/position3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/vec3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/vector3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/asset3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/albedo_factor.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/blob.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/blob.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/media_type.hpp \
+  /usr/include/c++/11/filesystem \
+  /usr/include/c++/11/bits/fs_fwd.h \
+  /usr/include/c++/11/chrono \
+  /usr/include/c++/11/ratio \
+  /usr/include/c++/11/ctime \
+  /usr/include/c++/11/bits/parse_numbers.h \
+  /usr/include/c++/11/bits/fs_path.h \
+  /usr/include/c++/11/locale \
+  /usr/include/c++/11/bits/locale_facets_nonio.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
+  /usr/include/libintl.h \
+  /usr/include/c++/11/bits/codecvt.h \
+  /usr/include/c++/11/bits/locale_facets_nonio.tcc \
+  /usr/include/c++/11/bits/locale_conv.h \
+  /usr/include/c++/11/iomanip \
+  /usr/include/c++/11/bits/quoted_string.h \
+  /usr/include/c++/11/codecvt \
+  /usr/include/c++/11/bits/fs_dir.h \
+  /usr/include/c++/11/bits/fs_ops.h \
+  _deps/rerun_sdk-src/src/rerun/archetypes/asset_video.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/bar_chart.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/length.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/tensor_data.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/tensor_data.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/tensor_buffer.hpp \
+  _deps/rerun_sdk-src/src/rerun/half.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/boxes2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/half_size2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/boxes3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/fill_mode.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/half_size3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/rotation_axis_angle.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/rotation_axis_angle.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/angle.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/rotation_quat.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/quaternion.hpp \
+  _deps/rerun_sdk-src/src/rerun/rerun_sdk_export.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/translation3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/capsules3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/clear.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/clear_is_recursive.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/coordinate_frame.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/transform_frame_id.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/cylinders3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/depth_image.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/colormap.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/depth_meter.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/fill_ratio.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/image_buffer.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/image_format.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/image_format.hpp \
+  _deps/rerun_sdk-src/src/rerun/image_utils.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/channel_datatype.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/color_model.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/pixel_format.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/value_range.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/range1d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/ellipsoids3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/encoded_depth_image.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/encoded_image.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/opacity.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/geo_line_strings.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/geo_line_string.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/dvec2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/geo_points.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/lat_lon.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/graph_edges.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/graph_edge.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/utf8pair.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/graph_type.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/graph_nodes.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/graph_node.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/image.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/instance_poses3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/scale3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/transform_mat3x3.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/mat3x3.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/line_strips2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/line_strip2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/line_strips3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/line_strip3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/mcap_channel.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/channel_id.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/uint16.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/key_value_pairs.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/mcap_message.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/mcap_schema.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/schema_id.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/mcap_statistics.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/channel_message_counts.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/channel_count_pair.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/uint64.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/count.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/timestamp.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/time_int.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/mesh3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/texcoord2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/triangle_indices.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/uvec3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/pinhole.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/image_plane_distance.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/pinhole_projection.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/resolution.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/view_coordinates.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/view_coordinates.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/points2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/keypoint_id.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/points3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/recording_info.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/name.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/scalars.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/scalar.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/float64.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/segmentation_image.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/series_lines.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/aggregation_policy.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/series_visible.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/stroke_width.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/series_points.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/marker_shape.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/marker_size.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/tensor.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/text_document.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/text_log.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/text_log_level.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/transform3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/transform_relation.hpp \
+  _deps/rerun_sdk-src/src/rerun/rotation3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/transform_axes3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/axis_length.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/video_frame_reference.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/entity_path.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/entity_path.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/video_timestamp.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/video_timestamp.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/video_stream.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/video_codec.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/video_sample.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/view_coordinates.hpp \
+  _deps/rerun_sdk-src/src/rerun/components.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/gamma_correction.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/interactive.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/linear_speed.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/magnification_filter.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/plane3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/plane3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/range1d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/tensor_dimension_index_selection.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/tensor_dimension_index_selection.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/tensor_height_dimension.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/tensor_dimension_selection.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/tensor_width_dimension.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/visible.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/absolute_time_range.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/mat4x4.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/vec4d.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/range2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/time_range.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/time_range_boundary.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/uint32.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/uuid.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/uvec2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/uvec4d.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/visible_time_range.hpp \
+  _deps/rerun_sdk-src/src/rerun/config.hpp \
+  _deps/rerun_sdk-src/src/rerun/entity_path.hpp \
+  _deps/rerun_sdk-src/src/rerun/recording_stream.hpp \
+  _deps/rerun_sdk-src/src/rerun/as_components.hpp \
+  _deps/rerun_sdk-src/src/rerun/log_sink.hpp \
+  _deps/rerun_sdk-src/src/rerun/spawn_options.hpp \
+  _deps/rerun_sdk-src/src/rerun/time_column.hpp \
+  _deps/rerun_sdk-src/src/rerun/timeline.hpp \
+  _deps/rerun_sdk-src/src/rerun/sdk_info.hpp \
+  _deps/rerun_sdk-src/src/rerun/c/sdk_info.h \
+  _deps/rerun_sdk-src/src/rerun/spawn.hpp \
+  _deps/rerun_sdk-src/src/rerun/demo_utils.hpp \
   /home/jfetko/Documents/HIER/mppi_cpp/MPPI.hpp \
   /home/jfetko/Documents/HIER/mppi_cpp/State.hpp \
   /home/jfetko/Documents/HIER/mppi_cpp/Waypoint.hpp \
@@ -1376,6 +1613,244 @@ CMakeFiles/mppi.dir/Main.cpp.o: /home/jfetko/Documents/HIER/mppi_cpp/Main.cpp \
   /usr/include/eigen3/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
   /usr/include/eigen3/Eigen/src/Eigenvalues/RealQZ.h \
   /usr/include/eigen3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
+  _deps/rerun_sdk-src/src/rerun.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/annotation_context.hpp \
+  _deps/rerun_sdk-src/src/rerun/collection.hpp \
+  _deps/rerun_sdk-src/src/rerun/collection_adapter.hpp \
+  _deps/rerun_sdk-src/src/rerun/compiler_utils.hpp \
+  _deps/rerun_sdk-src/src/rerun/collection_adapter_builtins.hpp \
+  _deps/rerun_sdk-src/src/rerun/type_traits.hpp \
+  /usr/include/c++/11/iterator \
+  /usr/include/c++/11/bits/stream_iterator.h \
+  _deps/rerun_sdk-src/src/rerun/component_batch.hpp \
+  /usr/include/c++/11/memory \
+  /usr/include/c++/11/bits/stl_raw_storage_iter.h \
+  /usr/include/c++/11/bits/align.h \
+  /usr/include/c++/11/bit \
+  /usr/include/c++/11/bits/unique_ptr.h \
+  /usr/include/c++/11/bits/shared_ptr.h \
+  /usr/include/c++/11/bits/shared_ptr_base.h \
+  /usr/include/c++/11/bits/allocated_ptr.h \
+  /usr/include/c++/11/ext/concurrence.h \
+  /usr/include/c++/11/bits/shared_ptr_atomic.h \
+  /usr/include/c++/11/backward/auto_ptr.h \
+  /usr/include/c++/11/pstl/glue_memory_defs.h \
+  /usr/include/c++/11/optional \
+  _deps/rerun_sdk-src/src/rerun/component_descriptor.hpp \
+  _deps/rerun_sdk-src/src/rerun/component_type.hpp \
+  _deps/rerun_sdk-src/src/rerun/result.hpp \
+  _deps/rerun_sdk-src/src/rerun/error.hpp \
+  _deps/rerun_sdk-src/src/rerun/loggable.hpp \
+  _deps/rerun_sdk-src/src/rerun/component_column.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/annotation_context.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/class_description_map_elem.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/class_description.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/annotation_info.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/rgba32.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/utf8.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/keypoint_pair.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/keypoint_id.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/class_id.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/arrows2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/class_id.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/color.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/draw_order.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/float32.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/position2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/vec2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/radius.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/show_labels.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/bool.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/text.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/vector2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/arrows3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/position3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/vec3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/vector3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/asset3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/albedo_factor.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/blob.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/blob.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/media_type.hpp \
+  /usr/include/c++/11/filesystem \
+  /usr/include/c++/11/bits/fs_fwd.h \
+  /usr/include/c++/11/chrono \
+  /usr/include/c++/11/ratio \
+  /usr/include/c++/11/ctime \
+  /usr/include/c++/11/bits/parse_numbers.h \
+  /usr/include/c++/11/bits/fs_path.h \
+  /usr/include/c++/11/locale \
+  /usr/include/c++/11/bits/locale_facets_nonio.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
+  /usr/include/libintl.h \
+  /usr/include/c++/11/bits/codecvt.h \
+  /usr/include/c++/11/bits/locale_facets_nonio.tcc \
+  /usr/include/c++/11/bits/locale_conv.h \
+  /usr/include/c++/11/iomanip \
+  /usr/include/c++/11/bits/quoted_string.h \
+  /usr/include/c++/11/codecvt \
+  /usr/include/c++/11/bits/fs_dir.h \
+  /usr/include/c++/11/bits/fs_ops.h \
+  _deps/rerun_sdk-src/src/rerun/archetypes/asset_video.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/bar_chart.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/length.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/tensor_data.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/tensor_data.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/tensor_buffer.hpp \
+  _deps/rerun_sdk-src/src/rerun/half.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/boxes2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/half_size2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/boxes3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/fill_mode.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/half_size3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/rotation_axis_angle.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/rotation_axis_angle.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/angle.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/rotation_quat.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/quaternion.hpp \
+  _deps/rerun_sdk-src/src/rerun/rerun_sdk_export.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/translation3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/capsules3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/clear.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/clear_is_recursive.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/coordinate_frame.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/transform_frame_id.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/cylinders3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/depth_image.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/colormap.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/depth_meter.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/fill_ratio.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/image_buffer.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/image_format.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/image_format.hpp \
+  _deps/rerun_sdk-src/src/rerun/image_utils.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/channel_datatype.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/color_model.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/pixel_format.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/value_range.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/range1d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/ellipsoids3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/encoded_depth_image.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/encoded_image.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/opacity.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/geo_line_strings.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/geo_line_string.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/dvec2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/geo_points.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/lat_lon.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/graph_edges.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/graph_edge.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/utf8pair.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/graph_type.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/graph_nodes.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/graph_node.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/image.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/instance_poses3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/scale3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/transform_mat3x3.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/mat3x3.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/line_strips2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/line_strip2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/line_strips3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/line_strip3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/mcap_channel.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/channel_id.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/uint16.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/key_value_pairs.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/mcap_message.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/mcap_schema.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/schema_id.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/mcap_statistics.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/channel_message_counts.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/channel_count_pair.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/uint64.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/count.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/timestamp.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/time_int.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/mesh3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/texcoord2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/triangle_indices.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/uvec3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/pinhole.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/image_plane_distance.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/pinhole_projection.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/resolution.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/view_coordinates.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/view_coordinates.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/points2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/keypoint_id.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/points3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/recording_info.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/name.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/scalars.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/scalar.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/float64.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/segmentation_image.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/series_lines.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/aggregation_policy.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/series_visible.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/stroke_width.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/series_points.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/marker_shape.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/marker_size.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/tensor.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/text_document.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/text_log.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/text_log_level.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/transform3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/transform_relation.hpp \
+  _deps/rerun_sdk-src/src/rerun/rotation3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/transform_axes3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/axis_length.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/video_frame_reference.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/entity_path.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/entity_path.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/video_timestamp.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/video_timestamp.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/video_stream.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/video_codec.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/video_sample.hpp \
+  _deps/rerun_sdk-src/src/rerun/archetypes/view_coordinates.hpp \
+  _deps/rerun_sdk-src/src/rerun/components.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/gamma_correction.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/interactive.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/linear_speed.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/magnification_filter.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/plane3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/plane3d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/range1d.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/tensor_dimension_index_selection.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/tensor_dimension_index_selection.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/tensor_height_dimension.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/tensor_dimension_selection.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/tensor_width_dimension.hpp \
+  _deps/rerun_sdk-src/src/rerun/components/visible.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/absolute_time_range.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/mat4x4.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/vec4d.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/range2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/time_range.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/time_range_boundary.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/uint32.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/uuid.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/uvec2d.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/uvec4d.hpp \
+  _deps/rerun_sdk-src/src/rerun/datatypes/visible_time_range.hpp \
+  _deps/rerun_sdk-src/src/rerun/config.hpp \
+  _deps/rerun_sdk-src/src/rerun/entity_path.hpp \
+  _deps/rerun_sdk-src/src/rerun/recording_stream.hpp \
+  _deps/rerun_sdk-src/src/rerun/as_components.hpp \
+  _deps/rerun_sdk-src/src/rerun/log_sink.hpp \
+  _deps/rerun_sdk-src/src/rerun/spawn_options.hpp \
+  _deps/rerun_sdk-src/src/rerun/time_column.hpp \
+  _deps/rerun_sdk-src/src/rerun/timeline.hpp \
+  _deps/rerun_sdk-src/src/rerun/sdk_info.hpp \
+  _deps/rerun_sdk-src/src/rerun/c/sdk_info.h \
+  _deps/rerun_sdk-src/src/rerun/spawn.hpp \
+  _deps/rerun_sdk-src/src/rerun/demo_utils.hpp \
   /home/jfetko/Documents/HIER/mppi_cpp/State.hpp \
   /home/jfetko/Documents/HIER/mppi_cpp/Control.hpp \
   /home/jfetko/Documents/HIER/mppi_cpp/Waypoint.hpp \
@@ -1838,928 +2313,1402 @@ CMakeFiles/mppi.dir/Trajectory.cpp.o: /home/jfetko/Documents/HIER/mppi_cpp/Traje
   /home/jfetko/Documents/HIER/mppi_cpp/State.hpp
 
 
-/home/jfetko/Documents/HIER/mppi_cpp/Trajectory.hpp:
-
-/home/jfetko/Documents/HIER/mppi_cpp/MPPI.hpp:
-
-/usr/include/c++/11/bit:
-
-/usr/include/c++/11/bits/stl_numeric.h:
-
-/usr/include/c++/11/random:
-
-/home/jfetko/Documents/HIER/mppi_cpp/MPPI.cpp:
-
-/home/jfetko/Documents/HIER/mppi_cpp/Control.hpp:
-
-/usr/include/eigen3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h:
-
-/usr/include/eigen3/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h:
-
-/usr/include/eigen3/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h:
-
-/usr/include/eigen3/Eigen/src/Eigenvalues/ComplexEigenSolver.h:
-
-/usr/include/eigen3/Eigen/src/Eigenvalues/EigenSolver.h:
-
-/usr/include/eigen3/Eigen/src/Geometry/arch/Geometry_SIMD.h:
-
-/usr/include/eigen3/Eigen/src/Geometry/Umeyama.h:
-
-/usr/include/eigen3/Eigen/src/Geometry/AlignedBox.h:
-
-/usr/include/eigen3/Eigen/src/Geometry/ParametrizedLine.h:
-
-/usr/include/eigen3/Eigen/src/Geometry/Hyperplane.h:
-
-/usr/include/eigen3/Eigen/src/Geometry/Scaling.h:
-
-/usr/include/eigen3/Eigen/src/Geometry/AngleAxis.h:
-
-/usr/include/eigen3/Eigen/src/Geometry/Quaternion.h:
-
-/usr/include/eigen3/Eigen/src/Geometry/RotationBase.h:
-
-/usr/include/eigen3/Eigen/src/Geometry/Homogeneous.h:
-
-/usr/include/eigen3/Eigen/src/Geometry/EulerAngles.h:
-
-/usr/include/eigen3/Eigen/src/Geometry/OrthoMethods.h:
-
-/usr/include/eigen3/Eigen/src/SVD/BDCSVD.h:
-
-/usr/include/eigen3/Eigen/src/SVD/SVDBase.h:
-
-/usr/include/eigen3/Eigen/src/QR/HouseholderQR.h:
-
-/usr/include/eigen3/Eigen/src/Householder/BlockHouseholder.h:
-
-/usr/include/eigen3/Eigen/src/Householder/Householder.h:
-
-/usr/include/eigen3/Eigen/src/Cholesky/LLT.h:
-
-/usr/include/eigen3/Eigen/Jacobi:
-
-/usr/include/eigen3/Eigen/Cholesky:
-
-/usr/include/eigen3/Eigen/src/LU/InverseImpl.h:
-
-/usr/include/eigen3/Eigen/src/misc/Kernel.h:
-
-/usr/include/eigen3/Eigen/src/Core/util/ReenableStupidWarnings.h:
-
-/usr/include/eigen3/Eigen/src/Core/ArrayWrapper.h:
-
-/usr/include/eigen3/Eigen/src/Core/Reverse.h:
-
-/usr/include/eigen3/Eigen/src/Core/Replicate.h:
-
-/usr/include/eigen3/Eigen/src/Core/Random.h:
-
-/usr/include/eigen3/Eigen/src/Core/PartialReduxEvaluator.h:
-
-/usr/include/eigen3/Eigen/src/Eigenvalues/Tridiagonalization.h:
-
-/usr/include/eigen3/Eigen/src/Core/VectorwiseOp.h:
-
-/usr/include/eigen3/Eigen/src/Core/Select.h:
-
-/usr/include/c++/11/numeric:
-
-/usr/include/eigen3/Eigen/src/Core/CoreIterators.h:
-
-/usr/include/eigen3/Eigen/src/Geometry/Rotation2D.h:
-
-/usr/include/eigen3/Eigen/src/Core/products/TriangularSolverVector.h:
-
-/usr/include/eigen3/Eigen/src/Core/products/TriangularMatrixVector.h:
-
-/usr/include/eigen3/Eigen/src/Core/products/SelfadjointProduct.h:
-
-/usr/include/eigen3/Eigen/src/Core/products/SelfadjointMatrixMatrix.h:
-
-/usr/include/eigen3/Eigen/src/Core/products/SelfadjointMatrixVector.h:
-
-/usr/include/eigen3/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h:
-
-/usr/include/eigen3/Eigen/src/Core/products/GeneralMatrixMatrix.h:
-
-/usr/include/eigen3/Eigen/src/SVD/JacobiSVD.h:
-
-/usr/include/eigen3/Eigen/src/SVD/UpperBidiagonalization.h:
-
-/usr/include/eigen3/Eigen/src/Core/ProductEvaluators.h:
-
-/usr/include/c++/11/bits/atomic_lockfree_defines.h:
-
-/usr/include/c++/11/bits/atomic_base.h:
-
 /home/jfetko/Documents/HIER/mppi_cpp/Trajectory.cpp:
 
-/usr/include/eigen3/Eigen/QR:
-
-/usr/include/c++/11/atomic:
-
-/usr/include/eigen3/Eigen/src/Core/products/Parallelizer.h:
-
-/usr/include/eigen3/Eigen/src/Core/SelfAdjointView.h:
-
-/usr/include/eigen3/Eigen/src/Core/TriangularMatrix.h:
-
-/usr/include/eigen3/Eigen/src/Core/PermutationMatrix.h:
-
-/usr/include/eigen3/Eigen/src/Core/Inverse.h:
-
-/usr/include/eigen3/Eigen/src/Core/GeneralProduct.h:
-
-/usr/include/eigen3/Eigen/src/Core/Fuzzy.h:
-
-/usr/include/eigen3/Eigen/src/Core/Transpose.h:
-
-/usr/include/eigen3/Eigen/src/Core/Reshaped.h:
-
-/usr/include/eigen3/Eigen/src/Geometry/Transform.h:
-
-/usr/include/eigen3/Eigen/src/Core/Block.h:
-
-/usr/include/eigen3/Eigen/src/Core/Ref.h:
-
-/usr/include/eigen3/Eigen/src/Core/ConditionEstimator.h:
-
-/usr/include/eigen3/Eigen/src/Core/Map.h:
-
-/usr/include/eigen3/Eigen/src/Core/Stride.h:
-
-/usr/include/eigen3/Eigen/src/Core/SelfCwiseBinaryOp.h:
-
-/usr/include/eigen3/Eigen/src/Core/CwiseNullaryOp.h:
-
-/usr/include/eigen3/Eigen/src/Core/CwiseUnaryOp.h:
-
-/usr/include/eigen3/Eigen/src/Core/CwiseBinaryOp.h:
-
-/usr/include/eigen3/Eigen/src/Core/NoAlias.h:
-
-/usr/include/eigen3/Eigen/src/Core/DenseStorage.h:
-
-/usr/include/eigen3/Eigen/src/plugins/ArrayCwiseBinaryOps.h:
-
-/usr/include/eigen3/Eigen/src/plugins/ArrayCwiseUnaryOps.h:
-
-/usr/include/c++/11/bits/random.h:
-
-/usr/include/eigen3/Eigen/src/Core/ArrayBase.h:
-
-/usr/include/eigen3/Eigen/src/Core/CoreEvaluators.h:
-
-/usr/include/eigen3/Eigen/src/Core/EigenBase.h:
-
-/usr/include/eigen3/Eigen/src/plugins/MatrixCwiseBinaryOps.h:
-
-/usr/include/eigen3/Eigen/src/plugins/MatrixCwiseUnaryOps.h:
-
-/usr/include/eigen3/Eigen/src/Core/MatrixBase.h:
-
-/usr/include/eigen3/Eigen/src/Core/Matrix.h:
-
-/usr/include/eigen3/Eigen/src/plugins/ReshapedMethods.h:
-
-/usr/include/eigen3/Eigen/src/Core/DenseCoeffsBase.h:
-
-/usr/include/eigen3/Eigen/src/Core/GlobalFunctions.h:
-
-/usr/include/eigen3/Eigen/src/Core/ArithmeticSequence.h:
-
-/usr/include/eigen3/Eigen/src/Core/util/ReshapedHelper.h:
-
-/usr/include/eigen3/Eigen/src/Core/util/IndexedViewHelper.h:
-
-/usr/include/eigen3/Eigen/src/Core/functors/AssignmentFunctors.h:
-
-/usr/include/eigen3/Eigen/src/Core/functors/StlFunctors.h:
-
-/usr/include/eigen3/Eigen/src/Core/functors/NullaryFunctors.h:
-
-/usr/include/eigen3/Eigen/src/Core/functors/UnaryFunctors.h:
-
-/usr/include/eigen3/Eigen/src/Core/MapBase.h:
-
-/usr/include/eigen3/Eigen/src/Core/arch/Default/GenericPacketMathFunctions.h:
-
-/usr/include/eigen3/Eigen/src/Core/arch/Default/Settings.h:
-
-/usr/include/eigen3/Eigen/src/Core/Visitor.h:
-
-/usr/include/eigen3/Eigen/src/Core/arch/SSE/MathFunctions.h:
-
-/usr/include/eigen3/Eigen/src/Core/arch/SSE/TypeCasting.h:
-
-/usr/include/eigen3/Eigen/src/Core/IndexedView.h:
-
-/usr/include/eigen3/Eigen/src/Core/arch/Default/GenericPacketMathFunctionsFwd.h:
-
-/usr/include/eigen3/Eigen/src/Core/arch/Default/TypeCasting.h:
-
-/usr/include/eigen3/Eigen/src/Core/products/TriangularSolverMatrix.h:
-
-/usr/include/eigen3/Eigen/src/Core/arch/Default/BFloat16.h:
-
-/usr/include/eigen3/Eigen/src/Core/arch/Default/Half.h:
-
-/usr/include/eigen3/Eigen/src/Core/arch/Default/ConjHelper.h:
-
-/usr/include/eigen3/Eigen/Geometry:
-
-/usr/include/eigen3/Eigen/src/Core/MathFunctionsImpl.h:
-
-/usr/include/eigen3/Eigen/src/Core/MathFunctions.h:
-
-/usr/include/eigen3/Eigen/src/Core/functors/BinaryFunctors.h:
-
-/usr/include/eigen3/Eigen/src/Core/NumTraits.h:
-
-/usr/include/eigen3/Eigen/src/Core/SolverBase.h:
-
-/usr/include/eigen3/Eigen/src/Core/util/SymbolicIndex.h:
-
-/usr/include/eigen3/Eigen/src/Eigenvalues/ComplexSchur.h:
-
-/usr/include/eigen3/Eigen/src/Core/util/Memory.h:
-
-/usr/include/eigen3/Eigen/src/Core/util/StaticAssert.h:
-
-/usr/include/eigen3/Eigen/src/Core/util/ForwardDeclarations.h:
-
-/usr/include/eigen3/Eigen/src/Core/util/Meta.h:
-
-/usr/include/eigen3/Eigen/src/Geometry/Translation.h:
-
-/usr/include/eigen3/Eigen/src/Core/util/Constants.h:
-
-/usr/include/eigen3/Eigen/src/misc/RealSvd2x2.h:
-
-/usr/include/c++/11/algorithm:
-
-/usr/include/x86_64-linux-gnu/bits/xopen_lim.h:
-
-/usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
-
-/usr/include/x86_64-linux-gnu/bits/local_lim.h:
-
-/usr/include/eigen3/Eigen/src/Householder/HouseholderSequence.h:
-
-/usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/mbstate_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/wint_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/floatn-common.h:
-
-/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:
-
-/usr/include/wchar.h:
-
-/usr/include/c++/11/bits/cxxabi_init_exception.h:
-
-/usr/include/c++/11/cwchar:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h:
-
-/usr/include/c++/11/tr1/special_function_util.h:
-
-/usr/include/c++/11/bits/stringfwd.h:
-
-/usr/include/c++/11/istream:
-
-/usr/include/c++/11/sstream:
-
-/usr/include/x86_64-linux-gnu/bits/wchar.h:
-
-/usr/include/eigen3/Eigen/src/Core/CwiseUnaryView.h:
-
-/usr/include/c++/11/stdlib.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/emmintrin.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/mmintrin.h:
-
-/usr/include/eigen3/Eigen/src/Core/util/Macros.h:
-
-/usr/include/eigen3/Eigen/src/Core/products/SelfadjointRank2Update.h:
-
-/usr/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h:
-
-/usr/include/eigen3/Eigen/Dense:
-
-/usr/include/errno.h:
-
-/usr/include/c++/11/bits/stl_algobase.h:
-
-/home/jfetko/Documents/HIER/mppi_cpp/State.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/types/FILE.h:
-
-/usr/include/c++/11/tr1/poly_hermite.tcc:
-
-/usr/include/c++/11/bits/exception.h:
-
-/usr/include/c++/11/bits/locale_facets.h:
-
-/usr/include/eigen3/Eigen/src/QR/ColPivHouseholderQR.h:
-
-/usr/include/c++/11/tr1/hypergeometric.tcc:
-
-/usr/include/c++/11/bits/localefwd.h:
-
-/usr/include/c++/11/tr1/exp_integral.tcc:
-
-/usr/include/eigen3/Eigen/src/Core/products/GeneralMatrixVector.h:
-
-/usr/include/eigen3/Eigen/src/Core/ReturnByValue.h:
-
-/usr/include/eigen3/Eigen/Core:
-
-/usr/include/c++/11/bits/stl_construct.h:
-
-/usr/include/c++/11/tr1/ell_integral.tcc:
-
-/usr/include/c++/11/tr1/poly_laguerre.tcc:
-
-/usr/include/c++/11/cstdlib:
-
-/usr/include/c++/11/bits/stl_iterator_base_types.h:
-
-/usr/include/eigen3/Eigen/src/QR/FullPivHouseholderQR.h:
-
-/usr/include/eigen3/Eigen/Householder:
-
-/usr/include/eigen3/Eigen/src/Core/DenseBase.h:
-
-/usr/include/assert.h:
-
-/usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/stdarg.h:
-
-/usr/include/c++/11/debug/assertions.h:
-
-/usr/include/c++/11/tuple:
-
-/usr/include/eigen3/Eigen/src/LU/PartialPivLU.h:
-
-/usr/include/eigen3/Eigen/src/Core/products/TriangularMatrixMatrix.h:
-
-/usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h:
-
-/usr/include/c++/11/bits/stl_pair.h:
-
-/usr/include/c++/11/ext/atomicity.h:
-
-/usr/include/eigen3/Eigen/src/Core/functors/TernaryFunctors.h:
-
-/usr/include/c++/11/bits/specfun.h:
-
-/usr/include/alloca.h:
-
-/usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
-
-/usr/include/strings.h:
-
-/usr/include/eigen3/Eigen/src/Cholesky/LDLT.h:
-
-/usr/include/x86_64-linux-gnu/bits/thread-shared-types.h:
-
-/usr/include/c++/11/ext/new_allocator.h:
-
-/usr/include/x86_64-linux-gnu/bits/iscanonical.h:
-
-/usr/include/eigen3/Eigen/src/Core/IO.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
-
-/usr/include/c++/11/bits/stl_iterator.h:
-
-/usr/include/x86_64-linux-gnu/bits/struct_mutex.h:
-
-/usr/include/x86_64-linux-gnu/bits/mathcalls.h:
-
-/usr/include/c++/11/tr1/riemann_zeta.tcc:
-
-/usr/include/x86_64-linux-gnu/bits/math-vector.h:
-
-/usr/include/c++/11/cassert:
-
-/usr/include/eigen3/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h:
-
-/usr/include/eigen3/Eigen/src/Core/BooleanRedux.h:
-
-/usr/include/eigen3/Eigen/src/Core/NestByValue.h:
-
-/usr/include/c++/11/bits/stl_algo.h:
-
-/usr/include/x86_64-linux-gnu/sys/select.h:
-
-/usr/include/c++/11/bits/predefined_ops.h:
-
-/usr/include/x86_64-linux-gnu/bits/typesizes.h:
-
-/usr/include/eigen3/Eigen/src/Core/DiagonalMatrix.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/c++allocator.h:
-
-/usr/include/x86_64-linux-gnu/bits/endianness.h:
-
-/usr/include/c++/11/tr1/modified_bessel_func.tcc:
-
-/usr/include/c++/11/ext/type_traits.h:
-
-/usr/include/c++/11/bits/postypes.h:
-
-/usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h:
-
-/usr/include/x86_64-linux-gnu/bits/endian.h:
-
-/usr/include/eigen3/Eigen/src/plugins/IndexedViewMethods.h:
-
-/usr/include/x86_64-linux-gnu/gnu/stubs.h:
-
-/usr/include/linux/limits.h:
-
-/usr/include/c++/11/bits/basic_string.h:
-
-/usr/include/eigen3/Eigen/src/misc/Image.h:
-
-/usr/include/eigen3/Eigen/src/Core/StlIterators.h:
-
-/usr/include/pthread.h:
-
-/usr/include/c++/11/bits/random.tcc:
-
-/usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
-
-/usr/include/eigen3/Eigen/src/plugins/CommonCwiseBinaryOps.h:
-
-/usr/include/x86_64-linux-gnu/bits/uintn-identity.h:
-
-/usr/include/c++/11/tr1/bessel_function.tcc:
-
-/usr/include/eigen3/Eigen/src/Eigenvalues/RealSchur.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h:
-
-/usr/include/c++/11/bits/exception_defines.h:
-
-/home/jfetko/Documents/HIER/mppi_cpp/Dynamics.cpp:
-
-/usr/include/c++/11/bits/uniform_int_dist.h:
-
-/usr/include/c++/11/bits/basic_ios.h:
-
-/usr/include/eigen3/Eigen/src/Core/Dot.h:
-
-/usr/include/c++/11/math.h:
-
-/usr/include/x86_64-linux-gnu/bits/waitflags.h:
-
-/usr/include/eigen3/Eigen/src/Core/CwiseTernaryOp.h:
-
-/usr/include/c++/11/bits/functexcept.h:
-
-/usr/include/c++/11/streambuf:
-
-/usr/include/eigen3/Eigen/src/Eigenvalues/HessenbergDecomposition.h:
-
-/usr/include/x86_64-linux-gnu/bits/time64.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
-
-/usr/include/x86_64-linux-gnu/asm/errno.h:
-
-/usr/include/eigen3/Eigen/src/Core/DiagonalProduct.h:
-
-/usr/include/x86_64-linux-gnu/sys/cdefs.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/clock_t.h:
-
-/usr/include/eigen3/Eigen/src/Core/products/GeneralBlockPanelKernel.h:
-
-/usr/include/eigen3/Eigen/src/Core/arch/SSE/PacketMath.h:
-
-/usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h:
-
-/usr/include/c++/11/tr1/legendre_function.tcc:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h:
-
-/usr/include/c++/11/ext/numeric_traits.h:
-
-/usr/include/eigen3/Eigen/src/Core/util/MKL_support.h:
-
-/usr/include/features.h:
-
-/usr/include/eigen3/Eigen/src/Core/arch/SSE/Complex.h:
-
-/usr/include/c++/11/pstl/pstl_config.h:
-
-/usr/include/eigen3/Eigen/src/Core/CommaInitializer.h:
-
-/usr/include/c++/11/type_traits:
-
-/usr/include/x86_64-linux-gnu/sys/single_threaded.h:
-
-/usr/include/c++/11/cmath:
-
-/usr/include/c++/11/bits/allocator.h:
-
-/usr/include/c++/11/bits/stl_tempbuf.h:
-
-/usr/include/c++/11/bits/std_function.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types.h:
-
-/usr/include/eigen3/Eigen/src/Core/Redux.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
-
-/usr/include/c++/11/bits/cpp_type_traits.h:
-
-/usr/include/c++/11/bits/stl_iterator_base_funcs.h:
-
-/usr/include/x86_64-linux-gnu/bits/fp-logb.h:
-
-/usr/include/c++/11/bits/ios_base.h:
-
-/usr/include/eigen3/Eigen/src/Core/Solve.h:
-
-/usr/include/x86_64-linux-gnu/bits/timesize.h:
-
-/usr/include/c++/11/complex:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h:
+/home/jfetko/Documents/HIER/mppi_cpp/Trajectory.hpp:
 
 /home/jfetko/Documents/HIER/mppi_cpp/Waypoint.hpp:
 
-/usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
+_deps/rerun_sdk-src/src/rerun/demo_utils.hpp:
 
-/usr/include/c++/11/tr1/gamma.tcc:
+_deps/rerun_sdk-src/src/rerun/timeline.hpp:
 
-/usr/include/eigen3/Eigen/SVD:
+_deps/rerun_sdk-src/src/rerun/spawn_options.hpp:
 
-/usr/include/c++/11/bits/locale_classes.h:
+_deps/rerun_sdk-src/src/rerun/log_sink.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/flt-eval-method.h:
+_deps/rerun_sdk-src/src/rerun/as_components.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/wordsize.h:
+_deps/rerun_sdk-src/src/rerun/entity_path.hpp:
 
-/usr/include/stdlib.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/uvec4d.hpp:
 
-/usr/include/eigen3/Eigen/src/Core/util/ConfigureVectorization.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/uvec2d.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/uint32.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/wctype-wchar.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/visible_time_range.hpp:
 
-/usr/include/c++/11/limits:
+_deps/rerun_sdk-src/src/rerun/datatypes/time_range_boundary.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/byteswap.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/range2d.hpp:
 
-/usr/include/eigen3/Eigen/src/Core/Product.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/vec4d.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/mat4x4.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/long-double.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/absolute_time_range.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
+_deps/rerun_sdk-src/src/rerun/datatypes.hpp:
 
-/usr/include/c++/11/bits/concept_check.h:
+_deps/rerun_sdk-src/src/rerun/components/tensor_dimension_index_selection.hpp:
 
-/usr/include/c++/11/iostream:
+_deps/rerun_sdk-src/src/rerun/components/plane3d.hpp:
 
-/usr/include/c++/11/bits/node_handle.h:
+_deps/rerun_sdk-src/src/rerun/components/gamma_correction.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/fp-fast.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/view_coordinates.hpp:
 
-/usr/include/c++/11/bits/locale_classes.tcc:
+_deps/rerun_sdk-src/src/rerun/components/interactive.hpp:
 
-/usr/lib/gcc/x86_64-linux-gnu/11/include/xmmintrin.h:
+_deps/rerun_sdk-src/src/rerun/components/video_sample.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/video_timestamp.hpp:
 
-/usr/include/eigen3/Eigen/Eigenvalues:
+_deps/rerun_sdk-src/src/rerun/components/video_timestamp.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/types/error_t.h:
+_deps/rerun_sdk-src/src/rerun/components/entity_path.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h:
+_deps/rerun_sdk-src/src/rerun/components/axis_length.hpp:
 
-/usr/include/locale.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/transform_axes3d.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/types/time_t.h:
+_deps/rerun_sdk-src/src/rerun/rotation3d.hpp:
 
-/usr/include/eigen3/Eigen/src/Core/SolveTriangular.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/transform3d.hpp:
 
-/home/jfetko/Documents/HIER/mppi_cpp/Dynamics.hpp:
+_deps/rerun_sdk-src/src/rerun/components/text_log_level.hpp:
 
-/usr/include/x86_64-linux-gnu/sys/types.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/text_log.hpp:
 
-/usr/include/c++/11/ext/aligned_buffer.h:
+_deps/rerun_sdk-src/src/rerun/components/marker_shape.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/types/timer_t.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/series_points.hpp:
 
-/usr/include/eigen3/Eigen/src/Core/util/IntegralConstant.h:
+_deps/rerun_sdk-src/src/rerun/components/stroke_width.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/time.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/segmentation_image.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/select.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/float64.hpp:
 
-/usr/include/c++/11/backward/binders.h:
+_deps/rerun_sdk-src/src/rerun/components/scalar.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/stdint-uintn.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/scalars.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/recording_info.hpp:
 
-/usr/include/eigen3/Eigen/src/plugins/BlockMethods.h:
+_deps/rerun_sdk-src/src/rerun/components/keypoint_id.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
+_deps/rerun_sdk-src/src/rerun/components/magnification_filter.hpp:
 
-/usr/include/c++/11/exception:
+_deps/rerun_sdk-src/src/rerun/components/resolution.hpp:
 
-/usr/include/c++/11/bits/exception_ptr.h:
+_deps/rerun_sdk-src/src/rerun/components/pinhole_projection.hpp:
 
-/usr/include/c++/11/ext/string_conversions.h:
+_deps/rerun_sdk-src/src/rerun/components/image_plane_distance.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/pinhole.hpp:
 
-/usr/include/c++/11/typeinfo:
+_deps/rerun_sdk-src/src/rerun/datatypes/uvec3d.hpp:
 
-/usr/include/c++/11/bits/move.h:
+_deps/rerun_sdk-src/src/rerun/components/triangle_indices.hpp:
 
-/usr/include/c++/11/bits/hash_bytes.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/mesh3d.hpp:
 
-/usr/include/c++/11/bits/string_view.tcc:
+_deps/rerun_sdk-src/src/rerun/datatypes/time_int.hpp:
 
-/usr/include/c++/11/bits/nested_exception.h:
+_deps/rerun_sdk-src/src/rerun/components/count.hpp:
 
-/usr/include/c++/11/bits/char_traits.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/uint64.hpp:
 
-/usr/include/eigen3/Eigen/src/Core/BandMatrix.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/channel_count_pair.hpp:
 
-/usr/include/asm-generic/errno-base.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/mcap_statistics.hpp:
 
-/usr/include/linux/errno.h:
+_deps/rerun_sdk-src/src/rerun/components/channel_id.hpp:
 
-/usr/include/c++/11/functional:
+_deps/rerun_sdk-src/src/rerun/datatypes/mat3x3.hpp:
 
-/home/jfetko/Documents/HIER/mppi_cpp/Main.cpp:
+_deps/rerun_sdk-src/src/rerun/components/scale3d.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/waitstatus.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/instance_poses3d.hpp:
 
-/usr/include/c++/11/cstdint:
+_deps/rerun_sdk-src/src/rerun/archetypes/image.hpp:
 
-/usr/include/x86_64-linux-gnu/c++/11/bits/c++locale.h:
+_deps/rerun_sdk-src/src/rerun/components/graph_node.hpp:
 
-/usr/include/eigen3/Eigen/src/Core/Assign.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/utf8pair.hpp:
 
-/usr/include/c++/11/clocale:
+_deps/rerun_sdk-src/src/rerun/components/graph_edge.hpp:
 
-/usr/include/eigen3/Eigen/src/Core/Array.h:
+_deps/rerun_sdk-src/src/rerun/components/lat_lon.hpp:
 
-/usr/include/c++/11/bits/ostream.tcc:
+_deps/rerun_sdk-src/src/rerun/archetypes/geo_points.hpp:
 
-/usr/include/c++/11/pstl/glue_numeric_defs.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/dvec2d.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/locale.h:
+_deps/rerun_sdk-src/src/rerun/components/geo_line_string.hpp:
 
-/usr/include/eigen3/Eigen/src/Core/util/XprHelper.h:
+_deps/rerun_sdk-src/src/rerun/components/tensor_height_dimension.hpp:
 
-/usr/include/c++/11/cctype:
+_deps/rerun_sdk-src/src/rerun/archetypes/ellipsoids3d.hpp:
 
-/usr/include/c++/11/unordered_map:
+_deps/rerun_sdk-src/src/rerun/datatypes/range1d.hpp:
 
-/usr/include/ctype.h:
+_deps/rerun_sdk-src/src/rerun/components/line_strip3d.hpp:
 
-/usr/include/eigen3/Eigen/src/plugins/CommonCwiseUnaryOps.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/color_model.hpp:
 
-/usr/include/x86_64-linux-gnu/c++/11/bits/gthr.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/channel_datatype.hpp:
 
-/usr/include/x86_64-linux-gnu/c++/11/bits/gthr-default.h:
+_deps/rerun_sdk-src/src/rerun/components/image_buffer.hpp:
 
-/usr/include/asm-generic/errno.h:
+_deps/rerun_sdk-src/src/rerun/components/fill_ratio.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/depth_image.hpp:
 
-/usr/include/c++/11/bits/unordered_map.h:
+_deps/rerun_sdk-src/src/rerun/components/transform_frame_id.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/cpu-set.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/coordinate_frame.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/clear.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/timex.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/capsules3d.hpp:
 
-/usr/include/c++/11/bits/invoke.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/quaternion.hpp:
 
-/usr/include/time.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/text_document.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/setjmp.h:
+_deps/rerun_sdk-src/src/rerun/components/rotation_quat.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/angle.hpp:
 
-/usr/include/x86_64-linux-gnu/c++/11/bits/atomic_word.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/rotation_axis_angle.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/uio_lim.h:
+_deps/rerun_sdk-src/src/rerun/components/fill_mode.hpp:
 
-/usr/include/c++/11/string:
+_deps/rerun_sdk-src/src/rerun/archetypes/boxes3d.hpp:
 
-/usr/include/c++/11/bits/ostream_insert.h:
+_deps/rerun_sdk-src/src/rerun/components/half_size2d.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/tensor_dimension_index_selection.hpp:
 
-/usr/include/c++/11/bits/cxxabi_forced.h:
+_deps/rerun_sdk-src/src/rerun/half.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/sched.h:
+_deps/rerun_sdk-src/src/rerun/components/linear_speed.hpp:
 
-/usr/include/c++/11/ext/alloc_traits.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/tensor_buffer.hpp:
 
-/usr/include/c++/11/bits/memoryfwd.h:
+_deps/rerun_sdk-src/src/rerun/datatypes/tensor_data.hpp:
 
-/usr/include/c++/11/bits/stl_function.h:
-
-/usr/include/x86_64-linux-gnu/bits/floatn.h:
-
-/usr/include/c++/11/bits/range_access.h:
-
-/usr/include/c++/11/iosfwd:
-
-/usr/include/c++/11/initializer_list:
-
-/usr/include/stdc-predef.h:
-
-/usr/include/c++/11/bits/alloc_traits.h:
-
-/usr/include/eigen3/Eigen/src/LU/Determinant.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h:
-
-/usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h:
-
-/usr/include/c++/11/string_view:
-
-/usr/include/c++/11/bits/functional_hash.h:
-
-/usr/include/c++/11/cstdio:
-
-/usr/include/stdio.h:
-
-/usr/include/eigen3/Eigen/src/Core/Swap.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
-
-/usr/include/c++/11/cerrno:
-
-/usr/include/eigen3/Eigen/LU:
-
-/usr/include/eigen3/Eigen/src/Core/Transpositions.h:
-
-/usr/include/x86_64-linux-gnu/bits/errno.h:
-
-/usr/include/eigen3/Eigen/src/Eigenvalues/RealQZ.h:
-
-/usr/include/sched.h:
-
-/usr/include/wctype.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/ctype_base.h:
-
-/usr/include/c++/11/bits/charconv.h:
-
-/usr/include/eigen3/Eigen/src/Core/StableNorm.h:
-
-/usr/include/c++/11/bits/basic_string.tcc:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/mm_malloc.h:
-
-/usr/include/c++/11/system_error:
-
-/usr/include/c++/11/cstddef:
-
-/usr/include/c++/11/bits/stl_vector.h:
-
-/usr/include/c++/11/utility:
-
-/usr/include/c++/11/ios:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/error_constants.h:
-
-/usr/include/c++/11/pstl/glue_algorithm_defs.h:
-
-/usr/include/c++/11/stdexcept:
-
-/usr/include/eigen3/Eigen/src/LU/arch/InverseSize4.h:
-
-/usr/include/c++/11/cwctype:
-
-/usr/include/c++/11/bits/streambuf_iterator.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/ctype_inline.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
-
-/usr/include/c++/11/bits/locale_facets.tcc:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/opt_random.h:
-
-/usr/include/c++/11/bits/enable_special_members.h:
-
-/usr/include/c++/11/bits/basic_ios.tcc:
-
-/usr/include/eigen3/Eigen/src/Core/VectorBlock.h:
-
-/usr/include/c++/11/ostream:
-
-/usr/include/eigen3/Eigen/src/Core/Diagonal.h:
-
-/usr/include/c++/11/bits/istream.tcc:
-
-/usr/include/eigen3/Eigen/src/QR/CompleteOrthogonalDecomposition.h:
-
-/usr/include/limits.h:
-
-/usr/include/c++/11/bits/stl_relops.h:
-
-/usr/include/eigen3/Eigen/src/Core/GenericPacketMath.h:
-
-/usr/include/c++/11/debug/debug.h:
-
-/usr/include/features-time64.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/syslimits.h:
-
-/usr/include/c++/11/tr1/beta_function.tcc:
-
-/usr/include/c++/11/array:
-
-/usr/include/c++/11/new:
-
-/usr/include/c++/11/bits/sstream.tcc:
-
-/usr/include/c++/11/climits:
-
-/usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:
-
-/usr/include/c++/11/bits/uses_allocator.h:
-
-/usr/include/c++/11/bits/refwrap.h:
-
-/usr/include/c++/11/bits/hashtable.h:
-
-/usr/include/c++/11/bits/hashtable_policy.h:
-
-/usr/include/c++/11/bits/ptr_traits.h:
-
-/usr/include/endian.h:
-
-/usr/include/stdint.h:
-
-/usr/include/c++/11/bits/erase_if.h:
-
-/usr/include/eigen3/Eigen/src/Jacobi/Jacobi.h:
-
-/usr/include/c++/11/vector:
-
-/usr/include/c++/11/bits/stl_uninitialized.h:
-
-/usr/include/eigen3/Eigen/src/Core/util/BlasUtil.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
-
-/usr/include/c++/11/bits/stl_bvector.h:
-
-/usr/include/c++/11/bits/vector.tcc:
-
-/usr/include/c++/11/pstl/execution_defs.h:
-
-/usr/include/c++/11/bits/algorithmfwd.h:
-
-/usr/include/c++/11/bits/std_abs.h:
-
-/usr/include/c++/11/bits/stl_heap.h:
-
-/usr/include/eigen3/Eigen/src/LU/FullPivLU.h:
-
-/usr/include/math.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
-
-/usr/include/c++/11/cstring:
-
-/usr/include/c++/11/bits/streambuf.tcc:
+/usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h:
 
 /usr/include/string.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h:
+_deps/rerun_sdk-src/src/rerun/archetypes/arrows3d.hpp:
+
+/usr/include/c++/11/bits/stl_heap.h:
+
+/usr/include/c++/11/bits/std_abs.h:
+
+/usr/include/c++/11/pstl/execution_defs.h:
+
+/usr/include/c++/11/bits/vector.tcc:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
+
+/usr/include/eigen3/Eigen/src/Core/util/BlasUtil.h:
+
+/usr/include/c++/11/bits/fs_fwd.h:
+
+/usr/include/c++/11/bits/stl_uninitialized.h:
+
+/usr/include/c++/11/vector:
+
+/usr/include/c++/11/bits/erase_if.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/class_id.hpp:
+
+/usr/include/stdint.h:
+
+/usr/include/c++/11/bits/ptr_traits.h:
+
+/usr/include/c++/11/bits/hashtable_policy.h:
+
+/usr/include/c++/11/bits/hashtable.h:
+
+_deps/rerun_sdk-src/src/rerun/spawn.hpp:
+
+/usr/include/c++/11/bits/refwrap.h:
+
+/usr/include/c++/11/climits:
+
+/home/jfetko/Documents/HIER/mppi_cpp/MPPI.hpp:
+
+/usr/include/c++/11/bits/sstream.tcc:
+
+/usr/include/c++/11/new:
+
+/usr/include/c++/11/array:
+
+/usr/include/c++/11/tr1/beta_function.tcc:
+
+/usr/include/c++/11/debug/debug.h:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/mcap_message.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/GenericPacketMath.h:
+
+/usr/include/c++/11/bits/stl_relops.h:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/geo_line_strings.hpp:
+
+/usr/include/limits.h:
+
+/usr/include/eigen3/Eigen/src/QR/CompleteOrthogonalDecomposition.h:
+
+_deps/rerun_sdk-src/src/rerun/component_type.hpp:
+
+/usr/include/c++/11/bits/istream.tcc:
+
+/usr/include/eigen3/Eigen/src/Core/Diagonal.h:
+
+/usr/include/c++/11/ostream:
+
+/usr/include/eigen3/Eigen/src/Core/VectorBlock.h:
+
+/usr/include/c++/11/bits/basic_ios.tcc:
+
+/usr/include/c++/11/bits/enable_special_members.h:
+
+/usr/include/c++/11/bits/locale_facets.tcc:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
+
+_deps/rerun_sdk-src/src/rerun/components/visible.hpp:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/ctype_inline.h:
+
+/usr/include/c++/11/bits/streambuf_iterator.h:
+
+/usr/include/c++/11/cwctype:
+
+/usr/include/c++/11/stdexcept:
+
+/usr/include/c++/11/pstl/glue_algorithm_defs.h:
+
+/usr/include/c++/11/ios:
+
+_deps/rerun_sdk-src/src/rerun/components/transform_mat3x3.hpp:
+
+_deps/rerun_sdk-src/src/rerun/rerun_sdk_export.hpp:
+
+/usr/include/c++/11/utility:
+
+/usr/include/c++/11/bits/stl_vector.h:
+
+/usr/include/c++/11/cstddef:
+
+/usr/include/c++/11/bits/basic_string.tcc:
+
+/usr/include/eigen3/Eigen/src/Core/StableNorm.h:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/ctype_base.h:
+
+/usr/include/wctype.h:
+
+/usr/include/sched.h:
+
+/usr/include/x86_64-linux-gnu/bits/errno.h:
+
+/usr/include/eigen3/Eigen/src/Core/Transpositions.h:
+
+/usr/include/eigen3/Eigen/LU:
+
+/usr/include/c++/11/cerrno:
+
+/usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/blob.hpp:
+
+/usr/include/stdio.h:
+
+/usr/include/c++/11/bits/functional_hash.h:
+
+/usr/include/c++/11/string_view:
+
+/usr/include/eigen3/Eigen/src/LU/Determinant.h:
+
+/usr/include/c++/11/initializer_list:
+
+/usr/include/c++/11/iosfwd:
+
+/usr/include/c++/11/iterator:
+
+_deps/rerun_sdk-src/src/rerun/sdk_info.hpp:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/mcap_schema.hpp:
+
+/usr/include/c++/11/bits/stl_function.h:
+
+/usr/include/c++/11/bits/memoryfwd.h:
+
+/usr/include/c++/11/ext/alloc_traits.h:
+
+/usr/include/x86_64-linux-gnu/bits/sched.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h:
+
+/usr/include/c++/11/bits/ostream_insert.h:
+
+/usr/include/c++/11/string:
+
+/usr/include/x86_64-linux-gnu/bits/uio_lim.h:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/atomic_word.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h:
+
+/usr/include/time.h:
+
+/usr/include/c++/11/bits/unordered_map.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
+
+/usr/include/asm-generic/errno.h:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/gthr-default.h:
+
+_deps/rerun_sdk-src/src/rerun/components/depth_meter.hpp:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/gthr.h:
+
+/usr/include/ctype.h:
+
+/usr/include/c++/11/locale:
+
+/usr/include/c++/11/unordered_map:
+
+/usr/include/c++/11/iomanip:
+
+/usr/include/eigen3/Eigen/src/Core/Array.h:
+
+/usr/include/c++/11/clocale:
+
+_deps/rerun_sdk-src/src/rerun/components/text.hpp:
+
+/usr/include/c++/11/cstdint:
+
+/usr/include/x86_64-linux-gnu/bits/waitstatus.h:
+
+/usr/include/c++/11/functional:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/line_strips2d.hpp:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/c++locale.h:
+
+/usr/include/linux/errno.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/rgba32.hpp:
+
+/usr/include/c++/11/bits/nested_exception.h:
+
+/usr/include/c++/11/bits/string_view.tcc:
+
+/usr/include/c++/11/bits/hash_bytes.h:
+
+/usr/include/c++/11/bits/move.h:
+
+/usr/include/c++/11/typeinfo:
+
+_deps/rerun_sdk-src/src/rerun/components/series_visible.hpp:
+
+/usr/include/c++/11/exception:
+
+/usr/include/eigen3/Eigen/src/Core/Assign.h:
+
+/usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
+
+/usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:
+
+/usr/include/eigen3/Eigen/src/plugins/BlockMethods.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/uuid.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h:
+
+/usr/include/c++/11/backward/binders.h:
+
+_deps/rerun_sdk-src/src/rerun/components.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/time.h:
+
+/usr/include/eigen3/Eigen/src/Core/util/IntegralConstant.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/tensor_dimension_selection.hpp:
+
+_deps/rerun_sdk-src/src/rerun/components/clear_is_recursive.hpp:
+
+/usr/include/x86_64-linux-gnu/sys/types.h:
+
+/usr/include/eigen3/Eigen/src/Core/SolveTriangular.h:
+
+_deps/rerun_sdk-src/src/rerun/components/color.hpp:
+
+_deps/rerun_sdk-src/src/rerun/components/schema_id.hpp:
+
+/usr/include/locale.h:
+
+/usr/include/x86_64-linux-gnu/bits/setjmp.h:
+
+/usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/error_t.h:
+
+_deps/rerun_sdk-src/src/rerun/components/marker_size.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/xmmintrin.h:
+
+/usr/include/c++/11/ext/aligned_buffer.h:
+
+/usr/include/c++/11/bits/locale_classes.tcc:
+
+/usr/include/x86_64-linux-gnu/bits/fp-fast.h:
+
+/usr/include/c++/11/bits/node_handle.h:
+
+/usr/include/c++/11/bits/concept_check.h:
+
+/usr/include/x86_64-linux-gnu/bits/long-double.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
+
+/usr/include/eigen3/Eigen/src/Core/Product.h:
+
+/usr/include/x86_64-linux-gnu/bits/byteswap.h:
+
+/usr/include/c++/11/limits:
+
+/usr/include/eigen3/Eigen/src/Core/util/ConfigureVectorization.h:
+
+/usr/include/stdlib.h:
+
+/usr/include/x86_64-linux-gnu/bits/wordsize.h:
+
+/usr/include/c++/11/chrono:
+
+/usr/include/x86_64-linux-gnu/bits/flt-eval-method.h:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/series_lines.hpp:
+
+/usr/include/c++/11/bits/locale_classes.h:
+
+/usr/include/eigen3/Eigen/SVD:
+
+/usr/include/c++/11/tr1/gamma.tcc:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h:
+
+/usr/include/x86_64-linux-gnu/bits/timesize.h:
+
+/usr/include/eigen3/Eigen/src/Core/Solve.h:
+
+_deps/rerun_sdk-src/src/rerun/component_descriptor.hpp:
+
+/usr/include/c++/11/bits/ios_base.h:
+
+/usr/include/x86_64-linux-gnu/bits/fp-logb.h:
+
+/usr/include/c++/11/bits/streambuf.tcc:
+
+/usr/include/c++/11/bits/stl_iterator_base_funcs.h:
+
+/usr/include/endian.h:
+
+/usr/include/c++/11/bits/cpp_type_traits.h:
+
+/usr/include/c++/11/bits/range_access.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
+
+/usr/include/eigen3/Eigen/src/Core/Redux.h:
+
+/usr/include/x86_64-linux-gnu/bits/types.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/pixel_format.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
+
+_deps/rerun_sdk-src/src/rerun/components/view_coordinates.hpp:
+
+/usr/include/c++/11/bits/stl_tempbuf.h:
+
+_deps/rerun_sdk-src/src/rerun/components/albedo_factor.hpp:
+
+/usr/include/c++/11/bits/allocator.h:
+
+/usr/include/c++/11/cmath:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/encoded_image.hpp:
+
+/usr/include/c++/11/type_traits:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/encoded_depth_image.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/CommaInitializer.h:
+
+/usr/include/c++/11/pstl/pstl_config.h:
+
+/usr/include/eigen3/Eigen/src/LU/FullPivLU.h:
+
+/usr/include/eigen3/Eigen/src/Core/arch/SSE/Complex.h:
+
+/usr/include/x86_64-linux-gnu/bits/select.h:
+
+_deps/rerun_sdk-src/src/rerun/components/class_id.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/util/MKL_support.h:
+
+/usr/include/c++/11/ext/numeric_traits.h:
+
+_deps/rerun_sdk-src/src/rerun/components/length.hpp:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h:
+
+/usr/include/c++/11/tr1/legendre_function.tcc:
+
+/usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h:
+
+/usr/include/eigen3/Eigen/src/Core/products/GeneralBlockPanelKernel.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/clock_t.h:
+
+/usr/include/x86_64-linux-gnu/sys/cdefs.h:
+
+/usr/include/eigen3/Eigen/src/Core/DiagonalProduct.h:
+
+/usr/include/x86_64-linux-gnu/asm/errno.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
+
+/usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h:
+
+/usr/include/eigen3/Eigen/src/Eigenvalues/HessenbergDecomposition.h:
+
+/usr/include/c++/11/streambuf:
+
+/usr/include/c++/11/bits/functexcept.h:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/tensor.hpp:
+
+_deps/rerun_sdk-src/src/rerun/loggable.hpp:
+
+_deps/rerun_sdk-src/src/rerun/components/value_range.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/waitflags.h:
+
+_deps/rerun_sdk-src/src/rerun/config.hpp:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/mm_malloc.h:
+
+/usr/include/x86_64-linux-gnu/bits/time64.h:
+
+_deps/rerun_sdk-src/src/rerun/components/position2d.hpp:
+
+/usr/include/eigen3/Eigen/Eigenvalues:
+
+/usr/include/c++/11/math.h:
+
+/usr/include/x86_64-linux-gnu/bits/cpu-set.h:
+
+/usr/include/eigen3/Eigen/src/Core/Dot.h:
+
+_deps/rerun_sdk-src/src/rerun/component_batch.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/floatn.h:
+
+/home/jfetko/Documents/HIER/mppi_cpp/Dynamics.cpp:
+
+/usr/include/c++/11/bits/exception_defines.h:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h:
+
+/usr/include/c++/11/iostream:
+
+/usr/include/x86_64-linux-gnu/bits/uintn-identity.h:
+
+/usr/include/eigen3/Eigen/src/plugins/CommonCwiseBinaryOps.h:
+
+/usr/include/c++/11/bits/fs_path.h:
+
+/usr/include/pthread.h:
+
+/usr/include/eigen3/Eigen/src/Core/StlIterators.h:
+
+/usr/include/eigen3/Eigen/src/misc/Image.h:
+
+/usr/include/c++/11/bits/basic_string.h:
+
+/usr/include/c++/11/bits/shared_ptr_base.h:
+
+/usr/include/eigen3/Eigen/src/plugins/IndexedViewMethods.h:
+
+_deps/rerun_sdk-src/src/rerun/components/blob.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h:
+
+_deps/rerun_sdk-src/src/rerun/components/texcoord2d.hpp:
+
+/usr/include/c++/11/bits/postypes.h:
+
+_deps/rerun_sdk-src/src/rerun/components/half_size3d.hpp:
+
+/usr/include/c++/11/ext/type_traits.h:
+
+/usr/include/x86_64-linux-gnu/bits/endianness.h:
+
+_deps/rerun_sdk-src/src/rerun/collection_adapter_builtins.hpp:
+
+/usr/include/math.h:
+
+/usr/include/c++/11/bits/charconv.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
+
+/usr/include/c++/11/bits/exception_ptr.h:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/c++allocator.h:
+
+/usr/include/eigen3/Eigen/src/Core/DiagonalMatrix.h:
+
+/usr/include/x86_64-linux-gnu/bits/typesizes.h:
+
+/usr/include/c++/11/bits/predefined_ops.h:
+
+/usr/include/x86_64-linux-gnu/sys/select.h:
+
+_deps/rerun_sdk-src/src/rerun/components/rotation_axis_angle.hpp:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/boxes2d.hpp:
+
+/usr/include/c++/11/bits/stl_algo.h:
+
+/usr/include/c++/11/tr1/modified_bessel_func.tcc:
+
+/usr/include/eigen3/Eigen/src/Core/NestByValue.h:
+
+/usr/include/eigen3/Eigen/src/Core/BooleanRedux.h:
+
+/usr/include/eigen3/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h:
+
+/usr/include/c++/11/cassert:
+
+/usr/include/c++/11/complex:
+
+/usr/include/x86_64-linux-gnu/bits/math-vector.h:
+
+/usr/include/c++/11/tr1/riemann_zeta.tcc:
+
+/usr/include/x86_64-linux-gnu/bits/endian.h:
+
+/usr/include/x86_64-linux-gnu/bits/mathcalls.h:
+
+_deps/rerun_sdk-src/src/rerun/components/range1d.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/struct_mutex.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdint-uintn.h:
+
+/usr/include/c++/11/bits/stl_iterator.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
+
+/usr/include/c++/11/ext/string_conversions.h:
+
+/usr/include/x86_64-linux-gnu/bits/iscanonical.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/keypoint_id.hpp:
+
+/usr/include/eigen3/Eigen/src/Cholesky/LDLT.h:
+
+/usr/include/strings.h:
+
+/usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
+
+/usr/include/alloca.h:
+
+/usr/include/c++/11/bits/specfun.h:
+
+_deps/rerun_sdk-src/src/rerun/component_column.hpp:
+
+/usr/include/c++/11/bits/stl_pair.h:
+
+/usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h:
+
+/usr/include/eigen3/Eigen/src/Core/products/TriangularMatrixMatrix.h:
+
+/usr/include/eigen3/Eigen/src/Jacobi/Jacobi.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h:
+
+/usr/include/eigen3/Eigen/src/LU/PartialPivLU.h:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/points2d.hpp:
+
+/usr/include/c++/11/tuple:
+
+/usr/include/c++/11/debug/assertions.h:
+
+/usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
+
+/usr/include/eigen3/Eigen/Householder:
+
+/usr/include/eigen3/Eigen/src/QR/FullPivHouseholderQR.h:
+
+/usr/include/c++/11/cstdlib:
+
+/usr/include/c++/11/tr1/poly_laguerre.tcc:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/error_constants.h:
+
+/usr/include/c++/11/tr1/ell_integral.tcc:
+
+_deps/rerun_sdk-src/src/rerun/collection.hpp:
+
+/usr/include/eigen3/Eigen/Core:
+
+_deps/rerun_sdk-src/src/rerun/image_utils.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/ReturnByValue.h:
+
+/usr/include/eigen3/Eigen/src/Core/CwiseTernaryOp.h:
+
+/usr/include/eigen3/Eigen/src/Core/products/GeneralMatrixVector.h:
+
+/usr/include/c++/11/bits/shared_ptr.h:
+
+_deps/rerun_sdk-src/src/rerun/components/graph_type.hpp:
+
+/usr/include/c++/11/tr1/exp_integral.tcc:
+
+/usr/include/c++/11/bits/localefwd.h:
+
+/usr/include/c++/11/tr1/hypergeometric.tcc:
+
+/usr/include/eigen3/Eigen/src/QR/ColPivHouseholderQR.h:
+
+/usr/include/c++/11/bits/locale_facets.h:
+
+/usr/include/eigen3/Eigen/src/Core/BandMatrix.h:
+
+/home/jfetko/Documents/HIER/mppi_cpp/Dynamics.hpp:
+
+/usr/include/c++/11/bits/exception.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/keypoint_pair.hpp:
+
+/usr/include/c++/11/tr1/poly_hermite.tcc:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/annotation_info.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/types/time_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/FILE.h:
+
+/home/jfetko/Documents/HIER/mppi_cpp/State.hpp:
+
+/usr/include/c++/11/bits/stl_algobase.h:
+
+_deps/rerun_sdk-src/src/rerun/components/vector3d.hpp:
+
+_deps/rerun_sdk-src/src/rerun/components/name.hpp:
+
+_deps/rerun_sdk-src/src/rerun/components/key_value_pairs.hpp:
+
+/usr/include/c++/11/bits/alloc_traits.h:
+
+/usr/include/errno.h:
+
+/usr/include/c++/11/tr1/bessel_function.tcc:
+
+_deps/rerun_sdk-src/src/rerun/result.hpp:
+
+/usr/include/eigen3/Eigen/Dense:
+
+/usr/include/asm-generic/errno-base.h:
+
+/usr/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h:
+
+/usr/include/eigen3/Eigen/src/Core/products/SelfadjointRank2Update.h:
+
+/usr/include/eigen3/Eigen/src/Core/util/Macros.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/mmintrin.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/emmintrin.h:
+
+/usr/include/c++/11/stdlib.h:
+
+/usr/include/eigen3/Eigen/src/Core/CwiseUnaryView.h:
+
+/usr/include/c++/11/istream:
+
+/usr/include/c++/11/bits/stringfwd.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/entity_path.hpp:
+
+/usr/include/c++/11/tr1/special_function_util.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h:
+
+/usr/include/c++/11/cwchar:
+
+/usr/include/c++/11/bits/cxxabi_init_exception.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
+
+/usr/include/wchar.h:
+
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:
+
+/usr/include/x86_64-linux-gnu/bits/floatn-common.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/mbstate_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/locale.h:
+
+/usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/syslimits.h:
+
+/usr/include/eigen3/Eigen/src/Householder/HouseholderSequence.h:
+
+/usr/include/x86_64-linux-gnu/bits/local_lim.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/uint16.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
+
+/usr/include/x86_64-linux-gnu/bits/xopen_lim.h:
+
+/usr/include/c++/11/algorithm:
+
+/usr/include/eigen3/Eigen/src/Core/util/Constants.h:
+
+/usr/include/eigen3/Eigen/src/Geometry/Translation.h:
+
+/usr/include/eigen3/Eigen/src/Core/util/Meta.h:
+
+_deps/rerun_sdk-src/src/rerun/components/transform_relation.hpp:
+
+/usr/include/c++/11/bits/ostream.tcc:
+
+/usr/include/eigen3/Eigen/src/Core/util/ForwardDeclarations.h:
+
+/usr/include/eigen3/Eigen/src/Core/util/StaticAssert.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/image_format.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/util/Memory.h:
+
+/usr/include/eigen3/Eigen/src/Eigenvalues/ComplexSchur.h:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/opt_random.h:
+
+/usr/include/eigen3/Eigen/src/Core/util/SymbolicIndex.h:
+
+/usr/include/eigen3/Eigen/src/Core/SolverBase.h:
+
+/usr/include/eigen3/Eigen/src/Core/NumTraits.h:
+
+/usr/include/eigen3/Eigen/src/plugins/CommonCwiseUnaryOps.h:
+
+/usr/include/eigen3/Eigen/src/Core/functors/BinaryFunctors.h:
+
+/usr/include/linux/limits.h:
+
+/usr/include/eigen3/Eigen/src/Core/MathFunctions.h:
+
+/usr/include/eigen3/Eigen/src/Core/MathFunctionsImpl.h:
+
+/usr/include/eigen3/Eigen/Geometry:
+
+/usr/include/eigen3/Eigen/src/Core/arch/Default/BFloat16.h:
+
+/usr/include/eigen3/Eigen/src/Core/products/TriangularSolverMatrix.h:
+
+/usr/include/eigen3/Eigen/src/Core/arch/Default/TypeCasting.h:
+
+_deps/rerun_sdk-src/src/rerun/components/colormap.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/arch/Default/GenericPacketMathFunctionsFwd.h:
+
+/usr/include/eigen3/Eigen/src/Core/IndexedView.h:
+
+/usr/include/eigen3/Eigen/src/Core/arch/SSE/TypeCasting.h:
+
+/usr/include/eigen3/Eigen/src/Core/arch/SSE/MathFunctions.h:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/video_frame_reference.hpp:
+
+/usr/include/c++/11/ext/new_allocator.h:
+
+/usr/include/eigen3/Eigen/src/Core/Visitor.h:
+
+/usr/include/eigen3/Eigen/src/Core/arch/SSE/PacketMath.h:
+
+/usr/include/eigen3/Eigen/src/Core/arch/Default/GenericPacketMathFunctions.h:
+
+_deps/rerun_sdk-src/src/rerun/recording_stream.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/MapBase.h:
+
+_deps/rerun_sdk-src/src/rerun/components/opacity.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/functors/UnaryFunctors.h:
+
+/usr/include/eigen3/Eigen/src/Core/functors/NullaryFunctors.h:
+
+/usr/include/eigen3/Eigen/src/Core/functors/StlFunctors.h:
+
+/usr/include/eigen3/Eigen/src/Core/functors/AssignmentFunctors.h:
+
+/usr/include/eigen3/Eigen/src/Core/util/IndexedViewHelper.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/time_range.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/util/ReshapedHelper.h:
+
+/usr/include/eigen3/Eigen/src/Core/ArithmeticSequence.h:
+
+/usr/include/eigen3/Eigen/src/Core/GlobalFunctions.h:
+
+/usr/include/c++/11/bits/stl_iterator_base_types.h:
+
+/usr/include/eigen3/Eigen/src/Core/DenseCoeffsBase.h:
+
+/usr/include/eigen3/Eigen/src/plugins/ReshapedMethods.h:
+
+/usr/include/eigen3/Eigen/src/Core/Matrix.h:
+
+/usr/include/eigen3/Eigen/src/Core/MatrixBase.h:
+
+/usr/include/eigen3/Eigen/src/plugins/MatrixCwiseUnaryOps.h:
+
+/usr/include/eigen3/Eigen/src/plugins/MatrixCwiseBinaryOps.h:
+
+/usr/include/eigen3/Eigen/src/Core/EigenBase.h:
+
+/usr/include/eigen3/Eigen/src/Core/CoreEvaluators.h:
+
+/usr/include/eigen3/Eigen/src/Core/ArrayBase.h:
+
+/usr/include/c++/11/bits/random.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h:
+
+/usr/include/c++/11/bits/stl_construct.h:
+
+_deps/rerun_sdk-src/src/rerun/components/media_type.hpp:
+
+/usr/include/eigen3/Eigen/src/Eigenvalues/RealSchur.h:
+
+/usr/include/eigen3/Eigen/src/plugins/ArrayCwiseUnaryOps.h:
+
+/usr/include/c++/11/ctime:
+
+/usr/include/eigen3/Eigen/src/Core/DenseStorage.h:
+
+/usr/include/eigen3/Eigen/src/Core/NoAlias.h:
+
+/usr/include/eigen3/Eigen/src/Core/CwiseBinaryOp.h:
+
+/usr/include/c++/11/pstl/glue_memory_defs.h:
+
+/usr/include/c++/11/bits/algorithmfwd.h:
+
+/usr/include/c++/11/bits/cxxabi_forced.h:
+
+/usr/include/eigen3/Eigen/src/Core/CwiseUnaryOp.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/stdarg.h:
+
+/usr/include/eigen3/Eigen/src/Core/CwiseNullaryOp.h:
+
+_deps/rerun_sdk-src/src/rerun/components/radius.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/SelfCwiseBinaryOp.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/plane3d.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/Map.h:
+
+/usr/include/eigen3/Eigen/src/Core/ConditionEstimator.h:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/graph_nodes.hpp:
+
+/usr/include/features-time64.h:
+
+/usr/include/c++/11/system_error:
+
+/usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/vec2d.hpp:
+
+/usr/include/x86_64-linux-gnu/sys/single_threaded.h:
+
+/usr/include/eigen3/Eigen/src/Core/Ref.h:
+
+_deps/rerun_sdk-src/src/rerun/components/annotation_context.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/Block.h:
+
+/usr/include/x86_64-linux-gnu/gnu/stubs.h:
+
+/usr/include/eigen3/Eigen/src/Geometry/Transform.h:
+
+/usr/include/eigen3/Eigen/src/Core/Reshaped.h:
+
+/usr/include/eigen3/Eigen/src/Core/Transpose.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
+
+/usr/include/eigen3/Eigen/src/Core/Fuzzy.h:
+
+/usr/include/eigen3/Eigen/src/Core/GeneralProduct.h:
+
+_deps/rerun_sdk-src/src/rerun/components/line_strip2d.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/Inverse.h:
+
+/usr/include/eigen3/Eigen/src/Core/PermutationMatrix.h:
+
+/usr/include/eigen3/Eigen/src/Core/TriangularMatrix.h:
+
+/usr/include/eigen3/Eigen/src/Core/SelfAdjointView.h:
+
+/usr/include/x86_64-linux-gnu/bits/wchar.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/class_description.hpp:
+
+/usr/include/c++/11/atomic:
+
+/usr/include/eigen3/Eigen/QR:
+
+/usr/include/c++/11/bits/random.tcc:
+
+/usr/include/c++/11/bits/atomic_base.h:
+
+/usr/include/c++/11/bits/atomic_lockfree_defines.h:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/mcap_channel.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/ProductEvaluators.h:
+
+/usr/include/eigen3/Eigen/src/SVD/UpperBidiagonalization.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/timer_t.h:
+
+/usr/include/c++/11/bits/std_function.h:
+
+/usr/include/eigen3/Eigen/src/SVD/JacobiSVD.h:
+
+/usr/include/eigen3/Eigen/src/Core/products/GeneralMatrixMatrix.h:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/line_strips3d.hpp:
+
+/usr/include/c++/11/bits/uses_allocator.h:
+
+/usr/include/eigen3/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h:
+
+/usr/include/eigen3/Eigen/src/Core/products/SelfadjointMatrixVector.h:
+
+/usr/include/eigen3/Eigen/src/Eigenvalues/RealQZ.h:
+
+/usr/include/eigen3/Eigen/src/Core/products/SelfadjointMatrixMatrix.h:
+
+/usr/include/eigen3/Eigen/src/Core/products/SelfadjointProduct.h:
+
+_deps/rerun_sdk-src/src/rerun/components/timestamp.hpp:
+
+/usr/include/eigen3/Eigen/src/misc/RealSvd2x2.h:
+
+/usr/include/eigen3/Eigen/src/Core/products/TriangularMatrixVector.h:
+
+/usr/include/stdc-predef.h:
+
+/usr/include/eigen3/Eigen/src/Core/products/TriangularSolverVector.h:
+
+/usr/include/eigen3/Eigen/src/Geometry/Rotation2D.h:
+
+/usr/include/eigen3/Eigen/src/Core/CoreIterators.h:
+
+/usr/include/c++/11/numeric:
+
+/usr/include/eigen3/Eigen/src/Core/Select.h:
+
+/usr/include/eigen3/Eigen/src/Core/VectorwiseOp.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/view_coordinates.hpp:
+
+/usr/include/eigen3/Eigen/src/LU/arch/InverseSize4.h:
+
+/usr/include/c++/11/pstl/glue_numeric_defs.h:
+
+/usr/include/eigen3/Eigen/src/Eigenvalues/Tridiagonalization.h:
+
+/usr/include/x86_64-linux-gnu/bits/timex.h:
+
+/usr/include/eigen3/Eigen/src/Core/arch/Default/ConjHelper.h:
+
+/usr/include/eigen3/Eigen/src/Core/PartialReduxEvaluator.h:
+
+/usr/include/c++/11/bits/locale_conv.h:
+
+/usr/include/eigen3/Eigen/src/Core/Random.h:
+
+/usr/include/eigen3/Eigen/src/Core/Replicate.h:
+
+/usr/include/eigen3/Eigen/src/Core/Reverse.h:
+
+/usr/include/x86_64-linux-gnu/bits/wctype-wchar.h:
+
+/usr/include/eigen3/Eigen/src/Core/ArrayWrapper.h:
+
+/usr/include/c++/11/bits/locale_facets_nonio.tcc:
+
+/usr/include/eigen3/Eigen/src/Core/util/ReenableStupidWarnings.h:
+
+/usr/include/eigen3/Eigen/src/misc/Kernel.h:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/annotation_context.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/products/Parallelizer.h:
+
+/usr/include/eigen3/Eigen/src/LU/InverseImpl.h:
+
+/usr/include/c++/11/bits/invoke.h:
+
+/usr/include/eigen3/Eigen/Cholesky:
+
+/usr/include/eigen3/Eigen/Jacobi:
+
+/usr/include/c++/11/bits/uniform_int_dist.h:
+
+/usr/include/eigen3/Eigen/src/Cholesky/LLT.h:
+
+_deps/rerun_sdk-src/src/rerun/time_column.hpp:
+
+/usr/include/eigen3/Eigen/src/Householder/Householder.h:
+
+_deps/rerun_sdk-src/src/rerun.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/functors/TernaryFunctors.h:
+
+/usr/include/eigen3/Eigen/src/Householder/BlockHouseholder.h:
+
+/usr/include/eigen3/Eigen/src/Core/Stride.h:
+
+/usr/include/eigen3/Eigen/src/QR/HouseholderQR.h:
+
+_deps/rerun_sdk-src/src/rerun/components/channel_message_counts.hpp:
+
+/usr/include/c++/11/cctype:
+
+_deps/rerun_sdk-src/src/rerun/components/position3d.hpp:
+
+/usr/include/c++/11/ext/atomicity.h:
+
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h:
+
+/usr/include/eigen3/Eigen/src/SVD/SVDBase.h:
+
+/usr/include/eigen3/Eigen/src/plugins/ArrayCwiseBinaryOps.h:
+
+/usr/include/eigen3/Eigen/src/SVD/BDCSVD.h:
+
+/usr/include/eigen3/Eigen/src/Geometry/OrthoMethods.h:
+
+/usr/include/eigen3/Eigen/src/Geometry/EulerAngles.h:
+
+_deps/rerun_sdk-src/src/rerun/components/aggregation_policy.hpp:
+
+/usr/include/eigen3/Eigen/src/Geometry/Homogeneous.h:
+
+/usr/include/c++/11/bits/codecvt.h:
+
+/usr/include/eigen3/Eigen/src/Geometry/RotationBase.h:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/video_stream.hpp:
+
+/usr/include/eigen3/Eigen/src/Geometry/Quaternion.h:
+
+/usr/include/eigen3/Eigen/src/Geometry/AngleAxis.h:
+
+/usr/include/eigen3/Eigen/src/Geometry/Scaling.h:
+
+/usr/include/features.h:
+
+/usr/include/eigen3/Eigen/src/Geometry/Hyperplane.h:
+
+/usr/include/c++/11/cstring:
+
+/usr/include/eigen3/Eigen/src/Geometry/ParametrizedLine.h:
+
+/usr/include/eigen3/Eigen/src/Geometry/AlignedBox.h:
+
+/usr/include/c++/11/sstream:
+
+/usr/include/eigen3/Eigen/src/Geometry/Umeyama.h:
+
+/usr/include/c++/11/cstdio:
+
+/usr/include/eigen3/Eigen/src/Geometry/arch/Geometry_SIMD.h:
+
+/usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
+
+/usr/include/eigen3/Eigen/src/Eigenvalues/EigenSolver.h:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/points3d.hpp:
+
+/usr/include/eigen3/Eigen/src/Eigenvalues/ComplexEigenSolver.h:
+
+/usr/include/eigen3/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h:
+
+/usr/include/eigen3/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h:
+
+/usr/include/eigen3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h:
+
+_deps/rerun_sdk-src/src/rerun/c/sdk_info.h:
+
+/home/jfetko/Documents/HIER/mppi_cpp/Control.hpp:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/cylinders3d.hpp:
+
+/home/jfetko/Documents/HIER/mppi_cpp/MPPI.cpp:
+
+/usr/include/c++/11/random:
+
+_deps/rerun_sdk-src/src/rerun/collection_adapter.hpp:
+
+/usr/include/c++/11/bits/stl_numeric.h:
+
+/usr/include/c++/11/bit:
+
+_deps/rerun_sdk-src/src/rerun/archetypes.hpp:
+
+_deps/rerun_sdk-src/src/rerun/compiler_utils.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/IO.h:
+
+_deps/rerun_sdk-src/src/rerun/type_traits.hpp:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h:
+
+/usr/include/c++/11/bits/stream_iterator.h:
+
+/usr/include/c++/11/memory:
+
+_deps/rerun_sdk-src/src/rerun/components/tensor_width_dimension.hpp:
+
+/usr/include/c++/11/bits/stl_raw_storage_iter.h:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/graph_edges.hpp:
+
+/usr/include/c++/11/bits/align.h:
+
+/usr/include/c++/11/bits/unique_ptr.h:
+
+/usr/include/c++/11/codecvt:
+
+/usr/include/assert.h:
+
+/usr/include/c++/11/bits/allocated_ptr.h:
+
+/usr/include/c++/11/ext/concurrence.h:
+
+/usr/include/c++/11/bits/shared_ptr_atomic.h:
+
+_deps/rerun_sdk-src/src/rerun/components/translation3d.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
+
+/usr/include/c++/11/backward/auto_ptr.h:
+
+/usr/include/c++/11/optional:
+
+_deps/rerun_sdk-src/src/rerun/error.hpp:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/class_description_map_elem.hpp:
+
+_deps/rerun_sdk-src/src/rerun/components/show_labels.hpp:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/utf8.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/arch/Default/Half.h:
+
+/usr/include/eigen3/Eigen/src/Core/arch/Default/Settings.h:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/arrows2d.hpp:
+
+_deps/rerun_sdk-src/src/rerun/components/video_codec.hpp:
+
+_deps/rerun_sdk-src/src/rerun/components/draw_order.hpp:
+
+/home/jfetko/Documents/HIER/mppi_cpp/Main.cpp:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/float32.hpp:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/bool.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/types/wint_t.h:
+
+_deps/rerun_sdk-src/src/rerun/components/vector2d.hpp:
+
+/usr/include/c++/11/bits/stl_bvector.h:
+
+_deps/rerun_sdk-src/src/rerun/datatypes/vec3d.hpp:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/asset3d.hpp:
+
+/usr/include/c++/11/filesystem:
+
+/usr/include/c++/11/ratio:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/bar_chart.hpp:
+
+_deps/rerun_sdk-src/src/rerun/components/image_format.hpp:
+
+/usr/include/c++/11/bits/parse_numbers.h:
+
+/usr/include/c++/11/bits/locale_facets_nonio.h:
+
+/usr/include/eigen3/Eigen/src/Core/Swap.h:
+
+/usr/include/c++/11/bits/basic_ios.h:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h:
+
+/usr/include/c++/11/bits/char_traits.h:
+
+/usr/include/x86_64-linux-gnu/bits/thread-shared-types.h:
+
+/usr/include/libintl.h:
+
+/usr/include/c++/11/bits/quoted_string.h:
+
+/usr/include/c++/11/bits/fs_dir.h:
+
+/usr/include/c++/11/bits/fs_ops.h:
+
+_deps/rerun_sdk-src/src/rerun/archetypes/asset_video.hpp:
+
+/usr/include/eigen3/Eigen/src/Core/util/XprHelper.h:
+
+_deps/rerun_sdk-src/src/rerun/components/tensor_data.hpp:
