@@ -12,8 +12,8 @@ Trajectory::Trajectory(std::vector<Waypoint> waypoints)
         // Populate headings
         for(int i = 0; i < points.size(); i++){
             if (i < points.size() - 1) {
-                int dx = points.at(i+1).state.val(0) -  points.at(i).state.val(0);
-                int dy = points.at(i+1).state.val(1) -  points.at(i).state.val(1);
+                double dx = points.at(i+1).state.val(0) -  points.at(i).state.val(0);
+                double dy = points.at(i+1).state.val(1) -  points.at(i).state.val(1);
                 points.at(i).state.val(2) = atan2(dy, dx);
             } else {
                 points.at(i).state.val(2) = points.at(i-1).state.val(2);
@@ -42,7 +42,7 @@ Waypoint Trajectory::sample(double time){
     Waypoint above = points.at(idx_above);
     Waypoint below = points.at(idx_above - 1);
 
-    VectorXd interp_vec = below.state.val + (above.state.val - below.state.val) * (time / (above.t - below.t));
+    VectorXd interp_vec = below.state.val + (above.state.val - below.state.val) * ((time - below.t) / (above.t - below.t));
     Waypoint interp_point = Waypoint{State(interp_vec), time};
 
     return interp_point;
