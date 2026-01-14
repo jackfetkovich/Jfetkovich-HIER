@@ -1,0 +1,4 @@
+CREATE /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/release/libarrow_bundled_dependencies.a
+ADDLIB $<TARGET_FILE:mimalloc::mimalloc>
+SAVE
+END

@@ -1,0 +1,11 @@
+[100%] Built target mimalloc-static
+[36mInstall the project...[0m
+-- Install configuration: "RELEASE"
+-- Installing: /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/mimalloc_ep/src/mimalloc_ep/lib/mimalloc-2.0/libmimalloc.a
+-- Installing: /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/mimalloc_ep/src/mimalloc_ep/lib/cmake/mimalloc-2.0/mimalloc.cmake
+-- Installing: /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/mimalloc_ep/src/mimalloc_ep/lib/cmake/mimalloc-2.0/mimalloc-release.cmake
+-- Installing: /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/mimalloc_ep/src/mimalloc_ep/include/mimalloc-2.0/mimalloc.h
+-- Installing: /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/mimalloc_ep/src/mimalloc_ep/include/mimalloc-2.0/mimalloc-override.h
+-- Installing: /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/mimalloc_ep/src/mimalloc_ep/include/mimalloc-2.0/mimalloc-new-delete.h
+-- Installing: /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/mimalloc_ep/src/mimalloc_ep/lib/cmake/mimalloc-2.0/mimalloc-config.cmake
+-- Installing: /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/mimalloc_ep/src/mimalloc_ep/lib/cmake/mimalloc-2.0/mimalloc-config-version.cmake

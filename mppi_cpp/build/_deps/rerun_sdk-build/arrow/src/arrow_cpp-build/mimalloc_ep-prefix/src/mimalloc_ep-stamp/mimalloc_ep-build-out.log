@@ -1,0 +1,16 @@
+[  6%] [32mBuilding C object CMakeFiles/mimalloc-static.dir/src/stats.c.o[0m
+[ 13%] [32mBuilding C object CMakeFiles/mimalloc-static.dir/src/random.c.o[0m
+[ 20%] [32mBuilding C object CMakeFiles/mimalloc-static.dir/src/os.c.o[0m
+[ 26%] [32mBuilding C object CMakeFiles/mimalloc-static.dir/src/segment.c.o[0m
+[ 33%] [32mBuilding C object CMakeFiles/mimalloc-static.dir/src/alloc-aligned.c.o[0m
+[ 40%] [32mBuilding C object CMakeFiles/mimalloc-static.dir/src/page.c.o[0m
+[ 46%] [32mBuilding C object CMakeFiles/mimalloc-static.dir/src/bitmap.c.o[0m
+[ 53%] [32mBuilding C object CMakeFiles/mimalloc-static.dir/src/options.c.o[0m
+[ 60%] [32mBuilding C object CMakeFiles/mimalloc-static.dir/src/arena.c.o[0m
+[ 73%] [32mBuilding C object CMakeFiles/mimalloc-static.dir/src/alloc.c.o[0m
+[ 73%] [32mBuilding C object CMakeFiles/mimalloc-static.dir/src/segment-cache.c.o[0m
+[ 80%] [32mBuilding C object CMakeFiles/mimalloc-static.dir/src/heap.c.o[0m
+[ 86%] [32mBuilding C object CMakeFiles/mimalloc-static.dir/src/alloc-posix.c.o[0m
+[ 93%] [32mBuilding C object CMakeFiles/mimalloc-static.dir/src/init.c.o[0m
+[100%] [32m[1mLinking C static library libmimalloc.a[0m
+[100%] Built target mimalloc-static

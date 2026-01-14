@@ -4,7 +4,7 @@
 # compile CXX with /usr/lib/ccache/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -isystem /usr/include/eigen3
+CXX_INCLUDES = -I/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-src/src -isystem /usr/include/eigen3
 
 CXX_FLAGS = 
 

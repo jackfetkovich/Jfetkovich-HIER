@@ -1,0 +1,31 @@
+Determining if the _M_ARM64 exist failed with the following output:
+Change Dir: /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/CMakeFiles/CMakeScratch/TryCompile-K3BV93
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_a9f11/fast && gmake[3]: Entering directory '/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/CMakeFiles/CMakeScratch/TryCompile-K3BV93'
+/usr/bin/gmake  -f CMakeFiles/cmTC_a9f11.dir/build.make CMakeFiles/cmTC_a9f11.dir/build
+gmake[4]: Entering directory '/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/CMakeFiles/CMakeScratch/TryCompile-K3BV93'
+Building CXX object CMakeFiles/cmTC_a9f11.dir/CheckSymbolExists.cxx.o
+/usr/lib/ccache/c++   -fdiagnostics-color=always  -fPIE -std=c++17 -o CMakeFiles/cmTC_a9f11.dir/CheckSymbolExists.cxx.o -c /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/CMakeFiles/CMakeScratch/TryCompile-K3BV93/CheckSymbolExists.cxx
+[01m[K/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/CMakeFiles/CMakeScratch/TryCompile-K3BV93/CheckSymbolExists.cxx:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[01m[K/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/CMakeFiles/CMakeScratch/TryCompile-K3BV93/CheckSymbolExists.cxx:7:19:[m[K [01;31m[Kerror: [m[K‘[01m[K_M_ARM64[m[K’ was not declared in this scope
+    7 |   return ((int*)(&[01;31m[K_M_ARM64[m[K))[argc];
+      |                   [01;31m[K^~~~~~~~[m[K
+gmake[4]: *** [CMakeFiles/cmTC_a9f11.dir/build.make:78: CMakeFiles/cmTC_a9f11.dir/CheckSymbolExists.cxx.o] Error 1
+gmake[4]: Leaving directory '/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/CMakeFiles/CMakeScratch/TryCompile-K3BV93'
+gmake[3]: *** [Makefile:127: cmTC_a9f11/fast] Error 2
+gmake[3]: Leaving directory '/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build/CMakeFiles/CMakeScratch/TryCompile-K3BV93'
+
+
+File CheckSymbolExists.cxx:
+/* */
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef _M_ARM64
+  return ((int*)(&_M_ARM64))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
