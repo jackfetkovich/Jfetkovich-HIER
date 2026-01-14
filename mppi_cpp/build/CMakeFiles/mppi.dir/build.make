@@ -140,6 +140,10 @@ mppi: CMakeFiles/mppi.dir/MPPI.cpp.o
 mppi: CMakeFiles/mppi.dir/Trajectory.cpp.o
 mppi: CMakeFiles/mppi.dir/Dynamics.cpp.o
 mppi: CMakeFiles/mppi.dir/build.make
+mppi: _deps/rerun_sdk-build/librerun_sdk.a
+mppi: _deps/rerun_sdk-src/lib/librerun_c__linux_x64.a
+mppi: _deps/rerun_sdk-build/arrow/lib/libarrow.a
+mppi: _deps/rerun_sdk-build/arrow/lib/libarrow_bundled_dependencies.a
 mppi: CMakeFiles/mppi.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable mppi"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/mppi.dir/link.txt --verbose=$(VERBOSE)

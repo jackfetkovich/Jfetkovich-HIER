@@ -1,0 +1,20 @@
+In file included from [01m[K/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp/cpp/src/arrow/result.h:27[m[K,
+                 from [01m[K/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp/cpp/src/arrow/util/compression.h:26[m[K,
+                 from [01m[K/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp/cpp/src/arrow/util/compression.cc:18[m[K:
+[01m[K/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp/cpp/src/arrow/util/compression.cc:[m[K In static member function ‘[01m[Kstatic arrow::Result<std::unique_ptr<arrow::util::Codec> > arrow::util::Codec::Create(arrow::Compression::type, const arrow::util::CodecOptions&)[m[K’:
+[01m[K/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp/cpp/src/arrow/util/compression.cc:218:28:[m[K [01;35m[Kwarning: [m[K‘[01m[Kthis[m[K’ pointer is null [[01;35m[K-Wnonnull[m[K]
+  218 |   RETURN_NOT_OK([01;35m[Kcodec->Init()[m[K);
+      |                 [01;35m[K~~~~~~~~~~~^~[m[K
+[01m[K/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp/cpp/src/arrow/status.h:57:62:[m[K [01;36m[Knote: [m[Kin definition of macro ‘[01m[KARROW_RETURN_NOT_OK[m[K’
+   57 |     ::arrow::Status __s = ::arrow::internal::GenericToStatus([01;36m[Kstatus[m[K); \
+      |                                                              [01;36m[K^~~~~~[m[K
+[01m[K/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp/cpp/src/arrow/util/compression.cc:218:3:[m[K [01;36m[Knote: [m[Kin expansion of macro ‘[01m[KRETURN_NOT_OK[m[K’
+  218 |   [01;36m[KRETURN_NOT_OK[m[K(codec->Init());
+      |   [01;36m[K^~~~~~~~~~~~~[m[K
+[01m[K/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp/cpp/src/arrow/compute/expression.cc:[m[K In member function ‘[01m[Karrow::Result<arrow::compute::Expression> arrow::compute::{anonymous}::Inequality::Simplify(arrow::compute::Expression)[m[K’:
+[01m[K/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp/cpp/src/arrow/compute/expression.cc:1292:48:[m[K [01;35m[Kwarning: [m[K‘[01m[Knull_selection[m[K’ may be used uninitialized in this function [[01;35m[K-Wmaybe-uninitialized[m[K]
+ 1292 |     FilterOptions filter_options(null_selection[01;35m[K)[m[K;
+      |                                                [01;35m[K^[m[K
+[01m[K/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp/cpp/src/arrow/compute/expression.cc:1266:42:[m[K [01;36m[Knote: [m[K‘[01m[Knull_selection[m[K’ was declared here
+ 1266 |     FilterOptions::NullSelectionBehavior [01;36m[Knull_selection[m[K;
+      |                                          [01;36m[K^~~~~~~~~~~~~~[m[K
