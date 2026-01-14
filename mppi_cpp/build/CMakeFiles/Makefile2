@@ -101,7 +101,7 @@ CMakeFiles/mppi.dir/all: _deps/rerun_sdk-build/CMakeFiles/rerun_sdk.dir/all
 CMakeFiles/mppi.dir/all: _deps/rerun_sdk-build/CMakeFiles/arrow_cpp.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles --progress-num=4 "Built target mppi"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles --progress-num=3,4,5 "Built target mppi"
 .PHONY : CMakeFiles/mppi.dir/all
 
 # Build rule for subdir invocation for target.
@@ -127,12 +127,12 @@ CMakeFiles/mppi.dir/clean:
 _deps/rerun_sdk-build/CMakeFiles/rerun_sdk.dir/all: _deps/rerun_sdk-build/CMakeFiles/arrow_cpp.dir/all
 	$(MAKE) $(MAKESILENT) -f _deps/rerun_sdk-build/CMakeFiles/rerun_sdk.dir/build.make _deps/rerun_sdk-build/CMakeFiles/rerun_sdk.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/rerun_sdk-build/CMakeFiles/rerun_sdk.dir/build.make _deps/rerun_sdk-build/CMakeFiles/rerun_sdk.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles --progress-num=5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100 "Built target rerun_sdk"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles --progress-num=6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100 "Built target rerun_sdk"
 .PHONY : _deps/rerun_sdk-build/CMakeFiles/rerun_sdk.dir/all
 
 # Build rule for subdir invocation for target.
 _deps/rerun_sdk-build/CMakeFiles/rerun_sdk.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles 99
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles 97
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/rerun_sdk-build/CMakeFiles/rerun_sdk.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles 0
 .PHONY : _deps/rerun_sdk-build/CMakeFiles/rerun_sdk.dir/rule
@@ -153,12 +153,12 @@ _deps/rerun_sdk-build/CMakeFiles/rerun_sdk.dir/clean:
 _deps/rerun_sdk-build/CMakeFiles/arrow_cpp.dir/all:
 	$(MAKE) $(MAKESILENT) -f _deps/rerun_sdk-build/CMakeFiles/arrow_cpp.dir/build.make _deps/rerun_sdk-build/CMakeFiles/arrow_cpp.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/rerun_sdk-build/CMakeFiles/arrow_cpp.dir/build.make _deps/rerun_sdk-build/CMakeFiles/arrow_cpp.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles --progress-num=1,2,3 "Built target arrow_cpp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles --progress-num=1,2 "Built target arrow_cpp"
 .PHONY : _deps/rerun_sdk-build/CMakeFiles/arrow_cpp.dir/all
 
 # Build rule for subdir invocation for target.
 _deps/rerun_sdk-build/CMakeFiles/arrow_cpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/rerun_sdk-build/CMakeFiles/arrow_cpp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles 0
 .PHONY : _deps/rerun_sdk-build/CMakeFiles/arrow_cpp.dir/rule

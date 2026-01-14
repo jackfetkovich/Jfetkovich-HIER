@@ -5,6 +5,7 @@ set(SOURCE_FILES
     MPPI.cpp
     Trajectory.cpp
     Dynamics.cpp
+    Timer.cpp
 )
 
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
