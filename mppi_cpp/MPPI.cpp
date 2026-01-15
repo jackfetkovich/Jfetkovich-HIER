@@ -92,7 +92,7 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
 
     for (int i = 0; i < rollouts.size(); i++) {
 
-        if(weights(i) > 0.0){
+        if(weights(i) > 0.2){
 
             double alpha = weights(i) * 255.0;
 

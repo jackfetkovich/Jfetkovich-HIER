@@ -68,7 +68,7 @@ int main(){
     time.reset();
     double elapsed_time = time.elapsed();
 
-    MPPI mppi = MPPI(30, 20, 1, mp, rec);
+    MPPI mppi = MPPI(30, 20, 10, mp, rec);
     State robot_state = init_state;
 
 
