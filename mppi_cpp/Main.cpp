@@ -31,13 +31,15 @@ int main(){
         0.0
     );
 
-    MotionParams mp = MotionParams{0.35, 0.1, 0.5, 0.6};
+    MotionParams mp = MotionParams{0.35, 0.5, 0.5, 1.5};
 
     // Note: Thetas are ignored and recomputed by geometry
     std::vector<Waypoint> waypoints{
         Waypoint{init_state, 0.0},
-        Waypoint{State(1.0, 0.0, 0.0, 0.0, 0.0), 10.0},
-        Waypoint{State(1.0, 1.5, 0.0, 0.0, 0.0), 20.0}
+        Waypoint{State(1.0, 0.0, 0.0, 0.0, 0.0), 3.0},
+        Waypoint{State(1.0, -1.0, 0.0, 0.0, 0.0), 10.0},
+        Waypoint{State(2.0, -1.5, 0.0, 0.0, 0.0), 15.0},
+
     };
 
     Trajectory traj = Trajectory(waypoints);
@@ -66,7 +68,7 @@ int main(){
     time.reset();
     double elapsed_time = time.elapsed();
 
-    MPPI mppi = MPPI(1000, 20, 1, mp, rec);
+    MPPI mppi = MPPI(30, 20, 1, mp, rec);
     State robot_state = init_state;
 
 
@@ -74,8 +76,20 @@ int main(){
     CtrlState ctrl_des;
     ctrl_des.mode = C_WALK_IDQP;
     
-    while(elapsed_time < 20.0){
-        Control ctrl = mppi.get_control(robot_state, traj, elapsed_time, 0.05);
+    while(elapsed_time < 15.0){
+        Control ctrl = mppi.get_control(robot_state, traj, elapsed_time, 0.02);
+        rec.set_time_duration_secs("sim_time", elapsed_time);
+
+        rec.log(
+            "/mppi/control/velocity",
+            rerun::Scalars(ctrl.val(0))
+        );
+
+        rec.log(
+            "/mppi/control/omega",
+            rerun::Scalars(ctrl.val(1))
+        );
+
         robot_state = unicyle_dynamics(robot_state, ctrl, mp, 0.05);
         rerun::Position2D loc = rerun::Position2D(robot_state.val(0), robot_state.val(1));
 
@@ -86,8 +100,6 @@ int main(){
 
         std::cout << elapsed_time << std::endl;
         
-
-       
         ctrl_des.args.cont[walk_idqp::ARG_H]  = 0.25;
         ctrl_des.args.cont[walk_idqp::ARG_VX] = 0.3;
         

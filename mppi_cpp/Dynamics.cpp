@@ -27,8 +27,8 @@ State unicyle_dynamics(State state, Control ctrl, MotionParams mp, double dt){
     
     State x_star = State(
         state.val(0) + ctrl.val(0) * cos(state.val(2)) * dt,
-        state.val(1) + ctrl.val(1) * sin(state.val(2)) * dt,
-        state.val(2) + ctrl.val(1),
+        state.val(1) + ctrl.val(0) * sin(state.val(2)) * dt,
+        state.val(2) + ctrl.val(1) * dt,
         ctrl.val(0),
         ctrl.val(1)
     );
