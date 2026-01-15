@@ -56,17 +56,12 @@ if(_IMPORT_PREFIX STREQUAL "/")
 endif()
 
 # Create imported target rerun_sdk
-add_library(rerun_sdk STATIC IMPORTED)
+add_library(rerun_sdk SHARED IMPORTED)
 
 set_target_properties(rerun_sdk PROPERTIES
   INTERFACE_COMPILE_FEATURES "cxx_std_17"
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include;${_IMPORT_PREFIX}/include"
-  INTERFACE_LINK_LIBRARIES "\$<LINK_ONLY:rerun_c>;\$<LINK_ONLY:rerun_arrow_target>"
 )
-
-if(CMAKE_VERSION VERSION_LESS 2.8.12)
-  message(FATAL_ERROR "This file relies on consumers using CMake 2.8.12 or greater.")
-endif()
 
 # Load information for each installed configuration.
 file(GLOB _cmake_config_files "${CMAKE_CURRENT_LIST_DIR}/rerun_sdkTargets-*.cmake")

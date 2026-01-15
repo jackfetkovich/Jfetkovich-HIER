@@ -156,10 +156,33 @@ mppi: CMakeFiles/mppi.dir/Trajectory.cpp.o
 mppi: CMakeFiles/mppi.dir/Dynamics.cpp.o
 mppi: CMakeFiles/mppi.dir/Timer.cpp.o
 mppi: CMakeFiles/mppi.dir/build.make
-mppi: _deps/rerun_sdk-build/librerun_sdk.a
-mppi: _deps/rerun_sdk-src/lib/librerun_c__linux_x64.a
-mppi: _deps/rerun_sdk-build/arrow/lib/libarrow.a
-mppi: _deps/rerun_sdk-build/arrow/lib/libarrow_bundled_dependencies.a
+mppi: /opt/openrobots/lib/libpinocchio_default.so
+mppi: /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so
+mppi: /usr/lib/x86_64-linux-gnu/libcrypto.so
+mppi: /usr/lib/x86_64-linux-gnu/libcurl.so
+mppi: /usr/lib/x86_64-linux-gnu/libpthread.a
+mppi: /usr/lib/x86_64-linux-gnu/libsz.so
+mppi: /usr/lib/x86_64-linux-gnu/libz.so
+mppi: /usr/lib/x86_64-linux-gnu/libdl.a
+mppi: /usr/lib/x86_64-linux-gnu/libm.so
+mppi: /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.so
+mppi: /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so
+mppi: /usr/lib/x86_64-linux-gnu/libcrypto.so
+mppi: /usr/lib/x86_64-linux-gnu/libcurl.so
+mppi: /usr/lib/x86_64-linux-gnu/libpthread.a
+mppi: /usr/lib/x86_64-linux-gnu/libsz.so
+mppi: /usr/lib/x86_64-linux-gnu/libz.so
+mppi: /usr/lib/x86_64-linux-gnu/libdl.a
+mppi: /usr/lib/x86_64-linux-gnu/libm.so
+mppi: libmpac_go2_local.a
+mppi: _deps/rerun_sdk-build/librerun_sdk.so
+mppi: /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5_cpp.so
+mppi: /opt/openrobots/lib/libpinocchio_default.so
+mppi: lib/libOsqpEigen.so.0.6.4
+mppi: _deps/osqp-build/out/libosqp.so
+mppi: _deps/unitree_sdk2-src/lib/x86_64/libunitree_sdk2.a
+mppi: _deps/unitree_sdk2-src/thirdparty/lib/x86_64/libddsc.so
+mppi: _deps/unitree_sdk2-src/thirdparty/lib/x86_64/libddscxx.so
 mppi: CMakeFiles/mppi.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable mppi"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/mppi.dir/link.txt --verbose=$(VERBOSE)

@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/unitree_sdk2-subbuild/CMakeFiles/unitree_sdk2-populate"
+		},
+		{
+			"file" : "/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/unitree_sdk2-subbuild/CMakeFiles/unitree_sdk2-populate.rule"
+		},
+		{
+			"file" : "/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/unitree_sdk2-subbuild/CMakeFiles/unitree_sdk2-populate-complete.rule"
+		},
+		{
+			"file" : "/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/unitree_sdk2-subbuild/unitree_sdk2-populate-prefix/src/unitree_sdk2-populate-stamp/unitree_sdk2-populate-build.rule"
+		},
+		{
+			"file" : "/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/unitree_sdk2-subbuild/unitree_sdk2-populate-prefix/src/unitree_sdk2-populate-stamp/unitree_sdk2-populate-configure.rule"
+		},
+		{
+			"file" : "/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/unitree_sdk2-subbuild/unitree_sdk2-populate-prefix/src/unitree_sdk2-populate-stamp/unitree_sdk2-populate-download.rule"
+		},
+		{
+			"file" : "/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/unitree_sdk2-subbuild/unitree_sdk2-populate-prefix/src/unitree_sdk2-populate-stamp/unitree_sdk2-populate-install.rule"
+		},
+		{
+			"file" : "/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/unitree_sdk2-subbuild/unitree_sdk2-populate-prefix/src/unitree_sdk2-populate-stamp/unitree_sdk2-populate-mkdir.rule"
+		},
+		{
+			"file" : "/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/unitree_sdk2-subbuild/unitree_sdk2-populate-prefix/src/unitree_sdk2-populate-stamp/unitree_sdk2-populate-patch.rule"
+		},
+		{
+			"file" : "/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/unitree_sdk2-subbuild/unitree_sdk2-populate-prefix/src/unitree_sdk2-populate-stamp/unitree_sdk2-populate-test.rule"
+		},
+		{
+			"file" : "/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/unitree_sdk2-subbuild/unitree_sdk2-populate-prefix/src/unitree_sdk2-populate-stamp/unitree_sdk2-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"unitree_sdk2-populate"
+		],
+		"name" : "unitree_sdk2-populate"
+	}
+}

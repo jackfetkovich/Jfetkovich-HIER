@@ -3,6 +3,7 @@
 #include "State.hpp"
 #include "Waypoint.hpp"
 #include "Trajectory.hpp"
+#include "MotionParams.hpp"
 #include <vector>
 #include <rerun.hpp>
 #include "Control.hpp"
@@ -11,13 +12,14 @@
 
 class MPPI {
     public:
-        MPPI(int K, int T, double lambda,  const rerun::RecordingStream& rec);
+        MPPI(int K, int T, double lambda,  MotionParams mp, const rerun::RecordingStream& rec);
         Control get_control(State state, Trajectory traj, double t, double dt);
 
     private:
         int K;
         int T;
         double lambda;
+        MotionParams mp;
         const rerun::RecordingStream& rec;
         Eigen::MatrixXd gen_rand_ctrl_seq(double mu_v, double sigma_v, double mu_omega, double sigma_omega);
         double cost_func(State state, Control ctrl, Waypoint target);

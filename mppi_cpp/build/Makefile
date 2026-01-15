@@ -87,7 +87,7 @@ rebuild_cache/fast: rebuild_cache
 
 # Special rule for the target list_install_components
 list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"OsqpEigen\" \"Unspecified\" \"runtime\" \"shlib\""
 .PHONY : list_install_components
 
 # Special rule for the target list_install_components
@@ -163,6 +163,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named mpac_go2_local
+
+# Build rule for target.
+mpac_go2_local: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 mpac_go2_local
+.PHONY : mpac_go2_local
+
+# fast build rule for target.
+mpac_go2_local/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mpac_go2_local.dir/build.make CMakeFiles/mpac_go2_local.dir/build
+.PHONY : mpac_go2_local/fast
+
+#=============================================================================
 # Target rules for targets named mppi
 
 # Build rule for target.
@@ -174,6 +187,617 @@ mppi: cmake_check_build_system
 mppi/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mppi.dir/build.make CMakeFiles/mppi.dir/build
 .PHONY : mppi/fast
+
+#=============================================================================
+# Target rules for targets named objects
+
+# Build rule for target.
+objects: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 objects
+.PHONY : objects
+
+# fast build rule for target.
+objects/fast:
+	$(MAKE) $(MAKESILENT) -f external/mpac_go2/CMakeFiles/objects.dir/build.make external/mpac_go2/CMakeFiles/objects.dir/build
+.PHONY : objects/fast
+
+#=============================================================================
+# Target rules for targets named ctrl
+
+# Build rule for target.
+ctrl: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ctrl
+.PHONY : ctrl
+
+# fast build rule for target.
+ctrl/fast:
+	$(MAKE) $(MAKESILENT) -f external/mpac_go2/CMakeFiles/ctrl.dir/build.make external/mpac_go2/CMakeFiles/ctrl.dir/build
+.PHONY : ctrl/fast
+
+#=============================================================================
+# Target rules for targets named atnmy
+
+# Build rule for target.
+atnmy: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 atnmy
+.PHONY : atnmy
+
+# fast build rule for target.
+atnmy/fast:
+	$(MAKE) $(MAKESILENT) -f external/mpac_go2/CMakeFiles/atnmy.dir/build.make external/mpac_go2/CMakeFiles/atnmy.dir/build
+.PHONY : atnmy/fast
+
+#=============================================================================
+# Target rules for targets named tlm
+
+# Build rule for target.
+tlm: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tlm
+.PHONY : tlm
+
+# fast build rule for target.
+tlm/fast:
+	$(MAKE) $(MAKESILENT) -f external/mpac_go2/CMakeFiles/tlm.dir/build.make external/mpac_go2/CMakeFiles/tlm.dir/build
+.PHONY : tlm/fast
+
+#=============================================================================
+# Target rules for targets named unit_test
+
+# Build rule for target.
+unit_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unit_test
+.PHONY : unit_test
+
+# fast build rule for target.
+unit_test/fast:
+	$(MAKE) $(MAKESILENT) -f external/mpac_go2/CMakeFiles/unit_test.dir/build.make external/mpac_go2/CMakeFiles/unit_test.dir/build
+.PHONY : unit_test/fast
+
+#=============================================================================
+# Target rules for targets named osqpstatic
+
+# Build rule for target.
+osqpstatic: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 osqpstatic
+.PHONY : osqpstatic
+
+# fast build rule for target.
+osqpstatic/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/osqp-build/CMakeFiles/osqpstatic.dir/build.make _deps/osqp-build/CMakeFiles/osqpstatic.dir/build
+.PHONY : osqpstatic/fast
+
+#=============================================================================
+# Target rules for targets named osqp
+
+# Build rule for target.
+osqp: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 osqp
+.PHONY : osqp
+
+# fast build rule for target.
+osqp/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/osqp-build/CMakeFiles/osqp.dir/build.make _deps/osqp-build/CMakeFiles/osqp.dir/build
+.PHONY : osqp/fast
+
+#=============================================================================
+# Target rules for targets named osqp_demo
+
+# Build rule for target.
+osqp_demo: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 osqp_demo
+.PHONY : osqp_demo
+
+# fast build rule for target.
+osqp_demo/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/osqp-build/CMakeFiles/osqp_demo.dir/build.make _deps/osqp-build/CMakeFiles/osqp_demo.dir/build
+.PHONY : osqp_demo/fast
+
+#=============================================================================
+# Target rules for targets named linsys_pardiso
+
+# Build rule for target.
+linsys_pardiso: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 linsys_pardiso
+.PHONY : linsys_pardiso
+
+# fast build rule for target.
+linsys_pardiso/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/osqp-build/lin_sys/direct/CMakeFiles/linsys_pardiso.dir/build.make _deps/osqp-build/lin_sys/direct/CMakeFiles/linsys_pardiso.dir/build
+.PHONY : linsys_pardiso/fast
+
+#=============================================================================
+# Target rules for targets named linsys_qdldl
+
+# Build rule for target.
+linsys_qdldl: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 linsys_qdldl
+.PHONY : linsys_qdldl
+
+# fast build rule for target.
+linsys_qdldl/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/osqp-build/lin_sys/direct/qdldl/CMakeFiles/linsys_qdldl.dir/build.make _deps/osqp-build/lin_sys/direct/qdldl/CMakeFiles/linsys_qdldl.dir/build
+.PHONY : linsys_qdldl/fast
+
+#=============================================================================
+# Target rules for targets named qdldlobject
+
+# Build rule for target.
+qdldlobject: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 qdldlobject
+.PHONY : qdldlobject
+
+# fast build rule for target.
+qdldlobject/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/osqp-build/lin_sys/direct/qdldl/qdldl_sources/CMakeFiles/qdldlobject.dir/build.make _deps/osqp-build/lin_sys/direct/qdldl/qdldl_sources/CMakeFiles/qdldlobject.dir/build
+.PHONY : qdldlobject/fast
+
+#=============================================================================
+# Target rules for targets named qdldlstatic
+
+# Build rule for target.
+qdldlstatic: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 qdldlstatic
+.PHONY : qdldlstatic
+
+# fast build rule for target.
+qdldlstatic/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/osqp-build/lin_sys/direct/qdldl/qdldl_sources/CMakeFiles/qdldlstatic.dir/build.make _deps/osqp-build/lin_sys/direct/qdldl/qdldl_sources/CMakeFiles/qdldlstatic.dir/build
+.PHONY : qdldlstatic/fast
+
+#=============================================================================
+# Target rules for targets named qdldl
+
+# Build rule for target.
+qdldl: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 qdldl
+.PHONY : qdldl
+
+# fast build rule for target.
+qdldl/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/osqp-build/lin_sys/direct/qdldl/qdldl_sources/CMakeFiles/qdldl.dir/build.make _deps/osqp-build/lin_sys/direct/qdldl/qdldl_sources/CMakeFiles/qdldl.dir/build
+.PHONY : qdldl/fast
+
+#=============================================================================
+# Target rules for targets named qdldl_example
+
+# Build rule for target.
+qdldl_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 qdldl_example
+.PHONY : qdldl_example
+
+# fast build rule for target.
+qdldl_example/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/osqp-build/lin_sys/direct/qdldl/qdldl_sources/CMakeFiles/qdldl_example.dir/build.make _deps/osqp-build/lin_sys/direct/qdldl/qdldl_sources/CMakeFiles/qdldl_example.dir/build
+.PHONY : qdldl_example/fast
+
+#=============================================================================
+# Target rules for targets named uninstall
+
+# Build rule for target.
+uninstall: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 uninstall
+.PHONY : uninstall
+
+# fast build rule for target.
+uninstall/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/osqp-build/lin_sys/direct/qdldl/qdldl_sources/CMakeFiles/uninstall.dir/build.make _deps/osqp-build/lin_sys/direct/qdldl/qdldl_sources/CMakeFiles/uninstall.dir/build
+.PHONY : uninstall/fast
+
+#=============================================================================
+# Target rules for targets named OsqpEigen
+
+# Build rule for target.
+OsqpEigen: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 OsqpEigen
+.PHONY : OsqpEigen
+
+# fast build rule for target.
+OsqpEigen/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/osqp-eigen-build/CMakeFiles/OsqpEigen.dir/build.make _deps/osqp-eigen-build/CMakeFiles/OsqpEigen.dir/build
+.PHONY : OsqpEigen/fast
+
+#=============================================================================
+# Target rules for targets named test_publisher
+
+# Build rule for target.
+test_publisher: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_publisher
+.PHONY : test_publisher
+
+# fast build rule for target.
+test_publisher/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/helloworld/CMakeFiles/test_publisher.dir/build.make _deps/unitree_sdk2-build/example/helloworld/CMakeFiles/test_publisher.dir/build
+.PHONY : test_publisher/fast
+
+#=============================================================================
+# Target rules for targets named test_subscriber
+
+# Build rule for target.
+test_subscriber: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_subscriber
+.PHONY : test_subscriber
+
+# fast build rule for target.
+test_subscriber/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/helloworld/CMakeFiles/test_subscriber.dir/build.make _deps/unitree_sdk2-build/example/helloworld/CMakeFiles/test_subscriber.dir/build
+.PHONY : test_subscriber/fast
+
+#=============================================================================
+# Target rules for targets named advanced_gamepad
+
+# Build rule for target.
+advanced_gamepad: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 advanced_gamepad
+.PHONY : advanced_gamepad
+
+# fast build rule for target.
+advanced_gamepad/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/wireless_controller/CMakeFiles/advanced_gamepad.dir/build.make _deps/unitree_sdk2-build/example/wireless_controller/CMakeFiles/advanced_gamepad.dir/build
+.PHONY : advanced_gamepad/fast
+
+#=============================================================================
+# Target rules for targets named test_jsonize
+
+# Build rule for target.
+test_jsonize: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_jsonize
+.PHONY : test_jsonize
+
+# fast build rule for target.
+test_jsonize/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/jsonize/CMakeFiles/test_jsonize.dir/build.make _deps/unitree_sdk2-build/example/jsonize/CMakeFiles/test_jsonize.dir/build
+.PHONY : test_jsonize/fast
+
+#=============================================================================
+# Target rules for targets named state_machine_example
+
+# Build rule for target.
+state_machine_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 state_machine_example
+.PHONY : state_machine_example
+
+# fast build rule for target.
+state_machine_example/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/state_machine/CMakeFiles/state_machine_example.dir/build.make _deps/unitree_sdk2-build/example/state_machine/CMakeFiles/state_machine_example.dir/build
+.PHONY : state_machine_example/fast
+
+#=============================================================================
+# Target rules for targets named go2_trajectory_follow
+
+# Build rule for target.
+go2_trajectory_follow: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 go2_trajectory_follow
+.PHONY : go2_trajectory_follow
+
+# fast build rule for target.
+go2_trajectory_follow/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/go2/CMakeFiles/go2_trajectory_follow.dir/build.make _deps/unitree_sdk2-build/example/go2/CMakeFiles/go2_trajectory_follow.dir/build
+.PHONY : go2_trajectory_follow/fast
+
+#=============================================================================
+# Target rules for targets named go2_sport_client
+
+# Build rule for target.
+go2_sport_client: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 go2_sport_client
+.PHONY : go2_sport_client
+
+# fast build rule for target.
+go2_sport_client/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/go2/CMakeFiles/go2_sport_client.dir/build.make _deps/unitree_sdk2-build/example/go2/CMakeFiles/go2_sport_client.dir/build
+.PHONY : go2_sport_client/fast
+
+#=============================================================================
+# Target rules for targets named go2_low_level
+
+# Build rule for target.
+go2_low_level: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 go2_low_level
+.PHONY : go2_low_level
+
+# fast build rule for target.
+go2_low_level/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/go2/CMakeFiles/go2_low_level.dir/build.make _deps/unitree_sdk2-build/example/go2/CMakeFiles/go2_low_level.dir/build
+.PHONY : go2_low_level/fast
+
+#=============================================================================
+# Target rules for targets named go2_stand_example
+
+# Build rule for target.
+go2_stand_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 go2_stand_example
+.PHONY : go2_stand_example
+
+# fast build rule for target.
+go2_stand_example/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/go2/CMakeFiles/go2_stand_example.dir/build.make _deps/unitree_sdk2-build/example/go2/CMakeFiles/go2_stand_example.dir/build
+.PHONY : go2_stand_example/fast
+
+#=============================================================================
+# Target rules for targets named go2_robot_state_client
+
+# Build rule for target.
+go2_robot_state_client: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 go2_robot_state_client
+.PHONY : go2_robot_state_client
+
+# fast build rule for target.
+go2_robot_state_client/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/go2/CMakeFiles/go2_robot_state_client.dir/build.make _deps/unitree_sdk2-build/example/go2/CMakeFiles/go2_robot_state_client.dir/build
+.PHONY : go2_robot_state_client/fast
+
+#=============================================================================
+# Target rules for targets named go2_video_client
+
+# Build rule for target.
+go2_video_client: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 go2_video_client
+.PHONY : go2_video_client
+
+# fast build rule for target.
+go2_video_client/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/go2/CMakeFiles/go2_video_client.dir/build.make _deps/unitree_sdk2-build/example/go2/CMakeFiles/go2_video_client.dir/build
+.PHONY : go2_video_client/fast
+
+#=============================================================================
+# Target rules for targets named go2_vui_client
+
+# Build rule for target.
+go2_vui_client: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 go2_vui_client
+.PHONY : go2_vui_client
+
+# fast build rule for target.
+go2_vui_client/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/go2/CMakeFiles/go2_vui_client.dir/build.make _deps/unitree_sdk2-build/example/go2/CMakeFiles/go2_vui_client.dir/build
+.PHONY : go2_vui_client/fast
+
+#=============================================================================
+# Target rules for targets named b2_sport_client
+
+# Build rule for target.
+b2_sport_client: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 b2_sport_client
+.PHONY : b2_sport_client
+
+# fast build rule for target.
+b2_sport_client/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/b2/CMakeFiles/b2_sport_client.dir/build.make _deps/unitree_sdk2-build/example/b2/CMakeFiles/b2_sport_client.dir/build
+.PHONY : b2_sport_client/fast
+
+#=============================================================================
+# Target rules for targets named b2_stand_example
+
+# Build rule for target.
+b2_stand_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 b2_stand_example
+.PHONY : b2_stand_example
+
+# fast build rule for target.
+b2_stand_example/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/b2/CMakeFiles/b2_stand_example.dir/build.make _deps/unitree_sdk2-build/example/b2/CMakeFiles/b2_stand_example.dir/build
+.PHONY : b2_stand_example/fast
+
+#=============================================================================
+# Target rules for targets named h1_loco_client
+
+# Build rule for target.
+h1_loco_client: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 h1_loco_client
+.PHONY : h1_loco_client
+
+# fast build rule for target.
+h1_loco_client/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/h1/CMakeFiles/h1_loco_client.dir/build.make _deps/unitree_sdk2-build/example/h1/CMakeFiles/h1_loco_client.dir/build
+.PHONY : h1_loco_client/fast
+
+#=============================================================================
+# Target rules for targets named h1_low_level_example
+
+# Build rule for target.
+h1_low_level_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 h1_low_level_example
+.PHONY : h1_low_level_example
+
+# fast build rule for target.
+h1_low_level_example/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/h1/CMakeFiles/h1_low_level_example.dir/build.make _deps/unitree_sdk2-build/example/h1/CMakeFiles/h1_low_level_example.dir/build
+.PHONY : h1_low_level_example/fast
+
+#=============================================================================
+# Target rules for targets named h1_27dof_example
+
+# Build rule for target.
+h1_27dof_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 h1_27dof_example
+.PHONY : h1_27dof_example
+
+# fast build rule for target.
+h1_27dof_example/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/h1/CMakeFiles/h1_27dof_example.dir/build.make _deps/unitree_sdk2-build/example/h1/CMakeFiles/h1_27dof_example.dir/build
+.PHONY : h1_27dof_example/fast
+
+#=============================================================================
+# Target rules for targets named h1_2_ankle_track
+
+# Build rule for target.
+h1_2_ankle_track: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 h1_2_ankle_track
+.PHONY : h1_2_ankle_track
+
+# fast build rule for target.
+h1_2_ankle_track/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/h1/CMakeFiles/h1_2_ankle_track.dir/build.make _deps/unitree_sdk2-build/example/h1/CMakeFiles/h1_2_ankle_track.dir/build
+.PHONY : h1_2_ankle_track/fast
+
+#=============================================================================
+# Target rules for targets named h1_arm_sdk_dds_example
+
+# Build rule for target.
+h1_arm_sdk_dds_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 h1_arm_sdk_dds_example
+.PHONY : h1_arm_sdk_dds_example
+
+# fast build rule for target.
+h1_arm_sdk_dds_example/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/h1/CMakeFiles/h1_arm_sdk_dds_example.dir/build.make _deps/unitree_sdk2-build/example/h1/CMakeFiles/h1_arm_sdk_dds_example.dir/build
+.PHONY : h1_arm_sdk_dds_example/fast
+
+#=============================================================================
+# Target rules for targets named h1_2_arm_sdk_dds_example
+
+# Build rule for target.
+h1_2_arm_sdk_dds_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 h1_2_arm_sdk_dds_example
+.PHONY : h1_2_arm_sdk_dds_example
+
+# fast build rule for target.
+h1_2_arm_sdk_dds_example/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/h1/CMakeFiles/h1_2_arm_sdk_dds_example.dir/build.make _deps/unitree_sdk2-build/example/h1/CMakeFiles/h1_2_arm_sdk_dds_example.dir/build
+.PHONY : h1_2_arm_sdk_dds_example/fast
+
+#=============================================================================
+# Target rules for targets named g1_loco_client
+
+# Build rule for target.
+g1_loco_client: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 g1_loco_client
+.PHONY : g1_loco_client
+
+# fast build rule for target.
+g1_loco_client/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/g1/CMakeFiles/g1_loco_client.dir/build.make _deps/unitree_sdk2-build/example/g1/CMakeFiles/g1_loco_client.dir/build
+.PHONY : g1_loco_client/fast
+
+#=============================================================================
+# Target rules for targets named g1_arm5_sdk_dds_example
+
+# Build rule for target.
+g1_arm5_sdk_dds_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 g1_arm5_sdk_dds_example
+.PHONY : g1_arm5_sdk_dds_example
+
+# fast build rule for target.
+g1_arm5_sdk_dds_example/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/g1/CMakeFiles/g1_arm5_sdk_dds_example.dir/build.make _deps/unitree_sdk2-build/example/g1/CMakeFiles/g1_arm5_sdk_dds_example.dir/build
+.PHONY : g1_arm5_sdk_dds_example/fast
+
+#=============================================================================
+# Target rules for targets named g1_arm7_sdk_dds_example
+
+# Build rule for target.
+g1_arm7_sdk_dds_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 g1_arm7_sdk_dds_example
+.PHONY : g1_arm7_sdk_dds_example
+
+# fast build rule for target.
+g1_arm7_sdk_dds_example/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/g1/CMakeFiles/g1_arm7_sdk_dds_example.dir/build.make _deps/unitree_sdk2-build/example/g1/CMakeFiles/g1_arm7_sdk_dds_example.dir/build
+.PHONY : g1_arm7_sdk_dds_example/fast
+
+#=============================================================================
+# Target rules for targets named g1_ankle_swing_example
+
+# Build rule for target.
+g1_ankle_swing_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 g1_ankle_swing_example
+.PHONY : g1_ankle_swing_example
+
+# fast build rule for target.
+g1_ankle_swing_example/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/g1/CMakeFiles/g1_ankle_swing_example.dir/build.make _deps/unitree_sdk2-build/example/g1/CMakeFiles/g1_ankle_swing_example.dir/build
+.PHONY : g1_ankle_swing_example/fast
+
+#=============================================================================
+# Target rules for targets named g1_audio_client_example
+
+# Build rule for target.
+g1_audio_client_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 g1_audio_client_example
+.PHONY : g1_audio_client_example
+
+# fast build rule for target.
+g1_audio_client_example/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/g1/CMakeFiles/g1_audio_client_example.dir/build.make _deps/unitree_sdk2-build/example/g1/CMakeFiles/g1_audio_client_example.dir/build
+.PHONY : g1_audio_client_example/fast
+
+#=============================================================================
+# Target rules for targets named g1_dex3_example
+
+# Build rule for target.
+g1_dex3_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 g1_dex3_example
+.PHONY : g1_dex3_example
+
+# fast build rule for target.
+g1_dex3_example/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/g1/CMakeFiles/g1_dex3_example.dir/build.make _deps/unitree_sdk2-build/example/g1/CMakeFiles/g1_dex3_example.dir/build
+.PHONY : g1_dex3_example/fast
+
+#=============================================================================
+# Target rules for targets named g1_dual_arm_example
+
+# Build rule for target.
+g1_dual_arm_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 g1_dual_arm_example
+.PHONY : g1_dual_arm_example
+
+# fast build rule for target.
+g1_dual_arm_example/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/g1/CMakeFiles/g1_dual_arm_example.dir/build.make _deps/unitree_sdk2-build/example/g1/CMakeFiles/g1_dual_arm_example.dir/build
+.PHONY : g1_dual_arm_example/fast
+
+#=============================================================================
+# Target rules for targets named go2w_sport_client
+
+# Build rule for target.
+go2w_sport_client: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 go2w_sport_client
+.PHONY : go2w_sport_client
+
+# fast build rule for target.
+go2w_sport_client/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/go2w/CMakeFiles/go2w_sport_client.dir/build.make _deps/unitree_sdk2-build/example/go2w/CMakeFiles/go2w_sport_client.dir/build
+.PHONY : go2w_sport_client/fast
+
+#=============================================================================
+# Target rules for targets named go2w_stand_example
+
+# Build rule for target.
+go2w_stand_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 go2w_stand_example
+.PHONY : go2w_stand_example
+
+# fast build rule for target.
+go2w_stand_example/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/go2w/CMakeFiles/go2w_stand_example.dir/build.make _deps/unitree_sdk2-build/example/go2w/CMakeFiles/go2w_stand_example.dir/build
+.PHONY : go2w_stand_example/fast
+
+#=============================================================================
+# Target rules for targets named b2w_sport_client
+
+# Build rule for target.
+b2w_sport_client: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 b2w_sport_client
+.PHONY : b2w_sport_client
+
+# fast build rule for target.
+b2w_sport_client/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/b2w/CMakeFiles/b2w_sport_client.dir/build.make _deps/unitree_sdk2-build/example/b2w/CMakeFiles/b2w_sport_client.dir/build
+.PHONY : b2w_sport_client/fast
+
+#=============================================================================
+# Target rules for targets named b2w_stand_example
+
+# Build rule for target.
+b2w_stand_example: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 b2w_stand_example
+.PHONY : b2w_stand_example
+
+# fast build rule for target.
+b2w_stand_example/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/unitree_sdk2-build/example/b2w/CMakeFiles/b2w_stand_example.dir/build.make _deps/unitree_sdk2-build/example/b2w/CMakeFiles/b2w_stand_example.dir/build
+.PHONY : b2w_stand_example/fast
 
 #=============================================================================
 # Target rules for targets named rerun_sdk
@@ -334,8 +958,56 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... arrow_cpp"
+	@echo "... uninstall"
+	@echo "... OsqpEigen"
+	@echo "... advanced_gamepad"
+	@echo "... atnmy"
+	@echo "... b2_sport_client"
+	@echo "... b2_stand_example"
+	@echo "... b2w_sport_client"
+	@echo "... b2w_stand_example"
+	@echo "... ctrl"
+	@echo "... g1_ankle_swing_example"
+	@echo "... g1_arm5_sdk_dds_example"
+	@echo "... g1_arm7_sdk_dds_example"
+	@echo "... g1_audio_client_example"
+	@echo "... g1_dex3_example"
+	@echo "... g1_dual_arm_example"
+	@echo "... g1_loco_client"
+	@echo "... go2_low_level"
+	@echo "... go2_robot_state_client"
+	@echo "... go2_sport_client"
+	@echo "... go2_stand_example"
+	@echo "... go2_trajectory_follow"
+	@echo "... go2_video_client"
+	@echo "... go2_vui_client"
+	@echo "... go2w_sport_client"
+	@echo "... go2w_stand_example"
+	@echo "... h1_27dof_example"
+	@echo "... h1_2_ankle_track"
+	@echo "... h1_2_arm_sdk_dds_example"
+	@echo "... h1_arm_sdk_dds_example"
+	@echo "... h1_loco_client"
+	@echo "... h1_low_level_example"
+	@echo "... linsys_pardiso"
+	@echo "... linsys_qdldl"
+	@echo "... mpac_go2_local"
 	@echo "... mppi"
+	@echo "... objects"
+	@echo "... osqp"
+	@echo "... osqp_demo"
+	@echo "... osqpstatic"
+	@echo "... qdldl"
+	@echo "... qdldl_example"
+	@echo "... qdldlobject"
+	@echo "... qdldlstatic"
 	@echo "... rerun_sdk"
+	@echo "... state_machine_example"
+	@echo "... test_jsonize"
+	@echo "... test_publisher"
+	@echo "... test_subscriber"
+	@echo "... tlm"
+	@echo "... unit_test"
 	@echo "... Dynamics.o"
 	@echo "... Dynamics.i"
 	@echo "... Dynamics.s"

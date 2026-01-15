@@ -17,7 +17,7 @@ struct Rollout {
     std::vector<State> logging_states;
 };
 
-MPPI::MPPI(int K, int T, double lambda, const rerun::RecordingStream& rec) : K(K), T(T), lambda(lambda), rec(rec){};
+MPPI::MPPI(int K, int T, double lambda, MotionParams mp, const rerun::RecordingStream& rec) : K(K), T(T), lambda(lambda), mp(mp), rec(rec){};
 
 Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
     rec.set_time_duration_secs("sim_time", t); // New time on timeline
@@ -44,7 +44,7 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
             double v = ctrls(0, k*T + t);
             double w = ctrls(1, k*T + t);
             Control ctrl = Control{v, w};
-            temp_state = unicyle_dynamics(temp_state, ctrl, dt);
+            temp_state = unicyle_dynamics(temp_state, ctrl, mp, dt);
             logging_states.push_back(temp_state);
 
             if(t < T-1){
@@ -80,25 +80,6 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
     } else {
         weights.setConstant(1.0 / K);
     }
-
-    // for (int i = 0; i < rollouts.size(); i++){
-    //     double green = weights(i) * 128;
-    //     double red = 128-green;
-    //     for (int j = 0; j < rollouts.at(i).logging_states.size(); j++){
-    //         rec.log(
-    //             "mppi/sample/" + std::to_string(i),
-    //             rerun::Points2D(
-    //                 rerun::Position2D(
-    //                     rollouts.at(i).logging_states.at(j).val(0), rollouts.at(i).logging_states.at(j).val(1)
-    //                 )
-    //                 )
-    //                 .with_radii({0.01f})
-    //                 .with_colors(
-    //                     rerun::Color(red, green, 0)
-    //                 )
-    //         );
-    //     }
-    // }
 
     for (int i = 0; i < rollouts.size(); i++) {
         double alpha = weights(i) * 255.0;

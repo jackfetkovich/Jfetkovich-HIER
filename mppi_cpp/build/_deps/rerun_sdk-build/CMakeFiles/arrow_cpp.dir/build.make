@@ -83,13 +83,13 @@ _deps/rerun_sdk-build/CMakeFiles/arrow_cpp-complete: _deps/rerun_sdk-build/arrow
 
 _deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-build: _deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-configure
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Performing build step for 'arrow_cpp'"
-	cd /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build && /usr/bin/cmake -Dmake=$(MAKE) -P /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-build-.cmake
+	cd /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build && /usr/bin/cmake -Dmake=$(MAKE) -P /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-build-Release.cmake
 	cd /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build && /usr/bin/cmake -E touch /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-build
 
 _deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-configure: _deps/rerun_sdk-build/arrow/tmp/arrow_cpp-cfgcmd.txt
 _deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-configure: _deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-patch
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Performing configure step for 'arrow_cpp'"
-	cd /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build && /usr/bin/cmake -P /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-configure-.cmake
+	cd /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build && /usr/bin/cmake -P /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-configure-Release.cmake
 	cd /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build && /usr/bin/cmake -E touch /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-configure
 
 _deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-download: _deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/download-arrow_cpp.cmake
@@ -103,7 +103,7 @@ _deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-download: _deps/rerun_
 
 _deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-install: _deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Performing install step for 'arrow_cpp'"
-	cd /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build && /usr/bin/cmake -Dmake=$(MAKE) -P /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-install-.cmake
+	cd /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build && /usr/bin/cmake -Dmake=$(MAKE) -P /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-install-Release.cmake
 	cd /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-build && /usr/bin/cmake -E touch /home/jfetko/Documents/HIER/mppi_cpp/build/_deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-install
 
 _deps/rerun_sdk-build/arrow/src/arrow_cpp-stamp/arrow_cpp-mkdir:

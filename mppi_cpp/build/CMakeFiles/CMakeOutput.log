@@ -447,3 +447,40 @@ Parsed CXX implicit link information from above output:
   implicit fwks: []
 
 
+Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD succeeded with the following output:
+Change Dir: /home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles/CMakeScratch/TryCompile-KPNrZb
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_61e86/fast && gmake[1]: Entering directory '/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles/CMakeScratch/TryCompile-KPNrZb'
+/usr/bin/gmake  -f CMakeFiles/cmTC_61e86.dir/build.make CMakeFiles/cmTC_61e86.dir/build
+gmake[2]: Entering directory '/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles/CMakeScratch/TryCompile-KPNrZb'
+Building C object CMakeFiles/cmTC_61e86.dir/src.c.o
+/usr/lib/ccache/cc -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_61e86.dir/src.c.o -c /home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles/CMakeScratch/TryCompile-KPNrZb/src.c
+Linking C executable cmTC_61e86
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_61e86.dir/link.txt --verbose=1
+/usr/lib/ccache/cc CMakeFiles/cmTC_61e86.dir/src.c.o -o cmTC_61e86 
+gmake[2]: Leaving directory '/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles/CMakeScratch/TryCompile-KPNrZb'
+gmake[1]: Leaving directory '/home/jfetko/Documents/HIER/mppi_cpp/build/CMakeFiles/CMakeScratch/TryCompile-KPNrZb'
+
+
+Source file was:
+#include <pthread.h>
+
+static void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_cancel(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+
+

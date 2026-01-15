@@ -503,8 +503,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/rerun_sdk.dir/src/rerun/time_column.cpp.o.d"
   "CMakeFiles/rerun_sdk.dir/src/rerun/timeline.cpp.o"
   "CMakeFiles/rerun_sdk.dir/src/rerun/timeline.cpp.o.d"
-  "librerun_sdk.a"
   "librerun_sdk.pdb"
+  "librerun_sdk.so"
 )
 
 # Per-language clean rules from dependency scanning.

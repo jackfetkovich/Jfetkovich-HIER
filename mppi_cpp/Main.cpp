@@ -10,6 +10,13 @@
 #include "Trajectory.hpp"
 #include "Timer.hpp"
 #include "Dynamics.hpp"
+#include "MotionParams.hpp"
+#include "atnmy/atnmy.h"
+#include "ctrl_modes_core.h"
+#include "ctrl/ctrl_args.h"
+#include "tlm/tlm.h"
+#include "robot.h"
+#include "atnmy_core.h"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -23,6 +30,8 @@ int main(){
         0.0,
         0.0
     );
+
+    MotionParams mp = MotionParams{0.35, 0.1, 0.5, 0.6};
 
     // Note: Thetas are ignored and recomputed by geometry
     std::vector<Waypoint> waypoints{
@@ -57,13 +66,17 @@ int main(){
     time.reset();
     double elapsed_time = time.elapsed();
 
-    MPPI mppi = MPPI(1000, 20, 1, rec);
+    MPPI mppi = MPPI(1000, 20, 1, mp, rec);
     State robot_state = init_state;
 
 
+    Telemetry tlm;
+    CtrlState ctrl_des;
+    ctrl_des.mode = C_WALK_IDQP;
+    
     while(elapsed_time < 20.0){
         Control ctrl = mppi.get_control(robot_state, traj, elapsed_time, 0.05);
-        robot_state = unicyle_dynamics(robot_state, ctrl, 0.05);
+        robot_state = unicyle_dynamics(robot_state, ctrl, mp, 0.05);
         rerun::Position2D loc = rerun::Position2D(robot_state.val(0), robot_state.val(1));
 
         rec.log(
@@ -74,6 +87,10 @@ int main(){
         std::cout << elapsed_time << std::endl;
         
 
+       
+        ctrl_des.args.cont[walk_idqp::ARG_H]  = 0.25;
+        ctrl_des.args.cont[walk_idqp::ARG_VX] = 0.3;
+        
         elapsed_time = time.elapsed();
     }
 

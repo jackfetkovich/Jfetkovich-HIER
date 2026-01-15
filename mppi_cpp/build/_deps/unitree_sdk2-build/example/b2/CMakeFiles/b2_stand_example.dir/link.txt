@@ -1,0 +1,1 @@
+/usr/lib/ccache/c++ -O3 -DNDEBUG CMakeFiles/b2_stand_example.dir/b2_stand_example.cpp.o -o ../../bin/b2_stand_example   -L/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/unitree_sdk2-src/thirdparty/lib/x86_64  -Wl,-rpath,/home/jfetko/Documents/HIER/mppi_cpp/build/_deps/unitree_sdk2-src/thirdparty/lib/x86_64 ../../../unitree_sdk2-src/lib/x86_64/libunitree_sdk2.a -lddsc -lddscxx 

@@ -11,7 +11,7 @@ set(ARROW_BUILD_SHARED "OFF")
 ### (for informational purposes)
 set(ARROW_PACKAGE_KIND "")
 ### The Arrow git commit id (if any)
-set(ARROW_GIT_ID "c3384c9594f917e68d9c103f15eaf397bbc93146")
+set(ARROW_GIT_ID "855a51a73e4024bd13957c932127294683e6ed66")
 ### The Arrow git commit description (if any)
 set(ARROW_GIT_DESCRIPTION "")
 ### Whether to create position-independent target

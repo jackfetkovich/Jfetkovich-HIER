@@ -18,5 +18,5 @@
 // These variables are not exposed as they can make compilation caching
 // and increment builds less efficient.
 
-#define ARROW_GIT_ID "c3384c9594f917e68d9c103f15eaf397bbc93146"
+#define ARROW_GIT_ID "855a51a73e4024bd13957c932127294683e6ed66"
 #define ARROW_GIT_DESCRIPTION ""
