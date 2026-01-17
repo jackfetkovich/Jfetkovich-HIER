@@ -22,6 +22,6 @@ class MPPI {
         MotionParams mp;
         const rerun::RecordingStream& rec;
         Eigen::MatrixXd gen_rand_ctrl_seq(double mu_v, double sigma_v, double mu_omega, double sigma_omega);
-        double cost_func(State state, Control ctrl, Waypoint target);
+        double cost_func(State state, Control ctrl, Waypoint target, int step);
         double terminal_cost_func(State state, Waypoint target);
 };

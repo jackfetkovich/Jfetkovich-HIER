@@ -22,7 +22,7 @@ MPPI::MPPI(int K, int T, double lambda, MotionParams mp, const rerun::RecordingS
 Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
     rec.set_time_duration_secs("sim_time", t); // New time on timeline
     
-    MatrixXd ctrls = gen_rand_ctrl_seq(0.05, 0.1, 0.0, 0.3); // Generate random control inputs
+    MatrixXd ctrls = gen_rand_ctrl_seq(0.05, 0.2, 0.0, 0.4); // Generate random control inputs
     VectorXd costs = VectorXd(K); // Store cost of each sampled path
 
     std::vector<Waypoint> discretized_waypoints = std::vector<Waypoint>();
@@ -39,8 +39,7 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
     std::vector<Rollout> rollouts = std::vector<Rollout>();
     std::vector<State> logging_states = std::vector<State>();
 
-    std::cout << "x: " << discretized_waypoints.at(t).state.val(0) << std::endl;
-    std::cout << "y: " << discretized_waypoints.at(t).state.val(1) << std::endl;
+
 
     for (int k = 0; k < K; k++){
         for (int t_ = 0; t_ < T; t_++){
@@ -51,9 +50,9 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
             logging_states.push_back(temp_state);
 
             if(t_ < T-1){
-                temp_cost += cost_func(temp_state, ctrl, discretized_waypoints.at(t_));
+                temp_cost += cost_func(temp_state, ctrl, discretized_waypoints.at(t_), t_) * pow(0.95, t_);
             } else {
-                temp_cost += terminal_cost_func(temp_state, discretized_waypoints.at(t_));
+                // temp_cost += terminal_cost_func(temp_state, discretized_waypoints.at(t_));
             }
         }
         costs(k) = temp_cost;
@@ -64,12 +63,11 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
         temp_cost = 0.0;
         logging_states.clear();
     }
+
+    double max_cost = costs.maxCoeff();
+    double min_cost = costs.minCoeff();
+    std::cout << "Cost diff: " << max_cost - min_cost << std::endl;
     
-    // Calculate smallest cost
-    double min_cost = INFINITY;
-    for (int i = 0; i < K; i++){
-        if(costs(i) < min_cost) min_cost = costs(i);
-    }
 
     // Calculate weights
     VectorXd weights = VectorXd(K);
@@ -82,7 +80,7 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
         weights /= sum_w;
     } else {
         weights.setConstant(1.0 / K);
-        std::cout << "CONSTANT WEIGHTS"<< std::endl;
+
     }
 
     rec.log(
@@ -90,11 +88,13 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
         rerun::Scalars(weights.maxCoeff())
     );
 
+    double max_weight = weights.maxCoeff();
+
     for (int i = 0; i < rollouts.size(); i++) {
 
-        if(weights(i) > 0.2){
+        if(weights(i) > max_weight/2){
 
-            double alpha = weights(i) * 255.0;
+            double alpha = weights(i)/max_weight * 255.0;
 
             std::vector<rerun::Position2D> pts;
             pts.reserve(rollouts[i].logging_states.size());
@@ -112,7 +112,7 @@ Control MPPI::get_control(State state, Trajectory traj, double t, double dt){
             rec.log(
                 "mppi/sample/" + std::to_string(i),
                 rerun::LineStrips2D(strips)
-                    .with_colors(rerun::Color(0, 255, 0, 255))
+                    .with_colors(rerun::Color(0, 255, 0, alpha))
             );
         }
     }
@@ -144,9 +144,9 @@ MatrixXd MPPI::gen_rand_ctrl_seq(double mu_v, double sigma_v, double mu_omega, d
     return controls;
 }
 
-double MPPI::cost_func(State state, Control ctrl, Waypoint target){
-    Eigen::DiagonalMatrix Q = Eigen::DiagonalMatrix<double, 5>(18.0, 18.0, 5.0, 0.0, 0.0);
-    Eigen::DiagonalMatrix R = Eigen::DiagonalMatrix<double, 2>(0.0005, 0.0001);
+double MPPI::cost_func(State state, Control ctrl, Waypoint target, int step){
+    Eigen::DiagonalMatrix Q = Eigen::DiagonalMatrix<double, 5>(4.0, 4.0, 0.0, 0.0, 0.0);
+    Eigen::DiagonalMatrix R = Eigen::DiagonalMatrix<double, 2>(0.05, 0.01);
     
     VectorXd state_diff = target.state.val - state.val;
     state_diff(2) = std::fmod((state_diff(2) + M_PI), (M_PI * 2)) - M_PI;
@@ -158,7 +158,7 @@ double MPPI::cost_func(State state, Control ctrl, Waypoint target){
 }
 
 double MPPI::terminal_cost_func(State state, Waypoint target){
-    Eigen::DiagonalMatrix Q = Eigen::DiagonalMatrix<double, 5>(22.0, 22.0, 6.0, 0.0, 0.0);
+    Eigen::DiagonalMatrix Q = Eigen::DiagonalMatrix<double, 5>(10.0, 10.0, 3.0, 0.0, 0.0);
     VectorXd state_diff = target.state.val - state.val;
     state_diff(2) = std::fmod((state_diff(2) + M_PI), (M_PI * 2)) - M_PI;
 

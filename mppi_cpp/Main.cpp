@@ -11,12 +11,6 @@
 #include "Timer.hpp"
 #include "Dynamics.hpp"
 #include "MotionParams.hpp"
-#include "atnmy/atnmy.h"
-#include "ctrl_modes_core.h"
-#include "ctrl/ctrl_args.h"
-#include "tlm/tlm.h"
-#include "robot.h"
-#include "atnmy_core.h"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -31,14 +25,14 @@ int main(){
         0.0
     );
 
-    MotionParams mp = MotionParams{0.35, 0.5, 0.5, 1.5};
+    MotionParams mp = MotionParams{0.35, 1.0, 1.9, 1.5};
 
     // Note: Thetas are ignored and recomputed by geometry
     std::vector<Waypoint> waypoints{
         Waypoint{init_state, 0.0},
-        Waypoint{State(1.0, 0.0, 0.0, 0.0, 0.0), 3.0},
-        Waypoint{State(1.0, -1.0, 0.0, 0.0, 0.0), 10.0},
-        Waypoint{State(2.0, -1.5, 0.0, 0.0, 0.0), 15.0},
+        Waypoint{State(1.0, 0.0, 0.0, 0.0, 0.0), 5.0},
+        Waypoint{State(1.5, 1.0, 0.0, 0.0, 0.0), 10.0},
+        Waypoint{State(1.5, -1.0, 0.0, 0.0, 0.0), 15.0},
 
     };
 
@@ -68,16 +62,11 @@ int main(){
     time.reset();
     double elapsed_time = time.elapsed();
 
-    MPPI mppi = MPPI(30, 20, 10, mp, rec);
+    MPPI mppi = MPPI(2000, 30, 0.05, mp, rec);
     State robot_state = init_state;
-
-
-    Telemetry tlm;
-    CtrlState ctrl_des;
-    ctrl_des.mode = C_WALK_IDQP;
     
     while(elapsed_time < 15.0){
-        Control ctrl = mppi.get_control(robot_state, traj, elapsed_time, 0.02);
+        Control ctrl = mppi.get_control(robot_state, traj, elapsed_time, 0.05);
         rec.set_time_duration_secs("sim_time", elapsed_time);
 
         rec.log(
@@ -95,13 +84,18 @@ int main(){
 
         rec.log(
             "mppi/telemetry",
-            rerun::Points2D(loc).with_radii({0.08f}).with_colors(rerun::Color(0, 0, 255))
+            rerun::Points2D(loc).with_radii({0.01f}).with_colors(rerun::Color(0, 0, 255))
         );
 
-        std::cout << elapsed_time << std::endl;
-        
-        ctrl_des.args.cont[walk_idqp::ARG_H]  = 0.25;
-        ctrl_des.args.cont[walk_idqp::ARG_VX] = 0.3;
+        Waypoint goal = traj.sample(elapsed_time);
+        rerun::Position2D goal_pos = rerun::Position2D(goal.state.val(0), goal.state.val(1));
+
+        rec.log(
+            "mppi/goal",
+            rerun::Points2D(goal_pos).with_radii({0.01f}).with_colors(rerun::Color(255, 255, 128))
+        );
+
+        // std::cout << elapsed_time << std::endl;
         
         elapsed_time = time.elapsed();
     }
