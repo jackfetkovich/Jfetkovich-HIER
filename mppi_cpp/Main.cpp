@@ -30,9 +30,9 @@ int main(){
     // Note: Thetas are ignored and recomputed by geometry
     std::vector<Waypoint> waypoints{
         Waypoint{init_state, 0.0},
-        Waypoint{State(1.0, 0.0, 0.0, 0.0, 0.0), 5.0},
-        Waypoint{State(1.5, 1.0, 0.0, 0.0, 0.0), 10.0},
-        Waypoint{State(1.5, -1.0, 0.0, 0.0, 0.0), 15.0},
+        Waypoint{State(0.25, 0.0, 0.0, 0.0, 0.0), 1.0},
+        Waypoint{State(0.4, 0.15, 0.0, 0.0, 0.0), 2.0},
+        Waypoint{State(0.65, 0.25, 0.0, 0.0, 0.0), 3.0},
 
     };
 
@@ -65,7 +65,7 @@ int main(){
     MPPI mppi = MPPI(2000, 30, 0.05, mp, rec);
     State robot_state = init_state;
     
-    while(elapsed_time < 15.0){
+    while(elapsed_time < 3.0){
         Control ctrl = mppi.get_control(robot_state, traj, elapsed_time, 0.05);
         rec.set_time_duration_secs("sim_time", elapsed_time);
 
