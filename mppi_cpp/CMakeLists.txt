@@ -6,6 +6,7 @@ set(SOURCE_FILES
     Trajectory.cpp
     Dynamics.cpp
     Timer.cpp
+    MathFuncs.cpp
 )
 
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)

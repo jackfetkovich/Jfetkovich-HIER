@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <functional>
 #include <Eigen/Dense>
 #include <rerun.hpp>
 #include <rerun/demo_utils.hpp>
@@ -11,6 +12,7 @@
 #include "Timer.hpp"
 #include "Dynamics.hpp"
 #include "MotionParams.hpp"
+#include "MathFuncs.hpp"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -31,12 +33,12 @@ int main(){
     std::vector<Waypoint> waypoints{
         Waypoint{init_state, 0.0},
         Waypoint{State(0.25, 0.0, 0.0, 0.0, 0.0), 1.0},
-        Waypoint{State(0.4, 0.15, 0.0, 0.0, 0.0), 2.0},
-        Waypoint{State(0.65, 0.25, 0.0, 0.0, 0.0), 3.0},
+        Waypoint{State(0.4, 0.15, 0.0, 0.0, 0.0), 3.0},
+        Waypoint{State(0.65, 0.25, 0.0, 0.0, 0.0), 6.0},
 
     };
 
-    Trajectory traj = Trajectory(waypoints);
+    Trajectory traj = Trajectory(waypoints, mp);
 
     // Create a new `RecordingStream` which sends data over gRPC to the viewer process.
     const auto rec = rerun::RecordingStream("rerun_example_cpp");
@@ -64,8 +66,21 @@ int main(){
 
     MPPI mppi = MPPI(2000, 30, 0.05, mp, rec);
     State robot_state = init_state;
+
+    std::function<Waypoint (double)> my_spline = generate_n_bezier(waypoints);
+
+    std::vector<rerun::Position2D> spline_points = std::vector<rerun::Position2D>();
+    for (int i = 0; i < 100; i++){
+        rerun::Position2D point = rerun::Position2D(my_spline(i/100.0).state.val(0), my_spline(i/100.0).state.val(1));
+        spline_points.push_back(point);
+    }
+    rec.log(
+        "mppi/spline/points",
+        rerun::Points2D(spline_points).with_radii({0.03f})
+    );
+
     
-    while(elapsed_time < 3.0){
+    while(elapsed_time < 6.0){
         Control ctrl = mppi.get_control(robot_state, traj, elapsed_time, 0.05);
         rec.set_time_duration_secs("sim_time", elapsed_time);
 

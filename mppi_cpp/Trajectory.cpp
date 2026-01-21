@@ -1,14 +1,22 @@
 
+// Standard Library
 #include <cmath>
+#include <functional>
+
+// Imported Library
 #include <Eigen/Dense>
+
+// My code
 #include "Trajectory.hpp"
 #include "Waypoint.hpp"
 #include "State.hpp"
+#include "MotionParams.hpp"
+#include "MathFuncs.hpp"
 
 using Eigen::VectorXd;
 
-Trajectory::Trajectory(std::vector<Waypoint> waypoints)
-    :points(waypoints){
+Trajectory::Trajectory(std::vector<Waypoint> waypoints, MotionParams mp)
+    :points(waypoints), params(mp){
         // Populate headings
         for(int i = 0; i < points.size(); i++){
             if (i < points.size() - 1) {
@@ -22,7 +30,7 @@ Trajectory::Trajectory(std::vector<Waypoint> waypoints)
     }
 
 Waypoint Trajectory::sample(double time){
-    
+
     // Bound time to trajectory start and end
     if (time >= points.at(points.size()-1).t){
         return points.at(points.size()-1);
@@ -47,3 +55,23 @@ Waypoint Trajectory::sample(double time){
 
     return interp_point;
 } 
+
+std::function<Waypoint(double)> generate_n_bezier(std::vector<Waypoint> ctrl_points){
+    
+    return [ctrl_points](double t){ 
+        double x {0.0};
+        double y {0.0};
+        double weight {0.0};
+        int n = ctrl_points.size() - 1;
+        
+        for(int i = 0; i < ctrl_points.size(); i++){
+            weight = choose(n, i) * pow(t, i) * pow((1-t), (n-i));
+            x += weight * ctrl_points.at(i).state.val(0);
+            y += weight * ctrl_points.at(i).state.val(1);
+        }
+
+        return Waypoint{State(x, y, 0, 0, 0), 0.0};
+    };
+}
+
+
