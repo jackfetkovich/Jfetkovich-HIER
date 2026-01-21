@@ -2,6 +2,11 @@
 
 // Factorial operator
 int fact(int n){
+
+    if (n == 0 || n == 1){
+        return 1;
+    }
+
     int out = n;
     for(int i = n-1; i > 1; i--){
         out *= i;
