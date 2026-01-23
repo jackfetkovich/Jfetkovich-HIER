@@ -35,6 +35,7 @@ int main(){
     std::vector<Waypoint> waypoints{
         Waypoint{init_state, 0.0},
         Waypoint{State(1.5, 0, 0.0, 0.0, 0.0), 8.0},
+        Waypoint{State(2.0, 1.0, 0.0, 0.0, 0.0), 16.0}
     };
 
     Trajectory traj = Trajectory(waypoints, mp);
@@ -63,7 +64,7 @@ int main(){
     time.reset();
     double elapsed_time = time.elapsed();
 
-    MPPI mppi = MPPI(1200, 25, 0.05, mp, rec);
+    MPPI mppi = MPPI(1200, 25, 0.5, mp, rec);
     State robot_state = init_state;
 
     // std::function<Waypoint (double)> my_spline = generate_n_bezier(waypoints);
@@ -81,7 +82,7 @@ int main(){
     // );
 
     
-    while(elapsed_time < 8.0){
+    while(elapsed_time < 16.0){
         u_nom = mppi.get_control(robot_state, traj, elapsed_time, 0.05, u_nom);
         Control ctrl = Control{u_nom(0,0), u_nom(1,0)};
         std::cout << ctrl.val(0) << ", " << ctrl.val(1) << std::endl;

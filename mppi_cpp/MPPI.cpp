@@ -22,7 +22,7 @@ MPPI::MPPI(int K, int T, double lambda, MotionParams mp, const rerun::RecordingS
 Eigen::Matrix<double, 2, 25> MPPI::get_control(State state, Trajectory traj, double t, double dt, Eigen::Matrix<double, 2, 25>& u_nom){
     rec.set_time_duration_secs("sim_time", t); // New time on timeline
     
-    MatrixXd ctrls = gen_rand_ctrl_seq(0.0, 0.1, 0.0, 0.0); // Generate random control inputs
+    MatrixXd ctrls = gen_rand_ctrl_seq(0.0, 0.1, 0.0, 0.3); // Generate random control inputs
 
     VectorXd costs = VectorXd(K); // Store cost of each sampled path
 
@@ -94,32 +94,32 @@ Eigen::Matrix<double, 2, 25> MPPI::get_control(State state, Trajectory traj, dou
 
     double max_weight = weights.maxCoeff();
 
-    // for (int i = 0; i < rollouts.size(); i++) {
+    for (int i = 0; i < rollouts.size(); i++) {
 
-    //     if(weights(i) > max_weight/1.2){
+        if(weights(i) > max_weight/1.2){
 
-    //         double alpha = weights(i)/max_weight * 255.0;
+            double alpha = weights(i)/max_weight * 255.0;
 
-    //         std::vector<rerun::Position2D> pts;
-    //         pts.reserve(rollouts[i].logging_states.size());
+            std::vector<rerun::Position2D> pts;
+            pts.reserve(rollouts[i].logging_states.size());
 
-    //         for (const auto& s : rollouts[i].logging_states) {
-    //             pts.emplace_back(
-    //                 static_cast<float>(s.val(0)),
-    //                 static_cast<float>(s.val(1))
-    //             );
-    //         }
+            for (const auto& s : rollouts[i].logging_states) {
+                pts.emplace_back(
+                    static_cast<float>(s.val(0)),
+                    static_cast<float>(s.val(1))
+                );
+            }
 
-    //         std::vector<std::vector<rerun::Position2D>> strips;
-    //         strips.push_back(pts);
+            std::vector<std::vector<rerun::Position2D>> strips;
+            strips.push_back(pts);
 
-    //         rec.log(
-    //             "mppi/sample/" + std::to_string(i),
-    //             rerun::LineStrips2D(strips)
-    //                 .with_colors(rerun::Color(0, 255, 0, alpha))
-    //         );
-    //     }
-    // }
+            rec.log(
+                "mppi/sample/" + std::to_string(i),
+                rerun::LineStrips2D(strips)
+                    .with_colors(rerun::Color(0, 255, 0, alpha))
+            );
+        }
+    }
 
     Eigen::Matrix<double, 2, 25> ctrl_out = u_nom.eval();
     for (int k = 0; k < K; k++){
