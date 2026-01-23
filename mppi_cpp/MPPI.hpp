@@ -13,7 +13,7 @@
 class MPPI {
     public:
         MPPI(int K, int T, double lambda,  MotionParams mp, const rerun::RecordingStream& rec);
-        Control get_control(State state, Trajectory traj, double t, double dt);
+        Eigen::Matrix<double, 2, 25> get_control(State state, Trajectory traj, double t, double dt, Eigen::Matrix<double, 2, 25>& u_nom);
 
     private:
         int K;

@@ -27,14 +27,14 @@ int main(){
         0.0
     );
 
+    Eigen::Matrix<double, 2, 25> u_nom = Eigen::Matrix<double, 2, 25>::Zero();
+
     MotionParams mp = MotionParams{0.35, 1.0, 1.9, 1.5};
 
     // Note: Thetas are ignored and recomputed by geometry
     std::vector<Waypoint> waypoints{
         Waypoint{init_state, 0.0},
-        Waypoint{State(0.25, 0.0, 0.0, 0.0, 0.0), 1.0},
-        Waypoint{State(0.25, 0.25, 0.0, 0.0, 0.0), 3.0},
-
+        Waypoint{State(1.5, 0, 0.0, 0.0, 0.0), 8.0},
     };
 
     Trajectory traj = Trajectory(waypoints, mp);
@@ -63,60 +63,65 @@ int main(){
     time.reset();
     double elapsed_time = time.elapsed();
 
-    MPPI mppi = MPPI(2000, 30, 0.05, mp, rec);
+    MPPI mppi = MPPI(1200, 25, 0.05, mp, rec);
     State robot_state = init_state;
 
-    std::function<Waypoint (double)> my_spline = generate_n_bezier(waypoints);
-    std::cout << my_spline(0.5).state.val(0) << std::endl;
+    // std::function<Waypoint (double)> my_spline = generate_n_bezier(waypoints);
+    // std::cout << my_spline(0.5).state.val(0) << std::endl;
 
-    std::vector<rerun::Position2D> spline_points = std::vector<rerun::Position2D>();
-    for (int i = 0; i < 100; i++){
-        std::cout << my_spline(i/100.0).state.val(0) << std::endl;
-        rerun::Position2D pt = rerun::Position2D(my_spline(i/100.0).state.val(0), my_spline(i/100.0).state.val(1));
-        spline_points.push_back(pt);
-    }
-    rec.log(
-        "mppi/spline/points",
-        rerun::Points2D(spline_points).with_radii({0.01f})
-    );
+    // std::vector<rerun::Position2D> spline_points = std::vector<rerun::Position2D>();
+    // for (int i = 0; i < 100; i++){
+    //     std::cout << my_spline(i/100.0).state.val(0) << std::endl;
+    //     rerun::Position2D pt = rerun::Position2D(my_spline(i/100.0).state.val(0), my_spline(i/100.0).state.val(1));
+    //     spline_points.push_back(pt);
+    // }
+    // rec.log(
+    //     "mppi/spline/points",
+    //     rerun::Points2D(spline_points).with_radii({0.01f})
+    // );
 
     
-    // while(elapsed_time < 6.0){
-    //     Control ctrl = mppi.get_control(robot_state, traj, elapsed_time, 0.05);
-    //     rec.set_time_duration_secs("sim_time", elapsed_time);
+    while(elapsed_time < 8.0){
+        u_nom = mppi.get_control(robot_state, traj, elapsed_time, 0.05, u_nom);
+        Control ctrl = Control{u_nom(0,0), u_nom(1,0)};
+        std::cout << ctrl.val(0) << ", " << ctrl.val(1) << std::endl;
+        u_nom.leftCols(24) = u_nom.rightCols(24);
+        u_nom.col(24) = u_nom.col(23);
 
-    //     rec.log(
-    //         "/mppi/control/velocity",
-    //         rerun::Scalars(ctrl.val(0))
-    //     );
+        rec.set_time_duration_secs("sim_time", elapsed_time);
 
-    //     rec.log(
-    //         "/mppi/control/omega",
-    //         rerun::Scalars(ctrl.val(1))
-    //     );
+        rec.log(
+            "/mppi/control/velocity",
+            rerun::Scalars(ctrl.val(0))
+        );
 
-    //     robot_state = unicyle_dynamics(robot_state, ctrl, mp, 0.05);
-    //     rerun::Position2D loc = rerun::Position2D(robot_state.val(0), robot_state.val(1));
+        rec.log(
+            "/mppi/control/omega",
+            rerun::Scalars(ctrl.val(1))
+        );
 
-    //     rec.log(
-    //         "mppi/telemetry",
-    //         rerun::Points2D(loc).with_radii({0.01f}).with_colors(rerun::Color(0, 0, 255))
-    //     );
+        robot_state = unicyle_dynamics(robot_state, ctrl, mp, 0.05);
+        rerun::Position2D loc = rerun::Position2D(robot_state.val(0), robot_state.val(1));
 
-    //     Waypoint goal = traj.sample(elapsed_time);
-    //     rerun::Position2D goal_pos = rerun::Position2D(goal.state.val(0), goal.state.val(1));
+        rec.log(
+            "mppi/telemetry",
+            rerun::Points2D(loc).with_radii({0.01f}).with_colors(rerun::Color(0, 0, 255))
+        );
 
-    //     rec.log(
-    //         "mppi/goal",
-    //         rerun::Points2D(goal_pos).with_radii({0.01f}).with_colors(rerun::Color(255, 255, 128))
-    //     );
+        Waypoint goal = traj.sample(elapsed_time);
+        rerun::Position2D goal_pos = rerun::Position2D(goal.state.val(0), goal.state.val(1));
 
-    //     // std::cout << elapsed_time << std::endl;
+        rec.log(
+            "mppi/goal",
+            rerun::Points2D(goal_pos).with_radii({0.01f}).with_colors(rerun::Color(255, 255, 128))
+        );
+
+        // std::cout << elapsed_time << std::endl;
         
-    //     elapsed_time = time.elapsed();
-    // }
+        elapsed_time = time.elapsed();
+    }
 
-    // std::cout << robot_state.val << std::endl;
+    std::cout << robot_state.val << std::endl;
 
     return 0;
 }
